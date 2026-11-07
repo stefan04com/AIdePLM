@@ -1,0 +1,124 @@
+{
+  "id": "run_demo01",
+  "trend": {
+    "id": "trend_demo01",
+    "title": "Commuters are roasting delayed-train apology emails",
+    "source": "saved",
+    "url": null,
+    "summary": "A viral thread: people share the most tone-deaf delay apologies and reward brands that own the delay with humour.",
+    "detected_at": "2026-11-07T09:00:00Z"
+  },
+  "fit": {
+    "fits": true,
+    "score": 82,
+    "reason": "Playful, self-aware tone matches the brand voice; no competitor or claim risk in the topic itself."
+  },
+  "draft": {
+    "brief": "Own the 'running late' joke: a lighthearted post that promises our app gets you there faster than the excuses.",
+    "caption": "Late again? Our app guarantees you'll arrive 10 minutes earlier than the train announcement. Download now.",
+    "visual_prompt": "Flat illustration of a commuter sprinting past a stationary train, warm sunrise colours, brand palette",
+    "hashtags": ["#MondayCommute", "#RunningLate"],
+    "image_url": "https://example.com/demo/image_v1.png",
+    "express_doc_id": "express_demo01",
+    "version": 1
+  },
+  "reactions": [
+    {
+      "persona_id": "gen_z_commuter",
+      "reaction": "Funny and relatable, but 'download now' feels like an ad. Drop the hard sell.",
+      "sentiment": 0.4,
+      "would_engage": true
+    },
+    {
+      "persona_id": "busy_parent",
+      "reaction": "I only care if it really saves me time. A guarantee would get my attention.",
+      "sentiment": 0.6,
+      "would_engage": true
+    },
+    {
+      "persona_id": "skeptical_veteran",
+      "reaction": "'Guarantees' sounds like marketing fluff. I've been burned by this before.",
+      "sentiment": -0.5,
+      "would_engage": false
+    }
+  ],
+  "comments": [
+    {
+      "id": "c_brand",
+      "role": "brand",
+      "text": "Love the tone, but keep the CTA softer and on-brand.",
+      "created_at": "2026-11-07T09:20:00Z"
+    },
+    {
+      "id": "c_legal",
+      "role": "legal",
+      "text": "We cannot promise a guaranteed time saving. Remove the guarantee claim.",
+      "created_at": "2026-11-07T09:22:00Z"
+    },
+    {
+      "id": "c_product",
+      "role": "product",
+      "text": "The time-saving angle is our strongest feature, please keep it prominent.",
+      "created_at": "2026-11-07T09:24:00Z"
+    }
+  ],
+  "referee": {
+    "conflicts": [
+      {
+        "id": "conf_1",
+        "between": [
+          {"kind": "human", "id": "legal", "label": "Legal"},
+          {"kind": "human", "id": "product", "label": "Product"}
+        ],
+        "summary": "Legal wants the guarantee removed; Product wants the time-saving promise to stay prominent.",
+        "positions": {
+          "legal": "No 'guarantee' or fixed-minutes claim.",
+          "product": "Keep time-saving as the headline benefit."
+        },
+        "compromise": "Keep the time-saving angle but phrase it as 'helps you arrive earlier', with no guarantee and no number."
+      },
+      {
+        "id": "conf_2",
+        "between": [
+          {"kind": "human", "id": "brand", "label": "Brand"},
+          {"kind": "persona", "id": "busy_parent", "label": "Busy parent"}
+        ],
+        "summary": "Brand wants a soft CTA; the busy parent responds to a concrete benefit.",
+        "positions": {
+          "brand": "Soft, on-brand call to action.",
+          "busy_parent": "Wants a concrete, credible time-saving benefit."
+        },
+        "compromise": "End with a soft CTA ('See how it works') after one concrete benefit line."
+      }
+    ],
+    "edits": [
+      {
+        "target": "caption",
+        "before": "Late again? Our app guarantees you'll arrive 10 minutes earlier than the train announcement. Download now.",
+        "after": "Late again? Our app helps you beat the train announcement. See how it works.",
+        "source_comment_id": "c_legal"
+      },
+      {
+        "target": "hashtags",
+        "before": "#MondayCommute #RunningLate",
+        "after": "#MondayCommute #BeatTheDelay",
+        "source_comment_id": "c_brand"
+      }
+    ],
+    "tasks": [
+      {"owner": "Legal", "task": "Sign off the revised caption wording", "due": "today 15:00"},
+      {"owner": "Product", "task": "Provide a substantiated time-saving stat for follow-up posts", "due": "this week"}
+    ],
+    "comment_status": [
+      {"comment_id": "c_brand", "status": "applied", "why": "CTA softened and hashtag updated."},
+      {"comment_id": "c_legal", "status": "applied", "why": "Guarantee and fixed-minutes claim removed."},
+      {"comment_id": "c_product", "status": "in_conflict", "why": "Conflicts with Legal; resolved via compromise wording."}
+    ],
+    "final_caption": "Late again? Our app helps you beat the train announcement. See how it works.",
+    "status": "ready_to_ship"
+  },
+  "status": "REFEREED",
+  "step": null,
+  "started_at": "2026-11-07T09:00:00Z",
+  "shipped_at": null
+}
