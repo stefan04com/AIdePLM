@@ -70,6 +70,38 @@ def test_new_comment_after_referee_reopens_review(client):
     assert client.post(f"/runs/{run_id}/referee").status_code == 200
 
 
+def _referee_with(client, monkeypatch, **update) -> tuple[str, dict]:
+    """Run the flow up to REFEREED, with the canned referee result patched by `update`."""
+    real = demo_cache.referee
+
+    def patched(*args, **kwargs):
+        return real(*args, **kwargs).model_copy(update=update)
+
+    monkeypatch.setattr(demo_cache, "referee", patched)
+    run_id = start_run(client)["id"]
+    for c in scripted_comments():
+        client.post(f"/runs/{run_id}/comments", json=c)
+    return run_id, client.post(f"/runs/{run_id}/referee").json()
+
+
+def test_needs_human_can_still_ship(client, monkeypatch):
+    """needs_human is a warning in the UI, not a state: the apply click is the human decision."""
+    run_id, ref = _referee_with(client, monkeypatch, status="needs_human")
+    assert ref["status"] == "needs_human"
+    assert client.get(f"/runs/{run_id}").json()["status"] == "REFEREED"
+    shipped = client.post(f"/runs/{run_id}/apply", json={"accept_all_edits": False})
+    assert shipped.status_code == 200
+    assert shipped.json()["status"] == "SHIPPED"
+
+
+def test_blank_final_caption_keeps_the_draft_caption(client, monkeypatch):
+    run_id, _ = _referee_with(client, monkeypatch, final_caption="  ")
+    before = client.get(f"/runs/{run_id}").json()["draft"]["caption"]
+    shipped = client.post(f"/runs/{run_id}/apply", json={"accept_all_edits": True}).json()
+    assert shipped["draft"]["caption"] == before
+    assert shipped["draft"]["version"] == 2
+
+
 def test_rejected_trend_stops_the_flow(client, monkeypatch):
     monkeypatch.setattr(
         demo_cache, "CANNED_FIT", demo_cache.CANNED_FIT.model_copy(update={"fits": False})

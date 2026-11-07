@@ -89,6 +89,8 @@ stateDiagram-v2
     REJECTED --> [*]
 ```
 
+**`needs_human`.** When the Referee returns `status: "needs_human"` the run is still `REFEREED`; there is no extra state. The UI shows a warning banner, and `POST /runs/{id}/apply` is **allowed**: the click is the human decision. A blank `final_caption` never reaches Express; the current caption is kept.
+
 ### End-to-end sequence
 
 ```mermaid
