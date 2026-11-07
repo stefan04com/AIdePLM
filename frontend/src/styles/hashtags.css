@@ -1,4 +1,4 @@
-/* Rules page: current trends (mocked fetch) and hashtag suggestions. */
+/* Rules page: current trends (mocked fetch) and hashtag suggestions under Platform rules. */
 
 .hashtags-actions {
   display: flex;
@@ -7,8 +7,7 @@
   gap: 12px;
 }
 
-.trend-list,
-.tag-list {
+.trend-list {
   list-style: none;
   margin: 10px 0;
   padding: 0;
@@ -16,8 +15,7 @@
   gap: 6px;
 }
 
-.trend-list li,
-.tag-list li {
+.trend-list li {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -29,26 +27,117 @@
   font-size: 13px;
 }
 
-.hashtags-form {
+.hashtag-card {
   display: grid;
-  grid-template-columns: 1fr auto auto;
-  align-items: end;
-  gap: 10px;
+  gap: 12px;
 }
 
-.hashtags-form label {
+.platform-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.platform-tabs button {
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 13px;
+}
+
+.platform-tabs button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.hashtags-form {
   display: grid;
-  gap: 4px;
-  font-size: 12px;
-  min-width: 0;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
 }
 
 .hashtags-form input {
   min-width: 0;
 }
 
-@media (max-width: 700px) {
-  .hashtags-form {
-    grid-template-columns: 1fr;
+.tag-chips {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  animation: tag-in 0.3s ease-out both;
+}
+
+.tag-chip:nth-child(2) {
+  animation-delay: 0.06s;
+}
+
+.tag-chip:nth-child(3) {
+  animation-delay: 0.12s;
+}
+
+.tag-name {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.tag-kind {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+}
+
+.tag-chip a {
+  text-decoration: none;
+  opacity: 0.6;
+}
+
+.tag-chip a:hover,
+.tag-chip a:focus-visible {
+  opacity: 1;
+}
+
+.tag-chip.kind-niche,
+.tag-chip.kind-local {
+  border-color: var(--accent);
+}
+
+.tag-limit {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.tag-limit strong {
+  color: var(--text);
+}
+
+@keyframes tag-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tag-chip {
+    animation: none;
   }
 }
