@@ -1,5 +1,5 @@
 import type { ApplyRequest, CommentRole, Persona, Run } from '../api/types'
-import { canApply, isReviewable } from '../lib/runStatus'
+import { canApply, isFinished, isReviewable } from '../lib/runStatus'
 import { RefereePanel } from './referee/RefereePanel'
 import { HumanReviewers } from './review/HumanReviewers'
 import { PersonaCards } from './review/PersonaCards'
@@ -24,6 +24,8 @@ export function ReviewColumn({ run, personas, busy, onComment, onApply, ...handl
       <HumanReviewers
         comments={run?.comments ?? []}
         commentStatus={run?.referee?.comment_status ?? []}
+        startedAt={run?.started_at ?? null}
+        timersLive={run !== null && !isFinished(run)}
         disabled={busy || !isReviewable(run)}
         onComment={onComment}
       />

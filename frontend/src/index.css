@@ -302,7 +302,48 @@ input {
 }
 
 .comment-box {
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
   margin-top: 6px;
+}
+
+textarea {
+  font: inherit;
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  resize: vertical;
+}
+
+.comment-box button {
+  padding: 6px 10px;
+}
+
+.timer {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--warn);
+  font-variant-numeric: tabular-nums;
+}
+
+.timer.done {
+  color: var(--ok);
+}
+
+.clock {
+  font-variant-numeric: tabular-nums;
+}
+
+.demo-toggle {
+  border-color: var(--tone);
+  color: var(--tone);
+  font-weight: 600;
 }
 
 blockquote {

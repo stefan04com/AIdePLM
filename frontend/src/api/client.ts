@@ -65,6 +65,7 @@ const backendApi = {
   apply: (id: string, body: ApplyRequest) => post<Run>(runPath(id, '/apply'), body),
   getUsage: (runId?: string) =>
     get<UsageSummary>(runId ? `/usage?run_id=${encodeURIComponent(runId)}` : '/usage'),
+  getDemoMode: () => get<DemoModeResponse>('/admin/demo-mode'),
   setDemoMode: (on: boolean) => post<DemoModeResponse>('/admin/demo-mode', { on }),
 }
 

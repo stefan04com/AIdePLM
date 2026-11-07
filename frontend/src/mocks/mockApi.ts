@@ -40,7 +40,7 @@ const DRAFT_DONE_MS = 4500
 const SYNC_CALL_MS = 1200 // fake latency for /reactions, /referee and /apply
 
 const runs = new Map<string, Run>()
-let demoMode = false
+let demoMode = true // the mock is always 'demo': canned, instant, offline
 
 const clone = <T>(value: T): T => structuredClone(value)
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -255,6 +255,10 @@ export async function getUsage(runId?: string): Promise<UsageSummary> {
     total_output_tokens: sumOf(MOCK_CALLS, 'output_tokens'),
     total_cost_usd: sumOf(MOCK_CALLS, 'cost_usd'),
   }
+}
+
+export async function getDemoMode(): Promise<DemoModeResponse> {
+  return { on: demoMode }
 }
 
 export async function setDemoMode(on: boolean): Promise<DemoModeResponse> {
