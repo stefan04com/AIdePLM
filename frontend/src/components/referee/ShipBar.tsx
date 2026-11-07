@@ -1,20 +1,20 @@
 import { useState } from 'react'
 
 interface Props {
-  acceptedCount: number
   totalConflicts: number
   canShip: boolean
   onShip: (acceptAllEdits: boolean) => void
 }
 
-function summary(accepted: number, total: number): string {
-  if (total === 0) return 'No conflicts to settle'
-  if (accepted === total) return `All ${total} compromises accepted`
-  return `Accepts all ${total} compromises (${accepted} reviewed one by one)`
+/** What the click really does: the backend ships the Referee's final caption, with every compromise in it. */
+function summary(total: number): string {
+  if (total === 0) return 'Ships the final caption'
+  const compromises = total === 1 ? 'the compromise' : `all ${total} compromises`
+  return `Ships the final caption with ${compromises} applied`
 }
 
-/** One click ships (demo script). The post preview and Slack message (both simulated) only update after this human click. */
-export function ShipBar({ acceptedCount, totalConflicts, canShip, onShip }: Props) {
+/** One click ships (demo script). The post preview and Slack message only update after this human click. */
+export function ShipBar({ totalConflicts, canShip, onShip }: Props) {
   const [acceptAllEdits, setAcceptAllEdits] = useState(true)
 
   return (
@@ -27,9 +27,9 @@ export function ShipBar({ acceptedCount, totalConflicts, canShip, onShip }: Prop
         />
         Also apply hashtag and visual edits
       </label>
-      <span className="muted">{summary(acceptedCount, totalConflicts)}</span>
+      <span className="muted">{summary(totalConflicts)}</span>
       <button className="primary" disabled={!canShip} onClick={() => onShip(acceptAllEdits)}>
-        Apply compromise &amp; ship
+        Apply all &amp; ship
       </button>
     </div>
   )

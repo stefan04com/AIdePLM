@@ -1,5 +1,4 @@
 import type { ApplyRequest, Comment, RefereeResult, SlackDelivery } from '../../api/types'
-import { useAcceptedConflicts } from '../../hooks/useAcceptedConflicts'
 import { humanize } from '../../lib/format'
 import { Badge, Banner, SectionHead } from '../ui'
 import { ConflictCard } from './ConflictCard'
@@ -12,7 +11,7 @@ interface Props {
   comments: Comment[]
   /** True when the run is REFEREED and no action is running. */
   canShip: boolean
-  /** True once the run is SHIPPED: every compromise was accepted by "Apply compromise". */
+  /** True once the run is SHIPPED: "Apply all & ship" put every compromise in the caption. */
   shipped: boolean
   /** What happened to the Slack message on ship: posted, simulated (no webhook) or failed. */
   slack: SlackDelivery | null
@@ -26,7 +25,6 @@ const SHIPPED_TEXT: Record<SlackDelivery, string> = {
 }
 
 export function RefereePanel({ referee, comments, canShip, shipped, slack, onApply }: Props) {
-  const { accepted, toggle, acceptAll, acceptedIds } = useAcceptedConflicts(referee.conflicts)
   const needsHuman = referee.status === 'needs_human'
 
   return (
@@ -43,13 +41,7 @@ export function RefereePanel({ referee, comments, canShip, shipped, slack, onApp
       )}
 
       {referee.conflicts.map((conflict) => (
-        <ConflictCard
-          key={conflict.id}
-          conflict={conflict}
-          accepted={shipped || accepted.has(conflict.id)}
-          disabled={!canShip}
-          onToggle={() => toggle(conflict.id)}
-        />
+        <ConflictCard key={conflict.id} conflict={conflict} applied={shipped} />
       ))}
 
       <EditList edits={referee.edits} comments={comments} />
@@ -59,16 +51,14 @@ export function RefereePanel({ referee, comments, canShip, shipped, slack, onApp
         <Banner tone={slack === 'failed' ? 'warn' : 'ok'}>{SHIPPED_TEXT[slack ?? 'simulated']}</Banner>
       ) : (
         <ShipBar
-          acceptedCount={acceptedIds.length}
           totalConflicts={referee.conflicts.length}
           canShip={canShip}
-          onShip={(acceptAllEdits) => {
-            acceptAll() // one click accepts every compromise (docs/demo-script.md)
+          onShip={(acceptAllEdits) =>
             onApply({
               conflict_ids: referee.conflicts.map((c) => c.id),
               accept_all_edits: acceptAllEdits,
             })
-          }}
+          }
         />
       )}
     </div>

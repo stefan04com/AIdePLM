@@ -1,7 +1,7 @@
 import type { Run } from '../../api/types'
 import { useNow } from '../../hooks/useNow'
 import type { Usage } from '../../hooks/useUsage'
-import { estimatePostCost } from '../../lib/cost'
+import { postCost } from '../../lib/cost'
 import { computeFactors, type Factor } from '../../lib/factors'
 import { isFinished } from '../../lib/runStatus'
 import { toneClass } from '../../lib/tones'
@@ -10,8 +10,7 @@ import { SectionHead } from '../ui'
 /** Every factor behind the decision to ship, from the run's real data (lib/factors.ts). */
 export function AnalysisPanel({ run, usage }: { run: Run | null; usage: Usage }) {
   const now = useNow(run !== null && !isFinished(run))
-  const perPost = usage.all ? (estimatePostCost(usage.all.calls)?.perPostUsd ?? null) : null
-  const factors = computeFactors(run, perPost, now)
+  const factors = computeFactors(run, postCost(usage.all?.calls), now)
 
   return (
     <section className="column">

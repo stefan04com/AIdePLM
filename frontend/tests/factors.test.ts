@@ -3,10 +3,11 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import type { Run } from '../src/api/types.ts'
+import { type PostCost, postCost } from '../src/lib/cost.ts'
 import { computeFactors } from '../src/lib/factors.ts'
 
 const NOW = Date.parse('2026-11-07T09:04:00Z')
-const byLabel = (run: Run | null, cost: number | null = null) =>
+const byLabel = (run: Run | null, cost: PostCost | null = null) =>
   Object.fromEntries(computeFactors(run, cost, NOW).map((f) => [f.label, f]))
 
 test('before a run every factor is empty', () => {
@@ -39,7 +40,7 @@ const run = {
 } as unknown as Run
 
 test('factors come from the run data', () => {
-  const f = byLabel(run, 0.0566)
+  const f = byLabel(run, postCost([]))
   assert.equal(f['Brand fit'].value, '88/100')
   assert.equal(f['Brand fit'].level, 0.88)
   assert.equal(f['Audience'].value, '+0.5')
@@ -49,7 +50,8 @@ test('factors come from the run data', () => {
   assert.equal(f['Conflicts'].value, '2')
   assert.equal(f['Conflicts'].detail, '1 applied · 1 in conflict · 0 rejected')
   assert.equal(f['Time to approval'].value, '4m 0s')
-  assert.equal(f['Cost per post'].value, '$0.0566')
+  assert.equal(f['Cost per post'].value, '$0.0602')
+  assert.equal(f['Cost per post'].detail, 'measured in the live eval')
 })
 
 test('cost stays empty until it was measured', () => {

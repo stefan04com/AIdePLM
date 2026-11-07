@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import type { CallUsage } from '../src/api/types.ts'
-import { estimatePostCost, formatUsd } from '../src/lib/cost.ts'
+import { estimatePostCost, formatUsd, LIVE_EVAL, postCost } from '../src/lib/cost.ts'
 
 const call = (name: string, model: string, cost: number, latency = 1000): CallUsage => ({
   call: name,
@@ -37,4 +37,21 @@ test('small amounts keep 4 decimals', () => {
   assert.equal(formatUsd(0.0042), '$0.0042')
   assert.equal(formatUsd(0.25), '$0.25')
   assert.equal(formatUsd(1.5), '$1.50')
+})
+
+test('without live calls the panel shows the live-eval number, never $0 or n/a', () => {
+  for (const calls of [[], [call('fit', 'demo-cache', 0)]]) {
+    const cost = postCost(calls)
+    assert.equal(cost.source, 'live-eval')
+    assert.equal(cost.perPostUsd, LIVE_EVAL.perPostUsd)
+    assert.equal(formatUsd(cost.perPostUsd), '$0.0602')
+  }
+  assert.equal(postCost(undefined).source, 'live-eval')
+})
+
+test('live calls on this machine win over the live-eval number', () => {
+  const cost = postCost([call('fit', 'claude', 0.01), call('referee', 'claude', 0.03)])
+  assert.equal(cost.source, 'local')
+  assert.ok(Math.abs(cost.perPostUsd - 0.04) < 1e-9)
+  assert.equal(cost.note, 'Average of 2 live calls on this machine')
 })

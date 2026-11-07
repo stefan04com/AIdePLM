@@ -5,7 +5,7 @@ const LABEL: Record<Exclude<NextStep, null>, string> = {
   reactions: 'persona reactions',
   comments: 'reviewer comments',
   referee: 'run referee',
-  apply: 'apply & ship',
+  apply: 'apply all & ship',
 }
 
 /** Header hint for presenter mode: what the next → / clicker press will do. */

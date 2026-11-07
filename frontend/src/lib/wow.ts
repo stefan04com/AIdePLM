@@ -9,12 +9,6 @@ export const TREND_LIFE_HOURS = 11.9
 
 const HOUR_MS = 3_600_000
 
-/** How many times faster than an eight-day review this run was approved. */
-export function speedup(startIso: string, endIso: string): number {
-  const ms = Math.max(1000, Date.parse(endIso) - Date.parse(startIso))
-  return Math.round((REVIEW_DAYS * 24 * HOUR_MS) / ms)
-}
-
 /** Milliseconds of trend life left at `nowMs` (negative once the trend is past its peak). */
 export function trendLifeLeft(detectedIso: string, nowMs: number): number {
   return TREND_LIFE_HOURS * HOUR_MS - (nowMs - Date.parse(detectedIso))

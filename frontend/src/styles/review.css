@@ -131,10 +131,6 @@ blockquote {
   background: color-mix(in srgb, var(--ok) 10%, var(--surface));
 }
 
-button.accepted {
-  border-color: var(--ok);
-  color: var(--ok);
-}
 
 .edit-row + .edit-row {
   margin-top: 12px;

@@ -1,18 +1,24 @@
 import type { Conflict } from '../../api/types'
-import { Card } from '../ui'
+import { Badge, Card } from '../ui'
 
 interface Props {
   conflict: Conflict
-  accepted: boolean
-  disabled: boolean
-  onToggle: () => void
+  /** True once the run shipped: the compromise is in the published caption. */
+  applied: boolean
 }
 
-export function ConflictCard({ conflict, accepted, disabled, onToggle }: Props) {
-  const title = conflict.between.map((party) => party.label).join(' vs ')
+/** One conflict and its compromise. No per-conflict choice: "Apply all & ship" applies every compromise. */
+export function ConflictCard({ conflict, applied }: Props) {
+  const parties = conflict.between.map((party) => party.label).join(' vs ')
+  const title = (
+    <>
+      {parties}
+      {applied && <Badge tone="ok">applied</Badge>}
+    </>
+  )
 
   return (
-    <Card title={title} accent={accepted ? 'ok' : 'warn'} className="conflict">
+    <Card title={title} accent={applied ? 'ok' : 'warn'} className="conflict">
       <p>{conflict.summary}</p>
       <ul>
         {conflict.between.map((party) => (
@@ -25,14 +31,6 @@ export function ConflictCard({ conflict, accepted, disabled, onToggle }: Props) 
       <p className="compromise">
         <strong>Compromise:</strong> {conflict.compromise}
       </p>
-      <button
-        className={accepted ? 'accepted' : ''}
-        aria-pressed={accepted}
-        disabled={disabled}
-        onClick={onToggle}
-      >
-        {accepted ? 'Compromise accepted' : 'Accept compromise'}
-      </button>
     </Card>
   )
 }

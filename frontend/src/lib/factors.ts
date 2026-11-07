@@ -2,7 +2,7 @@
 // the run's real data. A factor without data yet shows "—", never an invented number.
 
 import type { Run } from '../api/types'
-import { formatUsd } from './cost'
+import { formatUsd, type PostCost } from './cost'
 import { formatElapsed, formatSentiment } from './format'
 import type { Tone } from './tones'
 
@@ -90,24 +90,24 @@ function timeToApproval(run: Run | null, nowMs: number): Factor {
   }
 }
 
-function cost(perPostUsd: number | null): Factor {
-  if (perPostUsd === null) return EMPTY('Cost per post', 'not measured yet (demo mode is cached)')
+function cost(post: PostCost | null): Factor {
+  if (post === null) return EMPTY('Cost per post', 'not measured yet')
   return {
     label: 'Cost per post',
-    value: formatUsd(perPostUsd),
-    detail: 'measured on live AI calls',
+    value: formatUsd(post.perPostUsd),
+    detail: post.source === 'local' ? 'measured on live AI calls here' : 'measured in the live eval',
     level: null,
     tone: 'neutral',
   }
 }
 
-export function computeFactors(run: Run | null, perPostUsd: number | null, nowMs: number) {
+export function computeFactors(run: Run | null, postCost: PostCost | null, nowMs: number) {
   return [
     brandFit(run),
     audience(run),
     expertVoices(run),
     conflicts(run),
     timeToApproval(run, nowMs),
-    cost(perPostUsd),
+    cost(postCost),
   ]
 }

@@ -41,7 +41,18 @@ function findTarget(spot: AdobeeSpot, nest: HTMLElement | null): HTMLElement | n
   return nest
 }
 
-/** Perch on the target's top-right corner, kept on screen; at home, sit in the nest. */
+/** The pill on the right of the target's section title ("simulated", "ready to ship"), if any. */
+function sectionAside(el: HTMLElement): HTMLElement | null {
+  const inside = el.querySelector<HTMLElement>(':scope > .section-head .section-aside')
+  if (inside) return inside
+  const above = el.previousElementSibling
+  return above?.matches('.section-head') ? above.querySelector<HTMLElement>('.section-aside') : null
+}
+
+/**
+ * Perch on the target's top-right corner, kept on screen; at home, sit in the nest.
+ * If the target's section title has a pill on the right, perch just left of it so it stays readable.
+ */
 function perchFor(el: HTMLElement | null, home: boolean): Point {
   if (!el) return { x: 16, y: 8 }
   const box = el.getBoundingClientRect()
@@ -50,9 +61,13 @@ function perchFor(el: HTMLElement | null, home: boolean): Point {
   const ceiling = (document.querySelector('.topbar')?.getBoundingClientRect().bottom ?? 0) + 4
   const dock = document.querySelector('.ship-bar')?.getBoundingClientRect().top ?? window.innerHeight
   const floor = Math.min(window.innerHeight, dock) - BEE_H - 12
+  const pill = sectionAside(el)?.getBoundingClientRect()
+  const spot = pill
+    ? { x: pill.left - BEE_W - 6, y: pill.top + pill.height / 2 - BEE_H / 2 }
+    : { x: box.right - BEE_W * 0.75, y: box.top - BEE_H * 0.55 }
   return {
-    x: clamp(box.right - BEE_W * 0.75, 8, window.innerWidth - BEE_W - 8),
-    y: clamp(box.top - BEE_H * 0.55, ceiling, Math.max(ceiling, floor)),
+    x: clamp(spot.x, 8, window.innerWidth - BEE_W - 8),
+    y: clamp(spot.y, ceiling, Math.max(ceiling, floor)),
   }
 }
 

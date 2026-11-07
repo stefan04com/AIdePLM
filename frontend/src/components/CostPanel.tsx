@@ -1,34 +1,27 @@
 import type { CallUsage } from '../api/types'
 import type { Usage } from '../hooks/useUsage'
-import { estimatePostCost, formatUsd, isLiveCall } from '../lib/cost'
+import { formatUsd, isLiveCall, postCost } from '../lib/cost'
 import { formatDuration } from '../lib/format'
 import { Card, Muted, Pill, SectionHead } from './ui'
 
 /** AI cost per post (for the cost slide) and the calls of the current run. */
 export function CostPanel({ usage }: { usage: Usage }) {
-  const estimate = usage.all ? estimatePostCost(usage.all.calls) : null
+  const cost = postCost(usage.all?.calls)
   const runCalls = usage.run?.calls ?? []
 
   return (
     <section className="column">
       <SectionHead
         title="Compute cost"
-        aside={<Pill tone={estimate ? 'ok' : 'neutral'}>{estimate ? formatUsd(estimate.perPostUsd) : 'n/a'}</Pill>}
+        aside={<Pill tone="ok">{formatUsd(cost.perPostUsd)}</Pill>}
       />
       <Card title="Per post (measured)">
-        {estimate ? (
-          <>
-            <p className="cost-big">{formatUsd(estimate.perPostUsd)}</p>
-            <Muted>
-              Average of {estimate.liveCalls} live calls · about{' '}
-              {formatDuration(estimate.perPostLatencyMs)} of model time per post
-            </Muted>
-          </>
-        ) : (
-          <Muted>
-            No live calls logged yet. Demo mode answers from the cache ($0), so run once
-            with demo mode off to measure.
-          </Muted>
+        <p className="cost-big">{formatUsd(cost.perPostUsd)}</p>
+        <Muted>
+          {cost.note} · about {formatDuration(cost.perPostLatencyMs)} of model time per post
+        </Muted>
+        {cost.source === 'live-eval' && (
+          <Muted>Demo mode answers from the cache, so this run's own calls cost $0.</Muted>
         )}
       </Card>
 

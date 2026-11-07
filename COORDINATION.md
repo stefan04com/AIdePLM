@@ -9,7 +9,7 @@ Rules and architecture live in `CLAUDE.md` and `ARCHITECTURE.md`; this file only
 - **Feature freeze is on:** only fixes go here; ideas go to "What's next" in the pitch.
 - `main` is open: push or merge there as you like (team decision, 2026-11-07). Before you push, `git pull` first and run the tests (`pytest -q`, `npm run build && npm run lint && npm test`) so `main` still runs the demo. Never force-push `main`. Merge `main` back into `develop` after you push.
 
-Last updated: 2026-11-07 14:20 (Stefan)
+Last updated: 2026-11-07 15:10 (Andu)
 
 ## Status
 
@@ -35,10 +35,11 @@ Last updated: 2026-11-07 14:20 (Stefan)
 - [ ] Pitch, with Anda: say what is real (LLM, Slack) and what is simulated (Adobe, trends; `adobe.py` is the integration seam). Show `qa/results/live_eval_*.md` as proof the AI is real and measured, since demo mode answers from the cache.
 
 ### Andu
-- [ ] **"Accept compromise" doesn't change what ships:** `apply()` checks the `conflict_ids` but never uses them; it always ships the referee's full `final_caption`. Quick fix: rename the button "Apply all & ship" and drop or relabel the per-conflict "Accept" buttons (with Stefan if the backend should use them). Done when: the UI doesn't promise a choice it doesn't make.
-- [ ] **Cost panel shows "n/a" in demo mode:** show the measured **$0.0602 per post** (from the live eval) when there are no live calls, labelled "measured in live eval". **Number changed:** the latest eval (referee prompt now compares personas with humans) is $0.0602, so update the `0.0566` in `frontend/src/components/header/RunMeta.tsx` and `frontend/tests/factors.test.ts` too.
+- [x] **"Accept compromise" no longer promises a choice:** the per-conflict "Accept" buttons are gone; the ship button is **"Apply all & ship"** and says "Ships the final caption with all N compromises applied". After ship each conflict card shows "applied". (Backend unchanged: it still ships the full `final_caption`.)
+- [x] **Cost panel never shows "n/a":** without live calls on the laptop it shows **$0.0602 per post, "measured in the live eval"** (header, Analysis and Compute cost all use `postCost()` in `lib/cost.ts`); live calls on the laptop replace it automatically. Update `LIVE_EVAL` there if a new eval changes the number.
+- [x] **Ship screen says "37s vs 8 days for a typical review"** instead of the "18,893× faster" multiplier (`speedup()` removed).
+- [x] Header fits one row from 1600 px wide (wraps tidily below); Adobee perches beside a section's pill ("simulated", "ready to ship") instead of covering it.
 - [ ] One human click-through on the presentation laptop with `VITE_USE_MOCKS=false` in `frontend/.env.local` (the automated run can't judge how it looks on the projector).
-- [ ] Consider showing only "37s vs 8 days" on the ship screen instead of "18,893× faster": on a run of a few seconds the multiplier looks inflated.
 
 ### Militaru
 - [x] **Replaced the laptop photo** with a CC0 latte on a café table (`frontend/public/visuals/boabe-latte.jpg`, Matt Hoffman, `CREDITS.md`). `ADOBE_MOCK_IMAGE_URL=/visuals/boabe-latte.jpg`; `SLACK_IMAGE_URL` points at the same image on Wikimedia (public https), both defaults in `.env.example`. Tested: post shows it, a demo run posted to Slack with no image retry.
@@ -47,6 +48,7 @@ Last updated: 2026-11-07 14:20 (Stefan)
 - [x] `SLACK_IMAGE_URL` set to the public Wikimedia copy of the post photo (default in `.env.example`, so every laptop gets it).
 
 ### Anda
+- [ ] Demo script: the ship button is now **"Apply all & ship"** (was "Apply compromise"), and there are no per-conflict "Accept" buttons any more. Update the 2:10 row and the driver notes.
 - [ ] Pitch: say "37 s vs 8 days" rather than the multiplier, and state plainly what is real (LLM, Slack) and what is simulated (Adobe, trends).
 - [ ] Cost slide: **$0.0602 per post** (4 LLM calls, ~22 s of model time) next to "a review takes 8 days and 3+ versions" (Filestage, vendor-reported). If you add hours saved × hourly cost, label it as an assumption.
 
