@@ -84,6 +84,7 @@ Read first: `docs/trending-research.md` (data sources and limits) and `docs/what
 - [ ] Only if there's time and the team agrees (it's after the freeze): one real third integration, a live Reddit/news fetch in `trends.py` (fallback already there) or a Firefly call in `adobe.generate_visual()` if someone gets Adobe Developer credentials. Otherwise leave it in "What's next".
 - [x] Webhook URL: only needed on Stefan's laptop (the demo machine); it is in his `.env`, not in git.
 - [x] `SLACK_IMAGE_URL` set to the public GitHub raw copy of the post photo (default in `.env.example`, so every laptop gets it).
+- [x] **Visual after review:** on apply the post (v2) switches to `boabe-pumpkin-latte-revised.jpg` (`ADOBE_MOCK_REVISED_IMAGE_URL`, `adobe.revised_visual`), and the Slack message shows the same image (`SLACK_IMAGE_URL`). **That photo has a dreamstime.com watermark: replace it with a licensed image before the demo** (`CREDITS.md`).
 
 ### Anda
 - [ ] Pitch: say "37 s vs 8 days" rather than the multiplier, and state plainly what is real (LLM, Slack) and what is simulated (Adobe, trends).
