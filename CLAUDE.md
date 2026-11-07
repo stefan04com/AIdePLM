@@ -4,7 +4,7 @@ Guidance for Claude Code (and humans) working in this repo. Read this first, the
 
 ## Project in one paragraph
 
-**Moment** gets a trend to an approved social post in ~2 hours. Flow: **Spot** (trend from Reddit/news → AI brand-fit check) → **Draft** (AI brief, caption, visual prompt; the visual and the post are a local simulation, integration-ready for Adobe Firefly / Express) → **Review** (Brand/Legal/Product humans + 3 synthetic customer personas built from real reviews, side by side) → **Referee** (one structured LLM call → conflict cards, concrete edits, compromise, tasks) → **Ship** ("apply" bumps the post version, final post + tasks are built as a Slack message; Slack is mocked too). Built in 12 hours at the IT Fest Adobe Hackathon ("Marketing Reimagined"). The demo is 3 minutes and must work 3/3 times.
+**Moment** gets a trend to an approved social post in ~2 hours. Flow: **Spot** (trend from Reddit/news → AI brand-fit check) → **Draft** (AI brief, caption, visual prompt; the visual and the post are a local simulation, integration-ready for Adobe Firefly / Express) → **Review** (Brand/Legal/Product humans + 3 synthetic customer personas built from real reviews, side by side) → **Referee** (one structured LLM call → conflict cards, concrete edits, compromise, tasks) → **Ship** ("apply" bumps the post version, final post + tasks are posted to Slack through an incoming webhook). Built in 12 hours at the IT Fest Adobe Hackathon ("Marketing Reimagined"). The demo is 3 minutes and must work 3/3 times.
 
 ## Team and ownership
 
@@ -39,7 +39,7 @@ npm run build && npm run lint     # must pass before every PR
 curl -X POST localhost:8000/admin/demo-mode -d '{"on": true}' -H 'Content-Type: application/json'
 ```
 
-Copy `.env.example` to `.env` and fill in keys. Required: `LLM_PROVIDER` and `LLM_MODEL`, plus `LLM_API_KEY` (direct Anthropic API) or `AWS_BEARER_TOKEN_BEDROCK` exported in your shell (`LLM_PROVIDER=bedrock`, optional `AWS_REGION`). No Adobe keys and no `SLACK_WEBHOOK_URL` are needed: those integrations are local mocks (see "Integrations" below). Optional: `ADOBE_MOCK_IMAGE_URL`, `ADOBE_MOCK_LATENCY_S`.
+Copy `.env.example` to `.env` and fill in keys. Required: `LLM_PROVIDER` and `LLM_MODEL`, plus `LLM_API_KEY` (direct Anthropic API) or `AWS_BEARER_TOKEN_BEDROCK` exported in your shell (`LLM_PROVIDER=bedrock`, optional `AWS_REGION`). No Adobe keys are needed (local mock, see "Integrations" below). Optional: `SLACK_WEBHOOK_URL` (real Slack post; without it the message is only previewed), `ADOBE_MOCK_IMAGE_URL`, `ADOBE_MOCK_LATENCY_S`.
 
 ---
 
@@ -142,7 +142,7 @@ Types: `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `style`. Scopes: `llm
 - Untrusted text (trends, reviewer comments, reviews) goes into prompts inside delimited tags (`<trend>…</trend>`, `<comment role="legal">…</comment>`) with an instruction to treat it as data. Never concatenate it into the instruction part of a prompt.
 
 ### Reliability
-- Every external call (today the LLM; any future Adobe, Slack or Reddit/news integration) and every integration module call needs a timeout (default 15s) and a fallback in demo mode; `adapters.py` already wraps the mocks this way. If you add an integration without a fallback, the PR isn't done.
+- Every external call (today the LLM and the Slack webhook; any future Adobe or Reddit/news integration) and every integration module call needs a timeout (default 15s) and a fallback in demo mode; `adapters.py` already wraps the mocks this way. If you add an integration without a fallback, the PR isn't done.
 - The saved trend `data/demo_trend.json` is the default for the demo. Live trend fetch must never block the flow.
 - Nothing is applied to the post or the Slack message without the user clicking "apply".
 
@@ -170,7 +170,7 @@ By team decision there is no live Adobe, Slack or Reddit integration. The three 
 |---|---|---|
 | `trends.py` | `get_trend()` returns the saved trend from `data/demo_trend.json` (a placeholder if the file is missing or malformed). `live=True` (env `LIVE_TRENDS=1`) returns the first of the real trends collected from the web into `data/live_trends.json` (each with its source article), or a built-in sample if that file is unusable; nothing contacts Reddit or news sites at runtime | `current_trend()` |
 | `adobe.py` | `generate_visual(prompt)` returns a placeholder SVG (same prompt, same image), labelled as a mock. `create_post(caption, image_url)` returns a mock post at version 1; `update_post(...)` returns a copy with `version + 1`. Its `url` is only the Express home page, not a post | `create_visual_and_post()`, `update_post()` |
-| `slack.py` | `send_final_post(caption, image_url, tasks, elapsed)` builds the Block Kit message (caption, image, tasks, "Trend → approved" time) and reports it as sent; the UI can show the blocks as a preview | `send_to_slack()` |
+| `slack.py` | `send_final_post(caption, image_url, tasks, elapsed)` builds the Block Kit message (caption, image, tasks, "Trend → approved" time) and POSTs it to `SLACK_WEBHOOK_URL`; returns `posted`, `simulated` (no webhook) or `failed`, stored in `Run.slack`; the UI shows the blocks as a preview either way | `send_to_slack()` |
 
 Environment (both optional, read by `adobe.py`):
 

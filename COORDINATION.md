@@ -18,7 +18,8 @@ Last updated: 2026-11-07 12:30 (Stefan)
 | Backend flow (fit → draft → reactions → referee → apply) | Done in demo mode; 106 tests pass |
 | Real LLM (Bedrock) | Live eval on final `main`: 3/3 conflict, 0 fallbacks, **$0.0566/run** (`qa/results/live_eval_20261107_122427.md`). Use `LLM_MODEL=eu.anthropic.claude-sonnet-4-6`; `anthropic.claude-sonnet-5-5` returns 403 on our Bedrock account |
 | Rejected trend (fit says no) | Backend done (`GET /trend?which=rejected`); UI button pending |
-| Adobe / Slack / trends | Local simulations by team decision, no keys needed |
+| Slack | **Real**: incoming webhook (`SLACK_WEBHOOK_URL` in `.env`), posts on ship; `Run.slack` = posted / simulated / failed |
+| Adobe / trends | Local simulations by team decision, no keys needed |
 | Frontend | Builds and lints; not yet tested end to end in a real browser |
 | Tag `v1.0.0-demo` | Not cut yet |
 
@@ -36,6 +37,9 @@ Last updated: 2026-11-07 12:30 (Stefan)
 - [x] Image in the Slack preview: the simulated preview now shows the post's image, the local placeholder included (no external image needed).
 - [x] `ruff format` on the backend (`adobe.py`, `slack.py`, `test_adobe.py`, `test_llm_client.py`).
 - [x] `ARCHITECTURE.md` §4.4–4.6, ADR-003 and §10 describe the local simulations.
+- [x] Real Slack integration (Third-party integrations, 15%): webhook post on ship, preview fallback, UI label shows posted / not posted. Tested: a demo run posted to `#all-ai-de-plm-marketing-team`.
+- [x] Real CC0 photo for the post (`frontend/public/visuals/`), and real trends from the web for the live mock (`data/live_trends.json`).
+- [ ] Give the team the webhook URL privately (not in git) so every laptop posts to the same channel.
 
 ## Anda: data, demo script, pitch, QA
 - [ ] Read the cost from `qa/results/live_eval_20261107_122427.md` (**$0.0566 per post**, 3 live runs on `eu.anthropic.claude-sonnet-4-6` at $3 / $15 per Mtok) and put it in the cost slide. No need to ask Stefan.
