@@ -202,3 +202,10 @@ def test_fixture_matches_models():
     run = Run.model_validate_json(raw)
     assert run.status == "REFEREED" and run.referee and run.referee.conflicts
     assert "Latte" in run.draft.caption
+
+
+def test_demo_mode_can_be_read_back(client):
+    assert client.post("/admin/demo-mode", json={"on": False}).json() == {"on": False}
+    assert client.get("/admin/demo-mode").json() == {"on": False}
+    client.post("/admin/demo-mode", json={"on": True})
+    assert client.get("/admin/demo-mode").json() == {"on": True}

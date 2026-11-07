@@ -1,29 +1,33 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { api, USE_MOCKS } from './api/client'
 import { errorMessage } from './api/errors'
 import type { ApplyRequest, CommentRole, Persona, Trend } from './api/types'
 import { CanvasColumn } from './components/CanvasColumn'
+import { CostPanel } from './components/CostPanel'
+import { DemoModeToggle } from './components/header/DemoModeToggle'
+import { RunClock } from './components/header/RunClock'
 import { ReviewColumn } from './components/ReviewColumn'
 import { TrendColumn } from './components/TrendColumn'
 import { Badge, Banner } from './components/ui'
 import { useRun } from './hooks/useRun'
 import { isFinished, isRunBusy } from './lib/runStatus'
+import { readRunIdFromUrl, writeRunIdToUrl } from './lib/runUrl'
 import { scriptedComments } from './mocks/scriptedComments'
 
 export default function App() {
   const [trend, setTrend] = useState<Trend | null>(null)
   const [personas, setPersonas] = useState<Persona[]>([])
-  const [runId, setRunId] = useState<string | null>(null)
+  const [runId, setRunId] = useState<string | null>(readRunIdFromUrl) // refresh reopens the run
   const [busy, setBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const { run, error: pollError, refresh, setRun } = useRun(runId)
 
-  const showError = (err: unknown) => setActionError(errorMessage(err))
+  const showError = useCallback((err: unknown) => setActionError(errorMessage(err)), [])
 
   useEffect(() => {
     api.getTrend().then(setTrend, showError)
     api.getPersonas().then(setPersonas, showError)
-  }, [])
+  }, [showError])
 
   /** Runs one user action with a shared busy flag and error banner, then re-fetches the run. */
   async function act(action: () => Promise<unknown>) {
@@ -50,6 +54,7 @@ export default function App() {
       const created = await api.createRun(trend.id)
       setRun(created)
       setRunId(created.id)
+      writeRunIdToUrl(created.id)
     })
 
   const fillScripted = async (id: string) => {
@@ -63,19 +68,24 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <h1>Moment</h1>
+        {run && <RunClock run={run} />}
         {run && <Badge>{`${run.id} · ${run.status}`}</Badge>}
         {USE_MOCKS && <Badge tone="warn">mock API</Badge>}
+        <DemoModeToggle onError={showError} />
       </header>
 
       {error && <Banner tone="bad">{error}</Banner>}
 
       <main className="columns">
-        <TrendColumn
-          trend={trend}
-          fit={run?.fit ?? null}
-          canStart={!uiBusy && (run === null || isFinished(run))}
-          onStart={startRun}
-        />
+        <div className="column">
+          <TrendColumn
+            trend={trend}
+            fit={run?.fit ?? null}
+            canStart={!uiBusy && (run === null || isFinished(run))}
+            onStart={startRun}
+          />
+          <CostPanel run={run} />
+        </div>
         <CanvasColumn run={run} />
         <ReviewColumn
           run={run}

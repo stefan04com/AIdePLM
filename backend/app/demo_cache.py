@@ -59,101 +59,89 @@ def _recall(call: str) -> dict | None:
         return deepcopy(_last_good.get(call))
 
 
-# --- canned defaults: the Boabe cozy-autumn scenario (docs/demo-scenario.md) ------------------
-# Copied from frontend/src/mocks so demo mode, the mocks and the fixture tell the same story.
+# --- canned defaults: the Boabe cozy-autumn demo (docs/demo-scenario.md), from a live run ---
+# Same story as data/demo_comments.json: Legal vs Product on "no added sugar", Brand vs Product.
 
 CANNED_FIT = FitResult(
     fits=True,
-    score=91,
-    reason="Boabe's core moment is the slow cup in a warm corner; the trend is wholesome, "
-    "local-friendly and touches no sensitive topic.",
+    score=88,
+    reason="The cozy work-from-anywhere trend maps onto Boabe's core moment: the quiet corner, "
+    "the warm cup, the grey Bucharest day. Its honest, low-key tone matches the calm voice.",
 )
 
 CANNED_DRAFT = DraftContent(
-    brief="Join the cozy autumn setup trend with the new Pumpkin & Cinnamon Latte as the warm "
-    "thing in the mug.",
-    caption="Meet our new Pumpkin & Cinnamon Latte: no added sugar and the healthiest latte in "
-    "town. Order now in the Boabe app.",
-    visual_prompt="Close-up of a Pumpkin & Cinnamon Latte in a ceramic cup, centred on a wooden "
-    "desk, latte art, autumn leaves, warm window light",
-    hashtags=["#CozyAutumn", "#PumpkinCinnamonLatte", "#Boabe"],
+    brief="Join the cozy-corner thread with a grey Bucharest Tuesday and the new Pumpkin & "
+    "Cinnamon Latte as part of the scene. It works because the trend rewards honest moments, "
+    "not ads.",
+    caption="Grey Tuesday, one corner, the Pumpkin & Cinnamon Latte still warm. Bucharest does "
+    "autumn slowly when you let it. Order ahead in the app.",
+    visual_prompt="A quiet café corner by a rain-streaked window on a grey autumn afternoon: "
+    "a ceramic cup of pumpkin and cinnamon latte with steam, an open laptop, a wool blanket, "
+    "warm window light, wood table, no people, no text",
+    hashtags=["#CozySetup", "#BucharestAutumn"],
 )
 
 CANNED_PERSONAS = [
     Persona(
-        id="student_night_owl",
-        name="Student night owl",
-        segment="20-28, studies or works on a laptop for hours",
-        cares_about=["wifi and seats", "a calm corner", "honest, low-key posts"],
-        pet_peeves=["the weekend laptop ban", "posts that look like ads"],
+        id="remote_worker_regular",
+        name="Laptop Regular",
+        segment="Remote workers and students who use the café as a workspace for hours",
+        cares_about=["a calm seat", "wifi and sockets", "being welcome to stay"],
+        pet_peeves=["laptop bans", "noise", "being rushed out"],
+        sample_quotes=["Perfect for chill or work. The coffees and food are very good."],
+    ),
+    Persona(
+        id="curious_coffee_enthusiast",
+        name="Origin Seeker",
+        segment="Coffee-curious locals and visitors who care about beans, brewing and roast",
+        cares_about=["single origin", "brewing method", "baristas who explain"],
+        pet_peeves=["gimmicky flavoured drinks", "old crop beans"],
         sample_quotes=[
-            "Nice cosy café in the heart of Bucharest. Perfect for chill or work.",
-            "Also you can work with laptop or just chat.",
+            "The baristas are friendly and helpful, explaining the coffee origins, the best "
+            "vegetable milk combination for that particular origin, and so on."
         ],
     ),
     Persona(
-        id="busy_parent",
-        name="Busy parent",
-        segment="30-45, orders ahead, short on time",
-        cares_about=["ordering ahead in the app", "no queues", "clear prices"],
-        pet_peeves=["wrong or late orders", "prices shown too late"],
+        id="on_the_go_commuter",
+        name="App-First Commuter",
+        segment="Busy commuters who order ahead to skip the queue",
+        cares_about=["speed", "ordering ahead", "orders that are right"],
+        pet_peeves=["app bugs", "unclear prices", "waiting in line"],
         sample_quotes=[
-            "I like to order my coffees in advance and collect. So very convenient for me.",
-            "Their app is so easy to manage and is very convenient in tight situations.",
-        ],
-    ),
-    Persona(
-        id="coffee_purist",
-        name="Coffee purist",
-        segment="25-45, cares about beans, origin and brewing",
-        cares_about=["origin", "roast and extraction", "baristas who explain"],
-        pet_peeves=["over-roasted coffee", "old crop", "marketing hype"],
-        sample_quotes=[
-            "Nice place, kind staff, good extraction in Hario V60 and espresso.",
-            "Not the best coffee (most probably over roasted).",
+            "Their app is so easy to manage and is very convenient in tight situations."
         ],
     ),
 ]
 
 _CANNED_REACTIONS = [
     (
-        "The cozy corner is exactly my vibe, but 'healthiest latte in town' turns it into an "
-        "ad. Show the setup, not the sales pitch.",
-        0.2,
-        False,
-    ),
-    (
-        "Nice to know I can order it ahead in the app. A seasonal drink for the school-run "
-        "morning sounds good.",
-        0.6,
+        "That corner shot speaks to my soul. A grey Tuesday with a warm latte is my whole "
+        "personality from October to December.",
+        0.8,
         True,
     ),
     (
-        "'Healthiest' tells me nothing. Real pumpkin and Ceylon cinnamon with your house "
-        "espresso would.",
-        -0.3,
+        "The atmosphere looks cosy, but 'Pumpkin & Cinnamon Latte' tells me nothing about the "
+        "origin or the roast behind it.",
+        -0.1,
         False,
+    ),
+    (
+        "The 'order ahead in the app' nudge is exactly what I need. I'll set up my Tuesday "
+        "pick-up right now.",
+        0.8,
+        True,
     ),
 ]
 
 _CANNED_TASKS = [
+    Task(owner="Legal", task="Sign off the revised caption", due="today 15:00"),
     Task(
         owner="Product",
-        task="Send the 'no added sugar' documentation to Legal before using the claim",
+        task="Send Legal the documentation for 'no added sugar' before using it in a later post",
         due="this week",
     ),
-    Task(owner="Legal", task="Sign off the final caption", due="today 15:00"),
 ]
-
-FINAL_CAPTION = (
-    "Grey week, warm corner. Our Pumpkin & Cinnamon Latte, with real pumpkin and Ceylon "
-    "cinnamon, keeps us company. Pull up a chair."
-)
-FINAL_VISUAL_PROMPT = (
-    "Cozy desk by a rainy window, wool blanket, candle and open laptop, a Pumpkin & Cinnamon "
-    "Latte steaming in a ceramic cup, warm light"
-)
-FINAL_HASHTAGS = "#CozyAutumn #AutumnCorner #Boabe"
 
 
 REJECTED_TREND_ID = "trend_espresso_challenge"
@@ -202,7 +190,7 @@ def _heaviest_per_role(comments: list[Comment]) -> dict[str, str]:
 
 
 def referee(comments: list[Comment], draft_: Draft, personas_: list[Persona]) -> RefereeResult:
-    """Canned referee result built from the run's real comment ids / persona ids / draft."""
+    """Canned referee result built from the run's real comment ids / persona ids / caption."""
     latest = _heaviest_per_role(comments)  # docs/comment-weighting.md
     labels = {"brand": "Brand", "legal": "Legal", "product": "Product"}
 
@@ -214,76 +202,51 @@ def referee(comments: list[Comment], draft_: Draft, personas_: list[Persona]) ->
         conflicts.append(
             Conflict(
                 id="conf_1",
-                between=[human("legal"), human("product")],
-                summary="Product wants 'no added sugar' as the main selling point; Legal has no "
-                "documentation for it and blocks it.",
+                between=[human("product"), human("legal")],
+                summary="Product wants 'no added sugar' in the caption; Legal blocks it because "
+                "there is no documentation for the claim.",
                 positions={
-                    "legal": "No 'no added sugar' and no 'healthiest' until the claim is "
-                    "documented.",
-                    "product": "'No added sugar' is the launch's main selling point and must stay.",
+                    "product": "'No added sugar' is the latte's main selling point.",
+                    "legal": "An undocumented nutrition claim can't be published.",
                 },
-                compromise="Drop the sugar and health claims now; name the real ingredients "
-                "instead (pumpkin purée, Ceylon cinnamon). Product sends the sugar "
-                "documentation to Legal for a later post.",
+                compromise="Sell the latte on what we can state (real pumpkin, Ceylon "
+                "cinnamon) and use 'no added sugar' once Legal has the documentation.",
             )
         )
-    if "brand" in latest and "product" in latest and personas_:
-        p = personas_[0]  # the first persona stands for the "moment first" audience
+    if "brand" in latest and "product" in latest:
         conflicts.append(
             Conflict(
                 id="conf_2",
-                between=[
-                    human("brand"),
-                    ConflictParty(kind="persona", id=p.id, label=p.name),
-                    human("product"),
-                ],
-                summary=f"Brand and {p.name} want the cozy moment first; Product wants the "
-                "latte as the hero.",
+                between=[human("brand"), human("product")],
+                summary="Brand wants the moment to lead; Product wants the drink as the hero.",
                 positions={
-                    "brand": "Lead with the moment, latte in the background, soft CTA.",
-                    p.id: "Show the setup; a sales pitch kills it.",
-                    "product": "The new latte must be the hero of the visual.",
+                    "brand": "Lead with the cozy moment, latte in the background, soft CTA.",
+                    "product": "Make the Pumpkin & Cinnamon Latte the hero of copy and visual.",
                 },
-                compromise="The cozy corner leads, and the latte is the one warm thing in it: "
-                "named once in the caption and in focus on the desk, but not a product shot.",
+                compromise="Keep the moment first and name the latte once with its real "
+                "ingredients; soft call to action.",
             )
         )
 
+    final_caption = (
+        "Grey Tuesday. A Pumpkin & Cinnamon Latte, real pumpkin and Ceylon cinnamon, still warm "
+        "in the corner. Bucharest does autumn slowly when you let it. Order ahead in the app."
+    )
     edits: list[Edit] = []
-    if "legal" in latest:
+    if "legal" in latest or "product" in latest:
         edits.append(
             Edit(
                 target="caption",
                 before=draft_.caption,
-                after=FINAL_CAPTION,
-                source_comment_id=latest["legal"],
-            )
-        )
-    if "brand" in latest:
-        edits.append(
-            Edit(
-                target="visual_prompt",
-                before=draft_.visual_prompt,
-                after=FINAL_VISUAL_PROMPT,
-                source_comment_id=latest["brand"],
-            )
-        )
-        edits.append(
-            Edit(
-                target="hashtags",
-                before=" ".join(draft_.hashtags),
-                after=FINAL_HASHTAGS,
-                source_comment_id=latest["brand"],
+                after=final_caption,
+                source_comment_id=latest.get("product") or latest["legal"],
             )
         )
 
     why = {
-        "brand": ("applied", "Moment leads, latte stays in the scene, soft CTA."),
-        "legal": ("applied", "Sugar and health claims removed."),
-        "product": (
-            "in_conflict",
-            "Sugar claim waits for documentation; the latte is still named and in focus.",
-        ),
+        "brand": ("applied", "The moment leads and the call to action stays soft."),
+        "legal": ("applied", "No sugar, health or superlative claim in the caption."),
+        "product": ("in_conflict", "Latte named with its real ingredients; sugar claim on hold."),
     }
     statuses = [
         CommentStatus(comment_id=cid, status=why[role][0], why=why[role][1])  # type: ignore[arg-type]
@@ -294,6 +257,6 @@ def referee(comments: list[Comment], draft_: Draft, personas_: list[Persona]) ->
         edits=edits,
         tasks=[t.model_copy() for t in _CANNED_TASKS],
         comment_status=statuses,
-        final_caption=FINAL_CAPTION,
+        final_caption=final_caption,
         status="ready_to_ship",
     )

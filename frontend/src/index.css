@@ -12,7 +12,7 @@
   --radius: 10px;
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
 
-  font: 15px/1.5 var(--sans);
+  font: 16px/1.5 var(--sans); /* readable on a projector */
   color: var(--text);
   background: var(--bg);
   color-scheme: light dark;
@@ -175,7 +175,7 @@ input {
   margin-left: 6px;
   padding: 1px 8px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 13px;
   background: var(--bg);
   border: 1px solid var(--tone, var(--border));
   color: var(--tone, var(--muted));
@@ -234,7 +234,7 @@ input {
   }
 }
 
-.canvas img,
+.post img,
 .image-placeholder {
   width: 100%;
   aspect-ratio: 1;
@@ -261,11 +261,6 @@ input {
   color: var(--accent);
 }
 
-.shipped-time {
-  font-size: 32px;
-  font-weight: 700;
-  color: var(--ok);
-}
 
 .comment {
   font-size: 14px;
@@ -286,7 +281,7 @@ input {
   flex-wrap: wrap;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .comment-meta .badge {
@@ -302,7 +297,53 @@ input {
 }
 
 .comment-box {
-  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.comment-box textarea {
+  width: 100%;
+}
+
+textarea {
+  font: inherit;
+  flex: 1;
+  min-width: 0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text);
+  resize: vertical;
+}
+
+.comment-box button {
+  padding: 6px 10px;
+}
+
+.timer {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--warn);
+  font-variant-numeric: tabular-nums;
+}
+
+.timer.done {
+  color: var(--ok);
+}
+
+.clock {
+  font-variant-numeric: tabular-nums;
+}
+
+.demo-toggle {
+  border-color: var(--tone);
+  color: var(--tone);
+  font-weight: 600;
 }
 
 blockquote {
@@ -377,4 +418,159 @@ ins {
 .ship-bar input {
   width: auto;
   margin-right: 6px;
+}
+
+/* --- Express and Slack previews ------------------------------------------ */
+
+.express,
+.slack {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.express-bar,
+.slack-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.express-bar .badge {
+  margin-left: auto;
+}
+
+.express-logo {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--accent);
+  color: var(--accent-text);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.post {
+  padding: 12px;
+}
+
+.post-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  line-height: 1.2;
+}
+
+.avatar,
+.slack-avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #6b4226;
+  color: #fff;
+  font-weight: 700;
+}
+
+.express-footer {
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+
+.slack-hash {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.slack-bar .muted {
+  margin-left: auto;
+}
+
+.slack-message {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+}
+
+.slack-avatar {
+  border-radius: 6px;
+  background: #4a154b;
+}
+
+.slack-body {
+  min-width: 0;
+  font-size: 14px;
+}
+
+.slack-body img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.slack-body ul {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+
+.slack-app {
+  padding: 0 4px;
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.slack-header {
+  font-weight: 700;
+  margin: 6px 0 4px;
+}
+
+.slack-note {
+  font-size: 13px;
+}
+
+.slack-clock {
+  font-weight: 700;
+  color: var(--ok);
+}
+
+/* --- Cost panel ------------------------------------------------------------ */
+
+.cost-big {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.cost-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cost-table th,
+.cost-table td {
+  padding: 4px 6px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.cost-table th {
+  color: var(--muted);
+  font-weight: 600;
 }

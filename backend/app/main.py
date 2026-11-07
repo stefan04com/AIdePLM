@@ -108,3 +108,9 @@ def get_usage(run_id: str | None = None) -> UsageSummary:
 def set_demo_mode(body: DemoModeRequest) -> DemoModeResponse:
     store.set_demo_mode(body.on)
     return DemoModeResponse(on=store.demo_mode())
+
+
+@app.get("/admin/demo-mode", response_model=DemoModeResponse)
+def get_demo_mode() -> DemoModeResponse:
+    """Lets the UI show whether demo mode is on (the demo script needs it on all the time)."""
+    return DemoModeResponse(on=store.demo_mode())
