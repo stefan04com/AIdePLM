@@ -14,9 +14,14 @@ import type {
   DemoModeResponse,
   Persona,
   PersonaReaction,
+  Platform,
+  PostingTime,
   RefereeResult,
+  RegenerateRequest,
   Run,
   Trend,
+  TrendScore,
+  TrendScoreRequest,
   UsageSummary,
 } from '../api/types'
 import expertsJson from '../../../data/industry_experts.json'
@@ -219,6 +224,44 @@ export async function apply(id: string, body: ApplyRequest): Promise<Run> {
     run.shipped_at = nowIso()
   })
   return weighed(run) // after withStep, so the returned run is no longer busy
+}
+
+/** Like orchestrator.regenerate: keeps the person's edit, clears reactions and referee. */
+export async function regenerate(id: string, body: RegenerateRequest): Promise<Run> {
+  const run = findRun(id)
+  requireStatus(run, ['DRAFTED', 'IN_REVIEW', 'REFEREED'], 'regenerate')
+  if (!body.caption.trim() || !body.instruction.trim()) {
+    throw new ApiError(422, 'caption and instruction must not be empty')
+  }
+  await withStep(run, 'Rewriting the caption…', () => {
+    if (run.draft) {
+      run.draft.caption = body.caption.trim()
+      run.draft.regenerations = (run.draft.regenerations ?? 0) + 1
+    }
+    run.reactions = []
+    run.referee = null
+    run.status = 'DRAFTED'
+  })
+  return weighed(run)
+}
+
+export async function getTrendScore(body: TrendScoreRequest): Promise<TrendScore> {
+  const tags = body.hashtags.filter((h) => h.trim())
+  const score = Math.min(100, 30 + (tags.length >= 1 && tags.length <= 5 ? 10 : 0) + 20)
+  return {
+    score,
+    suggestions: tags.length === 0 ? ['Add 2-3 specific hashtags.'] : ['Looks on trend.'],
+  }
+}
+
+const MOCK_POSTING_TIME = 'Weekdays 08:00-11:00'
+
+export async function getPostingTime(platform: Platform): Promise<PostingTime> {
+  return {
+    platform,
+    time: MOCK_POSTING_TIME,
+    reason: 'Mock answer: the real backend uses the rules in docs/what-makes-a-post-popular.md.',
+  }
 }
 
 function mockCall(

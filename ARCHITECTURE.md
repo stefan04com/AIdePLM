@@ -194,6 +194,9 @@ Every call writes `{run_id, call, model, input_tokens, output_tokens, latency_ms
 | POST | `/runs/{id}/comments` | `CommentCreate` `{role, text, author?}` | `Comment` (with `weight`, see `docs/comment-weighting.md`) |
 | POST | `/runs/{id}/referee` | | `RefereeResult` (synchronous, must stay < ~10s) |
 | POST | `/runs/{id}/apply` | `ApplyRequest` `{conflict_ids?, accept_all_edits}` | `Run` (status `SHIPPED`) |
+| POST | `/runs/{id}/regenerate` | `RegenerateRequest` `{caption, instruction}` | `Run` (status back to `DRAFTED`, reactions and referee cleared, `draft.regenerations` +1). Optional LLM call #6 `regenerate`; fallback keeps the edited caption |
+| POST | `/trend-score` | `TrendScoreRequest` `{words, hashtags}` | `TrendScore` `{score, suggestions}`. Optional LLM call #7 `trend_score`; fallback scores the overlap with the saved trends in `data/` |
+| GET | `/posting-time?platform=` | | `PostingTime` `{platform, time, reason}`; rules from `docs/what-makes-a-post-popular.md`, no LLM |
 | GET | `/usage?run_id=` | | `UsageSummary` (no `run_id` = totals across all runs) |
 | POST | `/admin/demo-mode` | `DemoModeRequest` `{on}` | `DemoModeResponse` `{on}` |
 

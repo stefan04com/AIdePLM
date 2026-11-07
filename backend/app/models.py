@@ -33,6 +33,7 @@ class Draft(BaseModel):
     image_url: str | None = None
     express_doc_id: str | None = None
     version: int = 1  # bumps on every apply
+    regenerations: int = 0  # how many times the caption was rewritten with POST /regenerate
 
 
 class Persona(BaseModel):
@@ -139,6 +140,40 @@ class CommentCreate(BaseModel):
 class ApplyRequest(BaseModel):
     conflict_ids: list[str] | None = None
     accept_all_edits: bool = False
+
+
+class RegenerateRequest(BaseModel):
+    caption: str = Field(min_length=1, max_length=2200)  # the caption as the person edited it
+    instruction: str = Field(min_length=1, max_length=500)  # e.g. "make it shorter and warmer"
+
+
+Platform = Literal[
+    "tiktok",
+    "instagram_reels",
+    "instagram_feed",
+    "youtube_shorts",
+    "facebook_reels",
+    "facebook_feed",
+    "x",
+    "threads",
+    "linkedin",
+]
+
+
+class TrendScoreRequest(BaseModel):
+    words: str = Field(min_length=1, max_length=2200)
+    hashtags: list[str] = Field(default=[], max_length=30)
+
+
+class TrendScore(BaseModel):
+    score: int = Field(ge=0, le=100)
+    suggestions: list[str] = []
+
+
+class PostingTime(BaseModel):
+    platform: Platform
+    time: str  # e.g. "Weekdays 08:00-11:00"
+    reason: str
 
 
 class DemoModeRequest(BaseModel):
