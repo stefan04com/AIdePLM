@@ -6,6 +6,18 @@ Guidance for Claude Code (and humans) working in this repo. Read this first, the
 
 **Moment** gets a trend to an approved social post in ~2 hours. Flow: **Spot** (trend from Reddit/news → AI brand-fit check) → **Draft** (AI brief, caption, visual prompt; the visual and the post are a local simulation, integration-ready for Adobe Firefly / Express) → **Review** (Brand/Legal/Product humans + 3 synthetic customer personas built from real reviews, side by side) → **Referee** (one structured LLM call → conflict cards, concrete edits, compromise, tasks) → **Ship** ("apply" bumps the post version, final post + tasks are posted to Slack through an incoming webhook). Built in 12 hours at the IT Fest Adobe Hackathon ("Marketing Reimagined"). The demo is 3 minutes and must work 3/3 times.
 
+## Progress (2026-11-07, 14:15)
+
+Feature freeze is on: fixes only.
+
+- **Works end to end** on `main`: trend → fit → draft → personas → human comments → referee → apply → Slack, plus the rejected "risky trend" beat. Backend 128 tests, frontend 20 tests, build and lint pass.
+- **Real AI:** live eval 3/3 with a conflict, 0 fallbacks, **$0.0566 per post** (`qa/results/live_eval_20261107_122427.md`).
+- **Real Slack** webhook on ship (`Run.slack` = posted / simulated / failed). The time reads in seconds under a minute ("37s", not "0m"), `SLACK_IMAGE_URL` gives Slack a public image, and a message Slack rejects because of its image is retried once without it. The "Shipped" banner says what really happened to the Slack message.
+- **Browser-tested** with `VITE_USE_MOCKS=false` in Chromium (`qa/e2e_browser.py`): 3/3 clean runs, no console or HTTP errors; the `needs_human` banner shows and apply still ships. Run in demo mode, so a live-LLM click-through is still open.
+- **Backup video:** `qa/results/moment-backup-demo.mp4` (72 s, no sound, demo mode).
+- **Simulated by decision:** Adobe (Firefly / Express) and trends. Say so in the pitch.
+- **Open:** see `COORDINATION.md` (rehearsals on the presentation laptop, webhook on every laptop, cost slide, tag `v1.0.0-demo`).
+
 ## Team and ownership
 
 | Person | Area | Paths |
@@ -35,11 +47,15 @@ cd frontend && npm install
 npm run dev                       # http://localhost:5173, proxies /api → :8000
 npm run build && npm run lint     # must pass before every PR
 
+# browser e2e of the whole demo (backend + `npm run dev` with VITE_USE_MOCKS=false running)
+pip install playwright && python -m playwright install chromium
+python qa/e2e_browser.py run1     # exit 0 = every check passed, screenshots in qa/results/e2e/
+
 # demo mode (cached responses for every external call)
 curl -X POST localhost:8000/admin/demo-mode -d '{"on": true}' -H 'Content-Type: application/json'
 ```
 
-Copy `.env.example` to `.env` and fill in keys. Required: `LLM_PROVIDER` and `LLM_MODEL`, plus `LLM_API_KEY` (direct Anthropic API) or `AWS_BEARER_TOKEN_BEDROCK` exported in your shell (`LLM_PROVIDER=bedrock`, optional `AWS_REGION`). No Adobe keys are needed (local mock, see "Integrations" below). Optional: `SLACK_WEBHOOK_URL` (real Slack post; without it the message is only previewed), `ADOBE_MOCK_IMAGE_URL`, `ADOBE_MOCK_LATENCY_S`.
+Copy `.env.example` to `.env` and fill in keys. Required: `LLM_PROVIDER` and `LLM_MODEL`, plus `LLM_API_KEY` (direct Anthropic API) or `AWS_BEARER_TOKEN_BEDROCK` exported in your shell (`LLM_PROVIDER=bedrock`, optional `AWS_REGION`). No Adobe keys are needed (local mock, see "Integrations" below). Optional: `SLACK_WEBHOOK_URL` (real Slack post; without it the message is only previewed), `PUBLIC_BASE_URL` or `SLACK_IMAGE_URL` (an image Slack can download), `ADOBE_MOCK_IMAGE_URL`, `ADOBE_MOCK_LATENCY_S`.
 
 ---
 
@@ -162,15 +178,15 @@ Types: `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `style`. Scopes: `llm
 
 ---
 
-## Integrations (all local mocks)
+## Integrations (Slack real; Adobe and trends simulated)
 
-By team decision there is no live Adobe, Slack or Reddit integration. The three modules (owner: Militaru) make no network calls and need no keys; they return results as if the call had worked, so the demo flow runs end to end. Apart from `models.py`, they use only the standard library. `backend/app/adapters.py` already wires them into the flow, each call with a 15s timeout and a fallback.
+By team decision there is no live Adobe or Reddit integration: those two modules (owner: Militaru) make no network calls and need no keys, and return results as if the call had worked. Slack is real when `SLACK_WEBHOOK_URL` is set. Apart from `models.py`, they use only the standard library. `backend/app/adapters.py` already wires them into the flow, each call with a 15s timeout and a fallback.
 
 | Module | What it does | Used by `adapters.py` |
 |---|---|---|
 | `trends.py` | `get_trend()` returns the saved trend from `data/demo_trend.json` (a placeholder if the file is missing or malformed). `live=True` (env `LIVE_TRENDS=1`) returns the first of the real trends collected from the web into `data/live_trends.json` (each with its source article), or a built-in sample if that file is unusable; nothing contacts Reddit or news sites at runtime | `current_trend()` |
 | `adobe.py` | `generate_visual(prompt)` returns a placeholder SVG (same prompt, same image), labelled as a mock. `create_post(caption, image_url)` returns a mock post at version 1; `update_post(...)` returns a copy with `version + 1`. Its `url` is only the Express home page, not a post | `create_visual_and_post()`, `update_post()` |
-| `slack.py` | `send_final_post(caption, image_url, tasks, elapsed)` builds the Block Kit message (caption, image, tasks, "Trend → approved" time) and POSTs it to `SLACK_WEBHOOK_URL`; returns `posted`, `simulated` (no webhook) or `failed`, stored in `Run.slack`; the UI shows the blocks as a preview either way | `send_to_slack()` |
+| `slack.py` | `send_final_post(caption, image_url, tasks, elapsed)` builds the Block Kit message (caption, image, tasks, "Trend → approved" time) and POSTs it to `SLACK_WEBHOOK_URL` (image from `SLACK_IMAGE_URL`, else the post image made absolute with `PUBLIC_BASE_URL`; on HTTP 400 it retries once without the image); returns `posted`, `simulated` (no webhook) or `failed`, stored in `Run.slack`; the UI shows the blocks as a preview either way | `send_to_slack()` |
 
 Environment (both optional, read by `adobe.py`):
 
