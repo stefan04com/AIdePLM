@@ -21,4 +21,5 @@ def test_live_trend_reaches_trends_module():
 def test_send_to_slack_reaches_slack_module():
     draft = Draft(brief="b", caption="Pull up a chair.", visual_prompt="latte on a desk")
     tasks = [Task(owner="Legal", task="Sign off the caption", due="today 15:00")]
-    assert adapters.send_to_slack(draft, tasks, timedelta(minutes=12)) is True
+    # conftest clears SLACK_WEBHOOK_URL, so the module simulates the post
+    assert adapters.send_to_slack(draft, tasks, timedelta(minutes=12)) == "simulated"

@@ -1,30 +1,40 @@
 import type { FitResult, Trend } from '../api/types'
-import { Badge, Card, Muted } from './ui'
+import { FitGauge } from './spot/FitGauge'
+import { Card, Muted, Pill, SectionHead } from './ui'
 
 interface Props {
   trend: Trend | null
   fit: FitResult | null
   canStart: boolean
   onStart: () => void
+  onTryRisky?: () => void
 }
 
-export function TrendColumn({ trend, fit, canStart, onStart }: Props) {
+export function TrendColumn({ trend, fit, canStart, onStart, onTryRisky }: Props) {
   return (
     <section className="column">
-      <h2>Spot</h2>
+      <SectionHead
+        id="01"
+        title="Signal intelligence"
+        aside={trend && <Pill>{trend.source} source</Pill>}
+      />
       {trend ? <TrendCard trend={trend} /> : <Muted>Loading trend…</Muted>}
       {fit && <FitCard fit={fit} />}
       <button className="primary" disabled={!trend || !canStart} onClick={onStart}>
         Start run
       </button>
+      {onTryRisky && (
+        <button className="risky" disabled={!canStart} onClick={onTryRisky} title="Brand-safety demo: a trend the fit check should reject (key B)">
+          Try a risky trend
+        </button>
+      )}
     </section>
   )
 }
 
 function TrendCard({ trend }: { trend: Trend }) {
   return (
-    <Card>
-      <Badge>{trend.source}</Badge>
+    <Card className="trend">
       <h3>{trend.title}</h3>
       <p>{trend.summary}</p>
       {trend.url && (
@@ -38,15 +48,13 @@ function TrendCard({ trend }: { trend: Trend }) {
 
 function FitCard({ fit }: { fit: FitResult }) {
   return (
-    <Card accent={fit.fits ? 'ok' : 'bad'} className="fit">
-      <div className="fit-score">
-        {fit.score}
-        <small>/100</small>
-      </div>
-      <div>
+    <Card className={`fit ${fit.fits ? 'fit-yes' : 'fit-no'}`}>
+      <FitGauge score={fit.score} fits={fit.fits} />
+      <p className="fit-status">
+        <span className="mono">{fit.score} / 100</span>
         <strong>{fit.fits ? 'Fits the brand' : 'Not a fit'}</strong>
-        <p>{fit.reason}</p>
-      </div>
+      </p>
+      <p className="muted">{fit.reason}</p>
     </Card>
   )
 }

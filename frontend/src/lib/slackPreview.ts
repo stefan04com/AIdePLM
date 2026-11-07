@@ -1,10 +1,12 @@
 // What the Slack message looks like after "Apply compromise". Mirrors build_blocks() in
-// backend/app/slack.py (Slack is simulated: nothing is posted, so the UI shows the message).
+// backend/app/slack.py, which posts it to a real webhook when SLACK_WEBHOOK_URL is set.
 // No value imports, so `npm test` can run it in Node.
 
-import type { Run, Task } from '../api/types'
+import type { Run, SlackDelivery, Task } from '../api/types'
 
 export interface SlackPreview {
+  /** What the backend did with the message; null on runs from before this field. */
+  delivery: SlackDelivery | null
   header: string
   caption: string
   /** The post's image. The preview shows the local placeholder too; with a real Firefly
@@ -14,9 +16,11 @@ export interface SlackPreview {
   elapsed: string
 }
 
-/** Same as slack.format_elapsed: "1h 50m" or "45m", rounded down to the minute. */
+/** Same as slack.format_elapsed: "1h 50m", "45m", or "4s" under a minute (rounded down). */
 export function formatMinutes(ms: number): string {
-  const totalMinutes = Math.floor(Math.max(0, ms) / 60_000)
+  const safe = Math.max(0, ms)
+  if (safe < 60_000) return `${Math.floor(safe / 1000)}s`
+  const totalMinutes = Math.floor(safe / 60_000)
   const hours = Math.floor(totalMinutes / 60)
   const minutes = totalMinutes % 60
   return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
@@ -35,6 +39,7 @@ export function taskLine(task: Task): string {
 export function buildSlackPreview(run: Run): SlackPreview | null {
   if (!run.shipped_at || !run.draft) return null
   return {
+    delivery: run.slack ?? null,
     header: 'Moment: post approved',
     caption: run.draft.caption,
     imageUrl: run.draft.image_url || null,

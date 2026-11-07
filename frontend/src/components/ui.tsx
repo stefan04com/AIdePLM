@@ -44,6 +44,30 @@ export function Banner({ tone, children }: { tone: Tone; children: ReactNode }) 
   )
 }
 
+interface SectionHeadProps {
+  /** Two-digit panel number shown in mono, e.g. "01". */
+  id?: string
+  title: ReactNode
+  /** Small info on the right: a pill, a total, a status. */
+  aside?: ReactNode
+}
+
+/** Panel title row: "01  SIGNAL INTELLIGENCE ............ [saved]". */
+export function SectionHead({ id, title, aside }: SectionHeadProps) {
+  return (
+    <header className="section-head">
+      {id && <span className="section-id">{id}</span>}
+      <h2>{title}</h2>
+      {aside && <div className="section-aside">{aside}</div>}
+    </header>
+  )
+}
+
+/** Small monospace label for data: ids, sources, versions, totals. */
+export function Pill({ tone = 'neutral', children }: { tone?: Tone; children: ReactNode }) {
+  return <span className={`pill ${toneClass(tone)}`}>{children}</span>
+}
+
 /** Gray helper text, used for empty and placeholder states. */
 export function Muted({ children }: { children: ReactNode }) {
   return <p className="muted">{children}</p>

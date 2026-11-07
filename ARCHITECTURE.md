@@ -12,7 +12,7 @@ Status: **Proposed** (freeze in hour 1). Date: 2026-11-07.
 | | |
 |---|---|
 | **Build time** | 12 hours, 4 people working in parallel |
-| **Must show live** | trend → fit check → draft (visual + post simulated locally) → human + persona review → conflict card → apply → Slack message (mock) |
+| **Must show live** | trend → fit check → draft (visual + post simulated locally) → human + persona review → conflict card → apply → Slack message (real webhook, preview fallback) |
 | **Scale** | one demo brand, one user, one run at a time. No multi-tenancy, no auth |
 | **Reliability** | the demo must work 3/3 times. Every external call needs a fallback |
 | **Cost** | ~5 LLM calls per run, logged per call for the cost-vs-value slide |
@@ -46,7 +46,7 @@ flowchart LR
     subgraph External
         MODEL[LLM provider]
         AD["Adobe module<br/>local simulation, Firefly/Express-ready"]
-        SL["Slack module<br/>local mock, Block Kit"]
+        SL["Slack<br/>incoming webhook, Block Kit"]
     end
 
     CSV[(reviews.csv<br/>50–100 reviews)]
@@ -82,7 +82,7 @@ stateDiagram-v2
     DRAFTED --> IN_REVIEW: personas react, humans comment
     IN_REVIEW --> REFEREED: referee call
     REFEREED --> IN_REVIEW: new comments → re-run referee
-    REFEREED --> SHIPPED: apply compromise → post version + Slack message (mocks)
+    REFEREED --> SHIPPED: apply compromise → post version + Slack message
     SHIPPED --> [*]
     REJECTED --> [*]
 ```
@@ -98,7 +98,7 @@ sequenceDiagram
     participant API as Backend
     participant LLM as LLM provider
     participant AD as Adobe module (local sim)
-    participant SL as Slack module (mock)
+    participant SL as Slack (webhook)
 
     UI->>API: GET /trend
     API-->>UI: trend (live or saved)
@@ -160,7 +160,7 @@ Five prompts, each with a Pydantic output schema. The model is asked for JSON; t
 
 Every call writes `{run_id, call, model, input_tokens, output_tokens, latency_ms}` to `logs/usage.jsonl` (`run_id` is null for call #3). `GET /usage` aggregates it and adds `cost_usd`, computed from a per-model price table. That file is the input for the cost slide.
 
-> **Note (by team decision):** the trend, Adobe and Slack integrations below are local mocks. They make no network calls and need no keys; each section says what the mock does and where a real integration would plug in.
+> **Note (by team decision):** the trend and Adobe integrations below are local mocks (no network calls, no keys); Slack is a real incoming webhook with a preview fallback; each section says what the mock does and where a real integration would plug in.
 
 ### 4.4 Trend source (owner: Militaru)
 - `trends.get_trend()` returns the saved `data/demo_trend.json` by default, normalised to the `Trend` model.
@@ -173,7 +173,7 @@ Every call writes `{run_id, call, model, input_tokens, output_tokens, latency_ms
 - **Integration-ready:** `adobe.py` is the seam where Adobe Firefly (image generation) and Adobe Express (the post) would plug in, behind the same functions (see ADR-003).
 
 ### 4.6 Slack (owner: Militaru)
-- Local mock: `slack.send_final_post` builds a Block Kit message with the final caption, the image, the task list and "Trend → approved: 1h 50m", and reports it as sent. No webhook; the blocks follow Slack's rules, so a real webhook could post them unchanged.
+- Real integration: `slack.send_final_post` builds a Block Kit message (final caption, image if it has a public https URL (a relative path like `/visuals/x.jpg` is made absolute with `PUBLIC_BASE_URL`; without it the image is left out), task list, "Trend → approved" time) and POSTs it to the incoming webhook in `SLACK_WEBHOOK_URL`, with a 15s timeout. It never raises: `Run.slack` records `posted`, `simulated` (no webhook set; the UI shows the preview) or `failed` (Slack unreachable; preview only). Error messages never contain the webhook URL. `Run.fallback_calls` lists the LLM calls that used canned content in live mode (the UI shows "CANNED: …" in the run line).
 
 ### 4.7 Data (owner: Anda)
 - `data/brand.md`: voice, do/don't, legal no-gos (competitor names, claims, etc.).
@@ -342,7 +342,7 @@ Small, but worth a line on the architecture slide; it's part of "technical excel
 - **Prompt injection from trends.** Reddit and news text is untrusted input. It is passed to the model inside clearly delimited `<trend>` tags with an instruction to treat it as data only, and the fit/draft outputs are schema-validated, so injected text can't change the output shape or trigger actions.
 - **Reviewer comments are also untrusted.** Same delimiting in the Referee prompt; the Referee can only *propose* edits, and a human clicks "apply".
 - **Human in the loop.** Nothing is applied to the post or the Slack message without the "apply" click.
-- **Secrets.** LLM keys (Anthropic API key or Bedrock token) in `.env` or the shell, never committed (`.gitignore` from minute one); the frontend never sees a key. The Adobe and Slack mocks need no keys.
+- **Secrets.** LLM keys (Anthropic API key or Bedrock token) in `.env` or the shell, never committed (`.gitignore` from minute one); the frontend never sees a key. The Slack webhook URL is a secret too and lives only in `.env`; the Adobe mock needs no key.
 - **Brand safety.** brand.md "legal no-gos" are part of every draft and referee prompt, so Legal-type conflicts are caught even without a human Legal comment.
 - **Review data.** Only review text and rating are used; strip usernames before they go into the CSV.
 
@@ -413,7 +413,7 @@ moment/
 │   │   │   └── prompts/       # fit, draft, personas, reactions, referee
 │   │   ├── trends.py          # saved trend + mock "live"     (Militaru)
 │   │   ├── adobe.py           # local sim, Firefly/Express-ready (Militaru)
-│   │   ├── slack.py           # Block Kit, mock send          (Militaru)
+│   │   ├── slack.py           # Block Kit, real webhook post  (Militaru)
 │   │   └── demo_cache.py      # last-good responses
 │   └── tests/test_flow.py     # end-to-end with demo data
 ├── frontend/                  # React + TS                    (Andu)

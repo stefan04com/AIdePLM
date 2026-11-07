@@ -114,6 +114,31 @@ def test_second_saved_trend_is_rejected_in_demo_mode(client):
     assert client.get("/trend", params={"which": "nope"}).status_code == 422
 
 
+def test_ship_sends_the_reviewed_post_to_slack(client, monkeypatch):
+    """After review, Slack gets the referee's final caption and tasks, not the first draft."""
+    sent = {}
+
+    def fake_send_to_slack(draft, tasks, elapsed):
+        sent.update(caption=draft.caption, version=draft.version, tasks=tasks)
+        return "posted"
+
+    monkeypatch.setattr(adapters, "send_to_slack", fake_send_to_slack)
+    run = start_run(client)
+    run_id, first_caption = run["id"], run["draft"]["caption"]
+    for c in scripted_comments():
+        client.post(f"/runs/{run_id}/comments", json=c)
+    assert not sent  # nothing goes to Slack before the human clicks apply
+    ref = client.post(f"/runs/{run_id}/referee").json()
+    assert not sent
+
+    shipped = client.post(f"/runs/{run_id}/apply", json={"accept_all_edits": True}).json()
+    assert sent["caption"] == ref["final_caption"] == shipped["draft"]["caption"]
+    assert sent["caption"] != first_caption
+    assert sent["version"] == shipped["draft"]["version"] == 2
+    assert [t.model_dump() for t in sent["tasks"]] == ref["tasks"]
+    assert shipped["slack"] == "posted"
+
+
 def test_rejected_trend_stops_the_flow(client, monkeypatch):
     monkeypatch.setattr(
         demo_cache, "CANNED_FIT", demo_cache.CANNED_FIT.model_copy(update={"fits": False})
@@ -209,3 +234,14 @@ def test_demo_mode_can_be_read_back(client):
     assert client.get("/admin/demo-mode").json() == {"on": False}
     client.post("/admin/demo-mode", json={"on": True})
     assert client.get("/admin/demo-mode").json() == {"on": True}
+
+
+def test_comment_is_refused_while_a_step_is_running(client):
+    from app import store
+
+    run = start_run(client)
+    with store.mutate(run["id"]) as r:
+        r.step = "Referee is resolving the feedback…"
+    r = client.post(f"/runs/{run['id']}/comments", json={"role": "brand", "text": "late"})
+    assert r.status_code == 409
+    assert client.get(f"/runs/{run['id']}").json()["comments"] == []

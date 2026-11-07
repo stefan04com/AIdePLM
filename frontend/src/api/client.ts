@@ -54,7 +54,8 @@ const post = <T>(path: string, body?: unknown) => request<T>('POST', path, body)
 const runPath = (id: string, suffix = '') => `/runs/${encodeURIComponent(id)}${suffix}`
 
 const backendApi = {
-  getTrend: () => get<Trend>('/trend'),
+  /** The saved demo trend, or with 'rejected' the risky one the fit check turns down. */
+  getTrend: (which?: 'rejected') => get<Trend>(which ? '/trend?which=rejected' : '/trend'),
   getPersonas: () => get<Persona[]>('/personas'),
   /** Returns immediately with status SPOTTED; poll getRun until DRAFTED or REJECTED. */
   createRun: (trendId: string) => post<Run>('/runs', { trend_id: trendId }),

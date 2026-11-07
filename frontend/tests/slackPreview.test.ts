@@ -5,12 +5,13 @@ import { test } from 'node:test'
 import type { Run } from '../src/api/types.ts'
 import { buildSlackPreview, formatMinutes, taskLine } from '../src/lib/slackPreview.ts'
 
-test('elapsed is rounded down to the minute, like slack.format_elapsed', () => {
-  assert.equal(formatMinutes(0), '0m')
-  assert.equal(formatMinutes(59_000), '0m')
+test('elapsed is rounded down, in seconds under a minute, like slack.format_elapsed', () => {
+  assert.equal(formatMinutes(0), '0s')
+  assert.equal(formatMinutes(4_900), '4s')
+  assert.equal(formatMinutes(59_000), '59s')
   assert.equal(formatMinutes(4 * 60_000 + 59_000), '4m')
   assert.equal(formatMinutes(110 * 60_000), '1h 50m')
-  assert.equal(formatMinutes(-5_000), '0m')
+  assert.equal(formatMinutes(-5_000), '0s')
 })
 
 test('task lines collapse whitespace and default the owner', () => {
@@ -28,6 +29,7 @@ const shippedRun = {
 
 test('a shipped run builds the full preview', () => {
   assert.deepEqual(buildSlackPreview(shippedRun), {
+    delivery: null, // run has no `slack` field: treated as not posted
     header: 'Moment: post approved',
     caption: 'Grey week, warm corner.',
     imageUrl: 'data:image/svg+xml;base64,AA', // the simulated preview shows the local image
@@ -35,4 +37,5 @@ test('a shipped run builds the full preview', () => {
     elapsed: '4m',
   })
   assert.equal(buildSlackPreview({ ...shippedRun, shipped_at: null }), null)
+  assert.equal(buildSlackPreview({ ...shippedRun, slack: 'posted' })?.delivery, 'posted')
 })

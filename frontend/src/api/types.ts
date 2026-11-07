@@ -116,7 +116,13 @@ export interface Run {
   step: string | null // loading label while a background job runs
   started_at: IsoDateTime
   shipped_at: IsoDateTime | null
+  /** Set on ship: the Slack message was posted, simulated (no webhook) or failed. */
+  slack?: SlackDelivery | null
+  /** LLM calls that fell back to canned content in live mode (empty when all were real). */
+  fallback_calls?: string[]
 }
+
+export type SlackDelivery = 'posted' | 'simulated' | 'failed'
 
 // --- Request bodies ---------------------------------------------------------
 

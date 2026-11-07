@@ -1,0 +1,199 @@
+/* Friendly layer on top of the base styles: soft shapes, gentle motion, Adobe red. Loaded last. */
+
+body {
+  background:
+    radial-gradient(1200px 380px at 85% -120px, rgb(235 16 0 / 0.08), transparent 70%),
+    radial-gradient(900px 300px at -10% -80px, rgb(245 166 35 / 0.1), transparent 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 0 L56 16 L56 48 L28 64 L0 48 L0 16 Z M28 64 L28 97' fill='none' stroke='%23eb1000' stroke-opacity='0.035' stroke-width='1.2'/%3E%3C/svg%3E"),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+/* header */
+.topbar {
+  background: rgb(255 255 255 / 0.86);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgb(235 16 0 / 0.08), 0 8px 24px rgb(120 30 20 / 0.05);
+}
+
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ff6a3d 0%, #eb1000 55%, #b30000 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgb(235 16 0 / 0.3);
+  transform: rotate(-4deg);
+  transition: transform 0.25s ease;
+}
+
+.brand:hover .logo {
+  transform: rotate(4deg) scale(1.05);
+}
+
+.brand h1 {
+  font-size: 22px;
+  letter-spacing: -0.01em;
+}
+
+/* buttons */
+button {
+  border-radius: 999px;
+  padding: 8px 16px;
+  background: var(--surface);
+  border-color: var(--border-strong);
+  font-weight: 500;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+button:hover:not(:disabled) {
+  background: var(--surface-2);
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+  font-weight: 700;
+  box-shadow: 0 4px 14px rgb(235 16 0 / 0.28);
+}
+
+button.primary:hover:not(:disabled) {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+  box-shadow: 0 6px 18px rgb(235 16 0 / 0.36);
+}
+
+.demo-toggle {
+  background: var(--surface);
+}
+
+/* inputs */
+input,
+textarea {
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border-color: var(--border-strong);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+input:focus,
+textarea:focus,
+button:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+/* sections and cards */
+.section-head {
+  border-bottom: 2px dashed var(--border);
+}
+
+.section-id {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  font-weight: 700;
+}
+
+.section-head h2 {
+  letter-spacing: 0.06em;
+}
+
+.card {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lift);
+  transform: translateY(-2px);
+}
+
+.pill {
+  background: var(--surface);
+}
+
+.banner {
+  border-radius: var(--radius);
+}
+
+.factor-bar,
+.gauge-track {
+  border-radius: 999px;
+}
+
+.factor-bar {
+  height: 6px;
+}
+
+/* the post and Slack previews read like real apps on a white page */
+.express,
+.slack {
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lift);
+  overflow: hidden;
+}
+
+/* Adobee on a light page: softer shadows, honey hive in the theme colours */
+.bee-svg {
+  filter: drop-shadow(0 6px 8px rgb(150 30 20 / 0.22));
+}
+
+.adobee-sad .bee-svg {
+  filter: saturate(0.45) drop-shadow(0 6px 8px rgb(150 30 20 / 0.22));
+}
+
+.adobee-shadow {
+  background: rgb(150 30 20 / 0.22);
+}
+
+.hive {
+  --honey: #f5a623;
+}
+
+.hive-hex {
+  fill: var(--surface);
+  stroke: var(--border-strong);
+}
+
+.hive-caption {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  button,
+  .logo {
+    transition: none;
+  }
+  .card:hover,
+  button:hover:not(:disabled) {
+    transform: none;
+  }
+}

@@ -32,7 +32,7 @@ Moment is a **war room for one post**. It takes a trend from "this just happened
 
 **4. Referee.** AI reads all the feedback together. Where people disagree, it shows a **conflict card**, such as *"Legal says drop the competitor's name, Product wants it in"*, and proposes a compromise. Vague comments become concrete edits.
 
-**5. Ship.** One click applies the changes. The post gets a new version, and the final version plus the to-do list is packaged as a Slack message for the team (simulated in the demo).
+**5. Ship.** One click applies the changes. The post gets a new version, and the final version plus the to-do list is posted to the team's Slack channel.
 
 ### What's new here
 
@@ -49,7 +49,7 @@ Social media and brand teams at companies big enough to need sign-off from sever
 | **Marketing problem** | Slow approval kills trend-based marketing. |
 | **AI at the core** | AI checks brand fit, drafts the post, simulates real customers, and resolves conflicts between reviewers. Without it, the product doesn't exist. |
 | **Adobe tools** | Integration-ready: the visual and the post are simulated locally; `adobe.py` is where Adobe Firefly (visual) and Adobe Express (post) plug in. |
-| **Other integrations** | Reddit / news for trends, Slack for the final hand-off. Both are local mocks in the demo (saved trend, Slack message preview). |
+| **Other integrations** | Slack (real incoming webhook) for the final hand-off. Trends come from Reddit/news in the product concept; the demo uses saved and collected trends. |
 | **Cost vs value** | About five AI calls per post. Cost per post vs hours of review time saved: see the pitch. |
 
 ## The demo in 3 minutes
@@ -72,7 +72,7 @@ Social media and brand teams at companies big enough to need sign-off from sever
 |---|---|
 | **Stefan** | AI and backend |
 | **Andu** | Product interface |
-| **Militaru** | Integrations: local simulation of Adobe, Slack and trends, integration-ready |
+| **Militaru** | Integrations: real Slack webhook; local simulation of Adobe and trends, integration-ready |
 | **Anda** | Data, story and pitch |
 
 ---

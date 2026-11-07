@@ -143,6 +143,9 @@ def _finish_with_cached_draft(run_id: str) -> None:
     with store.mutate(run_id) as r:
         if r is not None and r.status == "SPOTTED":
             r.fit = r.fit or demo_cache.fit(r.trend)
+            for name in ("fit", "draft"):
+                if name not in r.fallback_calls and not store.demo_mode():
+                    r.fallback_calls.append(name)
             if not r.fit.fits:
                 r.status, r.step = "REJECTED", None
                 return
@@ -197,6 +200,8 @@ def add_comment(run_id: str, body: CommentCreate) -> Comment:
             raise NotFoundError(f"run {run_id} not found")
         if run.status not in REVIEWABLE | {"REFEREED"}:
             raise InvalidTransitionError(f"cannot comment while status is {run.status}")
+        if run.step is not None:  # the referee/reactions are running: this comment would be lost
+            raise InvalidTransitionError(f"run is busy: {run.step}")
         run.comments.append(comment)
         run.status = "IN_REVIEW"  # a new comment after REFEREED means: referee again
     return comment
@@ -253,10 +258,11 @@ def apply(run_id: str, body: ApplyRequest) -> Run:
         new_draft = _applied_draft(run.draft, run.referee, body.accept_all_edits)
         new_draft = adapters.update_post(run.draft, new_draft)
         shipped_at = _now()
-        adapters.send_to_slack(new_draft, run.referee.tasks, shipped_at - run.started_at)
+        slack = adapters.send_to_slack(new_draft, run.referee.tasks, shipped_at - run.started_at)
         with store.mutate(run_id) as r:
             if r is not None:
                 r.draft, r.status, r.shipped_at = new_draft, "SHIPPED", shipped_at
+                r.slack = slack
         return get_run(run_id)
     finally:
         _release(run_id)

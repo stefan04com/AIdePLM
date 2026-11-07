@@ -1,8 +1,14 @@
 import type { SlackPreview as Preview } from '../../lib/slackPreview'
 
+const DELIVERY_LABEL = {
+  posted: 'Posted to Slack',
+  simulated: 'Preview · not posted (no webhook set)',
+  failed: 'Slack unreachable · preview only',
+} as const
+
 /**
- * The Slack message Moment would post after "Apply compromise" (demo script 2:30).
- * Slack is simulated by the backend: nothing is posted; this shows what slack.build_blocks() builds.
+ * The Slack message Moment posts after "Apply compromise" (demo script 2:30), as built by
+ * slack.build_blocks(). The label says whether the backend really posted it.
  */
 export function SlackPreview({ preview }: { preview: Preview }) {
   return (
@@ -10,7 +16,7 @@ export function SlackPreview({ preview }: { preview: Preview }) {
       <header className="slack-bar">
         <span className="slack-hash">#</span>
         <strong>boabe-social</strong>
-        <span className="muted">Simulated · not posted</span>
+        <span className="muted">{DELIVERY_LABEL[preview.delivery ?? 'simulated']}</span>
       </header>
       <div className="slack-message">
         <span className="slack-avatar" aria-hidden>

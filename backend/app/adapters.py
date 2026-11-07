@@ -175,13 +175,13 @@ def update_post(old: Draft, new: Draft) -> Draft:
 # --- Slack ------------------------------------------------------------------
 
 
-def send_to_slack(draft: Draft, tasks: list[Task], elapsed: timedelta) -> bool:
+def send_to_slack(draft: Draft, tasks: list[Task], elapsed: timedelta) -> str:
+    """Post the final message: "posted", "simulated" (no webhook set) or "failed"."""
     mod = _module("slack")
     if mod is None:
-        return False
+        return "simulated"
 
-    def run() -> bool:
-        result = mod.send_final_post(draft.caption, draft.image_url, tasks, elapsed)
-        return bool(result.sent)
+    def run() -> str:
+        return mod.send_final_post(draft.caption, draft.image_url, tasks, elapsed).delivery
 
-    return _guarded(run, False, "slack")
+    return _guarded(run, "failed", "slack")
