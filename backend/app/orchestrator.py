@@ -17,6 +17,7 @@ from .models import (
     Comment,
     CommentCreate,
     Draft,
+    HashtagsRequest,
     Persona,
     PersonaReaction,
     RefereeResult,
@@ -294,6 +295,25 @@ def regenerate(run_id: str, body: RegenerateRequest) -> Run:
     finally:
         _release(run_id)
     return get_run(run_id)  # after the release, so the caller sees step=None
+
+
+def set_hashtags(run_id: str, body: HashtagsRequest) -> Run:
+    """Replace the post's hashtags (picked from the suggestions or removed). No AI call: the caption
+    is untouched, so the review keeps its answers."""
+    cleaned: list[str] = []
+    for raw in body.hashtags:
+        tag = "#" + raw.strip().lstrip("#").replace(" ", "")
+        if len(tag) > 1 and tag.lower() not in {t.lower() for t in cleaned}:
+            cleaned.append(tag)
+    with store.mutate(run_id) as r:
+        if r is None:
+            raise NotFoundError(f"run {run_id} not found")
+        if r.status not in EDITABLE or r.draft is None:
+            raise InvalidTransitionError(f"cannot change hashtags while status is {r.status}")
+        if r.step is not None:
+            raise InvalidTransitionError(f"run is busy: {r.step}")
+        r.draft.hashtags = cleaned
+    return get_run(run_id)
 
 
 def trend_score(body: TrendScoreRequest) -> TrendScore:

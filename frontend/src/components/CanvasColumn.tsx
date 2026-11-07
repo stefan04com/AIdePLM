@@ -3,6 +3,7 @@ import { useFirefly } from '../hooks/useFirefly'
 import { buildSlackPreview } from '../lib/slackPreview'
 import { ExpressPreview } from './canvas/ExpressPreview'
 import { EditPanel } from './canvas/EditPanel'
+import { HashtagCard } from './canvas/HashtagCard'
 import { FireflyPanel } from './canvas/FireflyPanel'
 import { BrandShield } from './wow/BrandShield'
 import { SlackPreview } from './canvas/SlackPreview'
@@ -13,9 +14,10 @@ interface Props {
   /** True while a request is in flight or the backend runs a step. */
   busy: boolean
   onRegenerate: (caption: string, instruction: string) => Promise<void>
+  onHashtags: (hashtags: string[]) => Promise<void>
 }
 
-export function CanvasColumn({ run, busy, onRegenerate }: Props) {
+export function CanvasColumn({ run, busy, onRegenerate, onHashtags }: Props) {
   const firefly = useFirefly(run?.id ?? null)
   // The variation picked from the Firefly mock replaces the post's visual everywhere on screen.
   const shown: Run | null =
@@ -37,6 +39,13 @@ export function CanvasColumn({ run, busy, onRegenerate }: Props) {
           draft={run.draft}
           enabled={!busy && run.status !== 'SHIPPED'}
           onRegenerate={onRegenerate}
+        />
+      )}
+      {run?.draft && (
+        <HashtagCard
+          draft={run.draft}
+          enabled={!busy && run.status !== 'SHIPPED'}
+          onChange={onHashtags}
         />
       )}
       {run?.draft && <FireflyPanel firefly={firefly} disabled={run.status === 'SHIPPED'} />}

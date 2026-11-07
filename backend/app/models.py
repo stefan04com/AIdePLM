@@ -147,6 +147,10 @@ class RegenerateRequest(BaseModel):
     instruction: str = Field(min_length=1, max_length=500)  # e.g. "make it shorter and warmer"
 
 
+class HashtagsRequest(BaseModel):
+    hashtags: list[str] = Field(max_length=30)  # the full list for the post, replaces the old one
+
+
 Platform = Literal[
     "tiktok",
     "instagram_reels",
