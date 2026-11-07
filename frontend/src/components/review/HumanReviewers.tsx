@@ -57,7 +57,7 @@ export function HumanReviewers(props: Props) {
               ))}
               <CommentBox
                 disabled={disabled}
-                initialText={prefilledComment(role)}
+                initialText={roleComments.length === 0 ? prefilledComment(role) : ''}
                 onSubmit={(text) => onComment(role, text, author.trim() || null)}
               />
             </Card>

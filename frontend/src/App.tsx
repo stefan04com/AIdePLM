@@ -3,6 +3,7 @@ import { api, USE_MOCKS } from './api/client'
 import { errorMessage } from './api/errors'
 import type { ApplyRequest, CommentRole, Persona, Trend } from './api/types'
 import { CanvasColumn } from './components/CanvasColumn'
+import { CostPanel } from './components/CostPanel'
 import { DemoModeToggle } from './components/header/DemoModeToggle'
 import { RunClock } from './components/header/RunClock'
 import { ReviewColumn } from './components/ReviewColumn'
@@ -76,12 +77,15 @@ export default function App() {
       {error && <Banner tone="bad">{error}</Banner>}
 
       <main className="columns">
-        <TrendColumn
-          trend={trend}
-          fit={run?.fit ?? null}
-          canStart={!uiBusy && (run === null || isFinished(run))}
-          onStart={startRun}
-        />
+        <div className="column">
+          <TrendColumn
+            trend={trend}
+            fit={run?.fit ?? null}
+            canStart={!uiBusy && (run === null || isFinished(run))}
+            onStart={startRun}
+          />
+          <CostPanel run={run} />
+        </div>
         <CanvasColumn run={run} />
         <ReviewColumn
           run={run}

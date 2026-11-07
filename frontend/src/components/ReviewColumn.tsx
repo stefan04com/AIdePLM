@@ -38,6 +38,7 @@ export function ReviewColumn({ run, personas, busy, onComment, onApply, ...handl
           referee={run.referee}
           comments={run.comments}
           canShip={!busy && canApply(run)}
+          shipped={run.status === 'SHIPPED'}
           onApply={onApply}
         />
       )}
