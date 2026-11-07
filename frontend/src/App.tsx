@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { api, USE_MOCKS } from './api/client'
 import { errorMessage } from './api/errors'
 import type { ApplyRequest, CommentRole, Persona, Trend } from './api/types'
+import { Adobee } from './components/Adobee'
 import { CanvasColumn } from './components/CanvasColumn'
 import { CostPanel } from './components/CostPanel'
 import { DemoModeToggle } from './components/header/DemoModeToggle'
@@ -68,6 +69,7 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <h1>Moment</h1>
+        <Adobee run={run} busy={uiBusy} />
         {run && <RunClock run={run} />}
         {run && <Badge>{`${run.id} · ${run.status}`}</Badge>}
         {USE_MOCKS && <Badge tone="warn">mock API</Badge>}
