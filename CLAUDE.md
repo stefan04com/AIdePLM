@@ -164,16 +164,16 @@ Types: `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `style`. Scopes: `llm
 
 ## Note for Stefan: integrations handoff (from Militaru)
 
-`backend/app/adobe.py`, `slack.py` and `trends.py` are on `feature/militaru-adobe-integration`, which includes `develop` at `d28bf71`. They aren't wired into the app yet, because `main.py` and `orchestrator.py` don't exist. They use only the standard library and don't import `models.py`, so the orchestrator does the mapping below.
+`backend/app/adobe.py`, `slack.py` and `trends.py` are on `feature/militaru-adobe-integration`, which includes `develop` at `d28bf71`. They aren't wired into the app yet, because `main.py` and `orchestrator.py` don't exist. `trends.py` returns `models.Trend` and `slack.py` takes `models.Task`; `adobe.py` has its own `Visual` and `ExpressPost` results, which map onto `Draft` as below. Apart from `models.py` (Pydantic), they use only the standard library.
 
 **Adobe is a mock.** We don't use `ADOBE_CLIENT_ID` or `ADOBE_CLIENT_SECRET`, and `adobe.py` makes no network calls. These still describe the real integration and need updating: the "Required" env list above, `.env.example`, `ARCHITECTURE.md` (§4.5, ADR-003, §10), and the README on `feature/stefan-contract`.
 
 | When | Call | What to do with the result |
 |---|---|---|
-| `GET /trend` | `trends.get_trend(live=False)` | `models.Trend(**asdict(trend))`. `live=True` tries Reddit and falls back to the saved trend |
+| `GET /trend` | `trends.get_trend(live=False)` | Return it as is: it's already a `models.Trend`. `live=True` tries Reddit and falls back to the saved trend |
 | Draft | `adobe.generate_visual(prompt)`, then `adobe.create_post(caption, image_url)` | Set `Draft.image_url`, `express_doc_id` (`post.doc_id`) and `version` (`post.version`) |
 | Apply | `adobe.update_post(post, caption=..., image_url=...)` | Returns a new post with `version + 1`. `caption=""` really blanks the caption, so guard against empty LLM output |
-| Apply | `slack.send_final_post(caption, image_url, tasks, elapsed, demo_mode=...)` | Build tasks with `SlackTask(**task.model_dump())`. It doesn't raise on send failures, so check `result.mode`: `live`, `demo`, `not_configured` or `failed` |
+| Apply | `slack.send_final_post(caption, image_url, tasks, elapsed, demo_mode=...)` | Pass `RefereeResult.tasks` as is. It doesn't raise on send failures, so check `result.mode`: `live`, `demo`, `not_configured` or `failed` |
 
 What you need to handle:
 
@@ -184,7 +184,7 @@ What you need to handle:
 - **Slack image:** the default placeholder is a `data:` URL, which Slack can't display, so the message goes out without an image. Set `ADOBE_MOCK_IMAGE_URL` to a public PNG or JPG to include one.
 - **Saved trend:** `data/demo_trend.json` is missing (Anda), so `get_trend()` returns "Demo trend (placeholder)" for now.
 
-Not tested: a real Slack send and a real Reddit fetch. Module tests use mocks; the mappings above were run once against `models.py` from `develop`.
+Not tested: a real Slack send and a real Reddit fetch. Module tests use mocks and run against `models.py` from `develop`.
 
 Decision we need from you: what happens when the Referee returns `needs_human`? The state machine has no transition for it.
 
