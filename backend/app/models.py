@@ -1,0 +1,159 @@
+"""Moment API contract. Mirrors ARCHITECTURE.md §5-§6; keep both in sync.
+
+Conventions: snake_case JSON (no aliases), datetimes are ISO 8601 UTC strings.
+After hour 1 do not rename/remove fields; adding optional fields is fine.
+"""
+
+from datetime import datetime
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
+
+class Trend(BaseModel):
+    id: str
+    title: str
+    source: Literal["reddit", "news", "saved"]
+    url: str | None = None
+    summary: str
+    detected_at: datetime
+
+
+class FitResult(BaseModel):
+    fits: bool
+    score: int = Field(ge=0, le=100)
+    reason: str
+
+
+class Draft(BaseModel):
+    brief: str
+    caption: str
+    visual_prompt: str
+    hashtags: list[str] = []
+    image_url: str | None = None
+    express_doc_id: str | None = None
+    version: int = 1  # bumps on every apply
+
+
+class Persona(BaseModel):
+    id: str  # never equal to a Comment role ("brand", "legal", "product")
+    name: str  # e.g. "Gen Z commuter"
+    segment: str
+    cares_about: list[str]
+    pet_peeves: list[str]
+    sample_quotes: list[str]  # pulled from reviews.csv
+
+
+class PersonaReaction(BaseModel):
+    persona_id: str
+    reaction: str
+    sentiment: float = Field(ge=-1, le=1)
+    would_engage: bool
+
+
+class Comment(BaseModel):
+    id: str
+    role: Literal["brand", "legal", "product"]
+    text: str
+    created_at: datetime
+
+
+class ConflictParty(BaseModel):
+    kind: Literal["human", "persona"]
+    id: str  # comment role ("legal") or persona_id
+    label: str  # display text, e.g. "Legal", "Gen Z commuter"
+
+
+class Conflict(BaseModel):
+    id: str
+    between: list[ConflictParty]
+    summary: str
+    positions: dict[str, str]  # keyed by ConflictParty.id
+    compromise: str
+
+
+class Edit(BaseModel):
+    target: Literal["caption", "visual_prompt", "hashtags"]
+    before: str  # for "hashtags": space-joined, e.g. "#a #b"
+    after: str
+    source_comment_id: str
+
+
+class Task(BaseModel):
+    owner: str
+    task: str
+    due: str
+
+
+class CommentStatus(BaseModel):
+    comment_id: str
+    status: Literal["applied", "in_conflict", "rejected"]
+    why: str
+
+
+class RefereeResult(BaseModel):
+    conflicts: list[Conflict]
+    edits: list[Edit]
+    tasks: list[Task]
+    comment_status: list[CommentStatus]
+    final_caption: str
+    status: Literal["ready_to_ship", "needs_human"]
+
+
+class Run(BaseModel):
+    id: str
+    trend: Trend
+    fit: FitResult | None = None
+    draft: Draft | None = None
+    reactions: list[PersonaReaction] = []
+    comments: list[Comment] = []
+    referee: RefereeResult | None = None
+    status: Literal["SPOTTED", "REJECTED", "DRAFTED", "IN_REVIEW", "REFEREED", "SHIPPED"]
+    step: str | None = None  # human-readable current step while a background job runs
+    started_at: datetime
+    shipped_at: datetime | None = None
+
+
+# --- Request bodies -------------------------------------------------------
+
+
+class CreateRunRequest(BaseModel):
+    trend_id: str
+
+
+class CommentCreate(BaseModel):
+    role: Literal["brand", "legal", "product"]
+    text: str
+
+
+class ApplyRequest(BaseModel):
+    conflict_ids: list[str] | None = None
+    accept_all_edits: bool = False
+
+
+class DemoModeRequest(BaseModel):
+    on: bool
+
+
+class DemoModeResponse(BaseModel):
+    on: bool
+
+
+# --- Usage ----------------------------------------------------------------
+
+
+class CallUsage(BaseModel):
+    call: str
+    model: str
+    input_tokens: int
+    output_tokens: int
+    latency_ms: int
+    cost_usd: float
+
+
+class UsageSummary(BaseModel):
+    run_id: str | None = None  # None = totals across all runs
+    calls: list[CallUsage]
+    total_input_tokens: int
+    total_output_tokens: int
+    total_cost_usd: float
