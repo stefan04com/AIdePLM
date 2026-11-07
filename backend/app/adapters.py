@@ -10,7 +10,6 @@ import json
 import logging
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import asdict
 from datetime import UTC, datetime, timedelta
 from typing import Any, TypeVar
 
@@ -111,7 +110,7 @@ def current_trend(live: bool = False) -> Trend:
     mod = _module("trends")
 
     def fetch() -> Trend:
-        return Trend.model_validate(asdict(mod.get_trend(live=live)))
+        return Trend.model_validate(mod.get_trend(live=live))  # already a models.Trend
 
     trend = _guarded(fetch, _fallback_trend(), "trend fetch") if mod else _fallback_trend()
     store.remember_trend(trend)
@@ -173,14 +172,7 @@ def send_to_slack(draft: Draft, tasks: list[Task], elapsed: timedelta) -> bool:
         return False
 
     def run() -> bool:
-        result = mod.send_final_post(
-            draft.caption,
-            draft.image_url,
-            [mod.SlackTask(owner=t.owner, task=t.task, due=t.due) for t in tasks],
-            elapsed,
-            demo_mode=store.demo_mode(),
-            timeout_s=TIMEOUT_S,
-        )
+        result = mod.send_final_post(draft.caption, draft.image_url, tasks, elapsed)
         return bool(result.sent)
 
     return _guarded(run, False, "slack")

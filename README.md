@@ -14,7 +14,7 @@ Most brands can't move that fast. Not because they lack ideas, but because of **
 
 By the time everyone agrees, the trend is over.
 
-> *Evidence for slow approval cycles and missed trends goes here, with sources (Anda).*
+Content review is slow: a 2023 [Filestage survey](https://filestage.io/blog/creative-collaboration-report) of 366 marketers and creatives found the average review takes eight days and over three versions, and up to 10 days at brands (vendor-reported). Attention moves faster: on Twitter, a hashtag's average time in the top 50 fell from 17.5 hours (2013) to 11.9 hours (2016) ([Lorenz-Spreen et al., 2019](https://pmc.ncbi.nlm.nih.gov/articles/PMC6465266)).
 
 ## The idea
 
