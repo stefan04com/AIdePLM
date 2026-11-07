@@ -24,7 +24,7 @@ Moment is a **war room for one post**. It takes a trend from "this just happened
 
 **1. Spot.** A trend comes in from Reddit or the news. Moment checks whether it fits the brand, and explains why or why not.
 
-**2. Draft.** AI writes the brief and the caption and creates the visual with Adobe Firefly. The post appears in Adobe Express.
+**2. Draft.** AI writes the brief and the caption and a prompt for the visual. The visual and the post are simulated locally in this version, ready to be generated with Adobe Firefly and laid out in Adobe Express.
 
 **3. Review.** Two kinds of reviewers look at the post at the same time:
 - **Real people:** Brand, Legal and Product, each with a short timer.
@@ -32,7 +32,7 @@ Moment is a **war room for one post**. It takes a trend from "this just happened
 
 **4. Referee.** AI reads all the feedback together. Where people disagree, it shows a **conflict card**, such as *"Legal says drop the competitor's name, Product wants it in"*, and proposes a compromise. Vague comments become concrete edits.
 
-**5. Ship.** One click applies the changes. The post updates in Adobe Express, and the final version plus the to-do list goes to the team's Slack.
+**5. Ship.** One click applies the changes. The post gets a new version, and the final version plus the to-do list is packaged as a Slack message for the team (simulated in the demo).
 
 ### What's new here
 
@@ -48,16 +48,16 @@ Social media and brand teams at companies big enough to need sign-off from sever
 |---|---|
 | **Marketing problem** | Slow approval kills trend-based marketing. |
 | **AI at the core** | AI checks brand fit, drafts the post, simulates real customers, and resolves conflicts between reviewers. Without it, the product doesn't exist. |
-| **Adobe tools** | Firefly creates the visual; Adobe Express holds the post and updates when changes are applied. |
-| **Other integrations** | Reddit / news for trends, Slack for the final hand-off. |
+| **Adobe tools** | Integration-ready: the visual and the post are simulated locally; `adobe.py` is where Adobe Firefly (visual) and Adobe Express (post) plug in. |
+| **Other integrations** | Reddit / news for trends, Slack for the final hand-off. Both are local mocks in the demo (saved trend, Slack message preview). |
 | **Cost vs value** | About five AI calls per post. Cost per post vs hours of review time saved: see the pitch. |
 
 ## The demo in 3 minutes
 
-1. *"This trend broke 20 minutes ago."* Moment matches it to the brand and drafts a post in Express.
+1. *"This trend broke 20 minutes ago."* Moment matches it to the brand and drafts the post, with a placeholder visual.
 2. Two judges play **Legal** and **Brand** and type real comments. At the same time, the customer personas react.
 3. A **conflict card** appears: Brand wants the joke, the customers say it will backfire, Legal flags the competitor's name. One click on "apply compromise" and the post updates.
-4. The final post and task list arrive in Slack. **Trend to approved post: 1h 50m.**
+4. The final post and task list appear as the Slack message the team would get. **Trend to approved post: 1h 50m.**
 
 ## What's next
 
@@ -72,7 +72,7 @@ Social media and brand teams at companies big enough to need sign-off from sever
 |---|---|
 | **Stefan** | AI and backend |
 | **Andu** | Product interface |
-| **Militaru** | Integrations (Adobe, Slack, trends) |
+| **Militaru** | Integrations: local simulation of Adobe, Slack and trends, integration-ready |
 | **Anda** | Data, story and pitch |
 
 ---

@@ -16,7 +16,7 @@ export function CanvasColumn({ run }: { run: Run | null }) {
       {run?.draft && <ExpressPreview draft={run.draft} />}
       {slack && (
         <>
-          <h2>Shipped to Slack</h2>
+          <h2>Slack message preview</h2>
           <SlackPreview preview={slack} />
         </>
       )}

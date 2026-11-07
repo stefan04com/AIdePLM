@@ -1,19 +1,19 @@
 import type { Draft } from '../../api/types'
-import { BRAND_HANDLE, BRAND_NAME, EXPRESS_HOME_URL } from '../../lib/brand'
+import { BRAND_HANDLE, BRAND_NAME } from '../../lib/brand'
 import { Badge } from '../ui'
 
-/** The draft as a social post inside an Adobe Express frame (demo script 0:40 and 2:10). */
+/**
+ * The draft as a social post (demo script 0:40 and 2:10). A local simulation: the backend
+ * makes a placeholder visual and a versioned mock post; nothing is sent to Adobe.
+ */
 export function ExpressPreview({ draft }: { draft: Draft }) {
   const updated = draft.version > 1
 
   return (
     <article className="express">
       <header className="express-bar">
-        <span className="express-logo" aria-hidden>
-          Ae
-        </span>
-        <strong>Adobe Express</strong>
-        <span className="muted">{draft.express_doc_id ?? 'preview'}</span>
+        <strong>Post preview</strong>
+        <span className="muted">Simulated · Adobe Express-ready</span>
         <Badge tone={updated ? 'ok' : 'neutral'}>
           v{draft.version}
           {updated && ' · updated by Referee'}
@@ -40,9 +40,7 @@ export function ExpressPreview({ draft }: { draft: Draft }) {
       </div>
 
       <footer className="express-footer">
-        <a href={EXPRESS_HOME_URL} target="_blank" rel="noreferrer">
-          Open in Express ↗
-        </a>
+        <span className="muted">Can be published through Adobe Express later</span>
       </footer>
     </article>
   )

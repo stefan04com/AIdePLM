@@ -1,5 +1,5 @@
 // What the Slack message looks like after "Apply compromise". Mirrors build_blocks() in
-// backend/app/slack.py (Slack is mocked, so the UI shows the message instead of a channel).
+// backend/app/slack.py (Slack is simulated: nothing is posted, so the UI shows the message).
 // No value imports, so `npm test` can run it in Node.
 
 import type { Run, Task } from '../api/types'
@@ -13,7 +13,7 @@ export interface SlackPreview {
   elapsed: string
 }
 
-/** Same rule as slack._is_web_url: data: URLs (the mock Firefly image) are not posted. */
+/** Same rule as slack._is_web_url: data: URLs (the local placeholder SVG) are skipped. */
 export function isWebUrl(url: string | null | undefined): url is string {
   if (!url || /\s/.test(url)) return false
   try {

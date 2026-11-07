@@ -13,7 +13,7 @@ function summary(accepted: number, total: number): string {
   return `Accepts all ${total} compromises (${accepted} reviewed one by one)`
 }
 
-/** One click ships (demo script). Nothing reaches Express or Slack without this human click. */
+/** One click ships (demo script). The post preview and Slack message (both simulated) only update after this human click. */
 export function ShipBar({ acceptedCount, totalConflicts, canShip, onShip }: Props) {
   const [acceptAllEdits, setAcceptAllEdits] = useState(true)
 
