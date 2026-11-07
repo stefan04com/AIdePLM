@@ -3,10 +3,11 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { api } from '../api/client'
-import type { Run, RunStatus } from '../api/types'
+import { errorMessage } from '../api/errors'
+import type { Run } from '../api/types'
+import { isFinished } from '../lib/runStatus'
 
 const POLL_MS = 1000
-const TERMINAL: RunStatus[] = ['SHIPPED', 'REJECTED']
 
 export function useRun(runId: string | null) {
   const [run, setRun] = useState<Run | null>(null)
@@ -18,11 +19,11 @@ export function useRun(runId: string | null) {
       setRun(await api.getRun(runId))
       setError(null)
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err))
+      setError(errorMessage(err))
     }
   }, [runId])
 
-  const isTerminal = run !== null && TERMINAL.includes(run.status)
+  const isTerminal = isFinished(run)
 
   useEffect(() => {
     if (!runId || isTerminal) return

@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 import { api, USE_MOCKS } from './api/client'
+import { errorMessage } from './api/errors'
 import type { CommentRole, Persona, Trend } from './api/types'
 import { CanvasColumn } from './components/CanvasColumn'
 import { ReviewColumn } from './components/ReviewColumn'
 import { TrendColumn } from './components/TrendColumn'
+import { Badge } from './components/ui'
 import { useRun } from './hooks/useRun'
+import { isFinished } from './lib/runStatus'
 import { scriptedComments } from './mocks/scriptedComments'
 
 export default function App() {
@@ -15,9 +18,11 @@ export default function App() {
   const [actionError, setActionError] = useState<string | null>(null)
   const { run, error: pollError, refresh, setRun } = useRun(runId)
 
+  const showError = (err: unknown) => setActionError(errorMessage(err))
+
   useEffect(() => {
-    api.getTrend().then(setTrend, (err: Error) => setActionError(err.message))
-    api.getPersonas().then(setPersonas, (err: Error) => setActionError(err.message))
+    api.getTrend().then(setTrend, showError)
+    api.getPersonas().then(setPersonas, showError)
   }, [])
 
   /** Runs one user action with a shared busy flag and error banner, then re-fetches the run. */
@@ -28,10 +33,15 @@ export default function App() {
       await action()
       await refresh()
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : String(err))
+      showError(err)
     } finally {
       setBusy(false)
     }
+  }
+
+  /** Wraps an API call that needs the current run id into a click handler. */
+  const onRun = (call: (id: string) => Promise<unknown>) => () => {
+    if (run) void act(() => call(run.id))
   }
 
   const startRun = () =>
@@ -42,23 +52,18 @@ export default function App() {
       setRunId(created.id)
     })
 
-  const withRun = (fn: (id: string) => Promise<unknown>) => () => {
-    if (run) void act(() => fn(run.id))
+  const fillScripted = async (id: string) => {
+    for (const comment of scriptedComments) await api.addComment(id, comment)
   }
 
   const error = actionError ?? pollError
-  const canStart = !busy && (!run || run.status === 'SHIPPED' || run.status === 'REJECTED')
 
   return (
     <div className="app">
       <header className="topbar">
         <h1>Moment</h1>
-        {run && (
-          <span className="badge">
-            {run.id} · {run.status}
-          </span>
-        )}
-        {USE_MOCKS && <span className="badge mock">mock API</span>}
+        {run && <Badge>{`${run.id} · ${run.status}`}</Badge>}
+        {USE_MOCKS && <Badge tone="warn">mock API</Badge>}
       </header>
 
       {error && (
@@ -68,21 +73,24 @@ export default function App() {
       )}
 
       <main className="columns">
-        <TrendColumn trend={trend} fit={run?.fit ?? null} canStart={canStart} onStart={startRun} />
+        <TrendColumn
+          trend={trend}
+          fit={run?.fit ?? null}
+          canStart={!busy && (run === null || isFinished(run))}
+          onStart={startRun}
+        />
         <CanvasColumn run={run} />
         <ReviewColumn
           run={run}
           personas={personas}
           busy={busy}
-          onRequestReactions={withRun((id) => api.requestReactions(id))}
           onComment={(role: CommentRole, text: string) =>
-            withRun((id) => api.addComment(id, { role, text }))()
+            onRun((id) => api.addComment(id, { role, text }))()
           }
-          onFillScripted={withRun(async (id) => {
-            for (const comment of scriptedComments) await api.addComment(id, comment)
-          })}
-          onReferee={withRun((id) => api.referee(id))}
-          onApply={withRun((id) => api.apply(id, { accept_all_edits: true }))}
+          onRequestReactions={onRun(api.requestReactions)}
+          onFillScripted={onRun(fillScripted)}
+          onReferee={onRun(api.referee)}
+          onApply={onRun((id) => api.apply(id, { accept_all_edits: true }))}
         />
       </main>
     </div>

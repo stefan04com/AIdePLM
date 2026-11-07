@@ -8,3 +8,8 @@ export class ApiError extends Error {
     this.status = status
   }
 }
+
+/** Turns anything thrown into a message we can show in the error banner. */
+export function errorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err)
+}

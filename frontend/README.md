@@ -38,5 +38,13 @@ npm run gen:types      # writes src/api/schema.gen.ts from http://localhost:8000
 | `src/api/client.ts` | The only place that calls the backend (or the mock) |
 | `src/api/types.ts` | Contract types, mirrored from `models.py` |
 | `src/hooks/useRun.ts` | Polls `GET /runs/{id}` every 1s until SHIPPED/REJECTED |
-| `src/components/` | Trend · Canvas · Review columns |
+| `src/components/` | Trend · Canvas · Review columns; `ui.tsx` has shared `Card`, `Badge`, `Muted` |
+| `src/components/review/` | Review actions, human reviewers, persona cards, conflict cards |
+| `src/lib/` | Formatting, run-status rules, colour tones |
 | `src/mocks/` | Fixture copy, personas, scripted comments, mock API |
+| `scripts/check-lines.mjs` | Fails if any line is over 300 characters (part of `npm run lint`) |
+
+## Code style
+
+- No line longer than 300 characters (`npm run lint` checks it).
+- If something repeats, extract it: a helper in `src/lib/`, a component in `ui.tsx`, or a CSS tone class.

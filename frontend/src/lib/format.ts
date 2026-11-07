@@ -9,3 +9,13 @@ export function formatElapsed(startIso: string, endIso?: string): string {
   if (m > 0) return `${m}m ${s}s`
   return `${s}s`
 }
+
+/** "in_conflict" → "in conflict", "ready_to_ship" → "ready to ship". */
+export function humanize(value: string): string {
+  return value.replace(/_/g, ' ')
+}
+
+/** 0.4 → "+0.4", -0.5 → "-0.5". */
+export function formatSentiment(sentiment: number): string {
+  return `${sentiment > 0 ? '+' : ''}${sentiment.toFixed(1)}`
+}

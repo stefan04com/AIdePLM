@@ -157,6 +157,19 @@ input {
   color: var(--muted);
 }
 
+/* Tones: components set tone-* and read var(--tone) for colour accents. */
+.tone-ok {
+  --tone: var(--ok);
+}
+
+.tone-warn {
+  --tone: var(--warn);
+}
+
+.tone-bad {
+  --tone: var(--bad);
+}
+
 .badge {
   display: inline-block;
   margin-left: 6px;
@@ -164,28 +177,12 @@ input {
   border-radius: 999px;
   font-size: 12px;
   background: var(--bg);
-  border: 1px solid var(--border);
-  color: var(--muted);
+  border: 1px solid var(--tone, var(--border));
+  color: var(--tone, var(--muted));
 }
 
-.badge.mock {
-  color: var(--warn);
-  border-color: var(--warn);
-}
-
-.status-applied {
-  color: var(--ok);
-  border-color: var(--ok);
-}
-
-.status-in_conflict {
-  color: var(--warn);
-  border-color: var(--warn);
-}
-
-.status-rejected {
-  color: var(--bad);
-  border-color: var(--bad);
+.accent-left {
+  border-left: 4px solid var(--tone);
 }
 
 .error {
@@ -210,14 +207,6 @@ input {
 .fit-score small {
   font-size: 13px;
   color: var(--muted);
-}
-
-.fit-yes {
-  border-left: 4px solid var(--ok);
-}
-
-.fit-no {
-  border-left: 4px solid var(--bad);
 }
 
 .step {
@@ -290,11 +279,7 @@ blockquote {
   font-size: 13px;
 }
 
-.conflict {
-  border-left: 4px solid var(--warn);
-}
-
-.conflict ul {
+.card ul {
   margin: 0 0 8px;
   padding-left: 18px;
 }

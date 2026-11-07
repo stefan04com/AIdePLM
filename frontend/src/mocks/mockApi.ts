@@ -5,6 +5,7 @@
 import { ApiError } from '../api/errors'
 import type {
   ApplyRequest,
+  CallUsage,
   Comment,
   CommentCreate,
   DemoModeResponse,
@@ -147,19 +148,40 @@ export async function apply(id: string, body: ApplyRequest): Promise<Run> {
   return clone(run)
 }
 
+function mockCall(
+  call: string,
+  inputTokens: number,
+  outputTokens: number,
+  latencyMs: number,
+  costUsd: number,
+): CallUsage {
+  return {
+    call,
+    model: 'mock',
+    input_tokens: inputTokens,
+    output_tokens: outputTokens,
+    latency_ms: latencyMs,
+    cost_usd: costUsd,
+  }
+}
+
+const MOCK_CALLS: CallUsage[] = [
+  mockCall('fit', 820, 60, 1400, 0.003),
+  mockCall('draft', 1100, 240, 2900, 0.007),
+  mockCall('reactions', 1300, 310, 3100, 0.009),
+  mockCall('referee', 2400, 650, 5200, 0.017),
+]
+
+const sumOf = (calls: CallUsage[], key: 'input_tokens' | 'output_tokens' | 'cost_usd') =>
+  calls.reduce((sum, c) => sum + c[key], 0)
+
 export async function getUsage(runId?: string): Promise<UsageSummary> {
-  const calls = [
-    { call: 'fit', model: 'mock', input_tokens: 820, output_tokens: 60, latency_ms: 1400, cost_usd: 0.003 },
-    { call: 'draft', model: 'mock', input_tokens: 1100, output_tokens: 240, latency_ms: 2900, cost_usd: 0.007 },
-    { call: 'reactions', model: 'mock', input_tokens: 1300, output_tokens: 310, latency_ms: 3100, cost_usd: 0.009 },
-    { call: 'referee', model: 'mock', input_tokens: 2400, output_tokens: 650, latency_ms: 5200, cost_usd: 0.017 },
-  ]
   return {
     run_id: runId ?? null,
-    calls,
-    total_input_tokens: calls.reduce((sum, c) => sum + c.input_tokens, 0),
-    total_output_tokens: calls.reduce((sum, c) => sum + c.output_tokens, 0),
-    total_cost_usd: calls.reduce((sum, c) => sum + c.cost_usd, 0),
+    calls: clone(MOCK_CALLS),
+    total_input_tokens: sumOf(MOCK_CALLS, 'input_tokens'),
+    total_output_tokens: sumOf(MOCK_CALLS, 'output_tokens'),
+    total_cost_usd: sumOf(MOCK_CALLS, 'cost_usd'),
   }
 }
 

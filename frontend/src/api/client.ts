@@ -1,8 +1,8 @@
-// The only module that talks to the backend. Components call these functions,
-// never fetch() directly. With VITE_USE_MOCKS=true (default until the hour-4
-// checkpoint) every call is served by ../mocks/mockApi.ts instead.
+// The only module that talks to the backend. Components use `api`, never fetch() directly.
+// With VITE_USE_MOCKS=true (default until the hour-4 checkpoint) `api` is the in-browser
+// mock from ../mocks/mockApi.ts, which implements the same functions.
 
-import * as mock from '../mocks/mockApi'
+import * as mockApi from '../mocks/mockApi'
 import { ApiError } from './errors'
 import type {
   ApiErrorBody,
@@ -21,71 +21,53 @@ import type {
 export const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== 'false'
 
 const BASE = '/api' // Vite proxy rewrites /api/* → http://localhost:8000/*
-const TIMEOUT_MS = 20_000 // backend calls are synchronous up to ~10s, plus margin
-
-export { ApiError }
+const TIMEOUT_MS = 20_000 // /reactions and /referee are synchronous up to ~10s, plus margin
 
 async function request<T>(method: 'GET' | 'POST', path: string, body?: unknown): Promise<T> {
+  const hasBody = body !== undefined
   let res: Response
   try {
     res = await fetch(BASE + path, {
       method,
-      headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },
-      body: body === undefined ? undefined : JSON.stringify(body),
+      headers: hasBody ? { 'Content-Type': 'application/json' } : undefined,
+      body: hasBody ? JSON.stringify(body) : undefined,
       signal: AbortSignal.timeout(TIMEOUT_MS),
     })
   } catch (err) {
     throw new ApiError(0, err instanceof Error ? err.message : 'Network error')
   }
-
-  if (!res.ok) {
-    let detail = res.statusText
-    try {
-      detail = ((await res.json()) as ApiErrorBody).detail ?? detail
-    } catch {
-      // body wasn't JSON; keep statusText
-    }
-    throw new ApiError(res.status, detail)
-  }
+  if (!res.ok) throw new ApiError(res.status, await readDetail(res))
   return (await res.json()) as T
 }
 
-export const api = {
-  getTrend: (): Promise<Trend> => (USE_MOCKS ? mock.getTrend() : request('GET', '/trend')),
-
-  getPersonas: (): Promise<Persona[]> =>
-    USE_MOCKS ? mock.getPersonas() : request('GET', '/personas'),
-
-  /** Returns immediately with status SPOTTED; poll getRun until DRAFTED or REJECTED. */
-  createRun: (trendId: string): Promise<Run> =>
-    USE_MOCKS ? mock.createRun(trendId) : request('POST', '/runs', { trend_id: trendId }),
-
-  getRun: (id: string): Promise<Run> =>
-    USE_MOCKS ? mock.getRun(id) : request('GET', `/runs/${encodeURIComponent(id)}`),
-
-  requestReactions: (id: string): Promise<PersonaReaction[]> =>
-    USE_MOCKS
-      ? mock.requestReactions(id)
-      : request('POST', `/runs/${encodeURIComponent(id)}/reactions`),
-
-  addComment: (id: string, body: CommentCreate): Promise<Comment> =>
-    USE_MOCKS
-      ? mock.addComment(id, body)
-      : request('POST', `/runs/${encodeURIComponent(id)}/comments`, body),
-
-  referee: (id: string): Promise<RefereeResult> =>
-    USE_MOCKS ? mock.referee(id) : request('POST', `/runs/${encodeURIComponent(id)}/referee`),
-
-  apply: (id: string, body: ApplyRequest): Promise<Run> =>
-    USE_MOCKS
-      ? mock.apply(id, body)
-      : request('POST', `/runs/${encodeURIComponent(id)}/apply`, body),
-
-  getUsage: (runId?: string): Promise<UsageSummary> =>
-    USE_MOCKS
-      ? mock.getUsage(runId)
-      : request('GET', runId ? `/usage?run_id=${encodeURIComponent(runId)}` : '/usage'),
-
-  setDemoMode: (on: boolean): Promise<DemoModeResponse> =>
-    USE_MOCKS ? mock.setDemoMode(on) : request('POST', '/admin/demo-mode', { on }),
+/** Reads FastAPI's {"detail": "..."} error body, falling back to the HTTP status text. */
+async function readDetail(res: Response): Promise<string> {
+  try {
+    return ((await res.json()) as ApiErrorBody).detail ?? res.statusText
+  } catch {
+    return res.statusText
+  }
 }
+
+const get = <T>(path: string) => request<T>('GET', path)
+const post = <T>(path: string, body?: unknown) => request<T>('POST', path, body)
+const runPath = (id: string, suffix = '') => `/runs/${encodeURIComponent(id)}${suffix}`
+
+const backendApi = {
+  getTrend: () => get<Trend>('/trend'),
+  getPersonas: () => get<Persona[]>('/personas'),
+  /** Returns immediately with status SPOTTED; poll getRun until DRAFTED or REJECTED. */
+  createRun: (trendId: string) => post<Run>('/runs', { trend_id: trendId }),
+  getRun: (id: string) => get<Run>(runPath(id)),
+  requestReactions: (id: string) => post<PersonaReaction[]>(runPath(id, '/reactions')),
+  addComment: (id: string, body: CommentCreate) => post<Comment>(runPath(id, '/comments'), body),
+  referee: (id: string) => post<RefereeResult>(runPath(id, '/referee')),
+  apply: (id: string, body: ApplyRequest) => post<Run>(runPath(id, '/apply'), body),
+  getUsage: (runId?: string) =>
+    get<UsageSummary>(runId ? `/usage?run_id=${encodeURIComponent(runId)}` : '/usage'),
+  setDemoMode: (on: boolean) => post<DemoModeResponse>('/admin/demo-mode', { on }),
+}
+
+export type Api = typeof backendApi
+
+export const api: Api = USE_MOCKS ? mockApi : backendApi
