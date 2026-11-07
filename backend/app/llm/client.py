@@ -23,6 +23,7 @@ log = logging.getLogger(__name__)
 PROMPTS_DIR = Path(__file__).parent / "prompts"
 TIMEOUT_S = 15.0
 MAX_TOKENS = 2048
+DEFAULT_REGION = "us-east-1"  # Bedrock region when AWS_REGION is not set
 DEMO_MODEL = "demo-cache"
 
 T = TypeVar("T", bound=BaseModel)
@@ -43,39 +44,38 @@ def wrap(tag: str, text: str, **attrs: str) -> str:
     return f"<{tag}{attr_str}>\n{safe}\n</{tag}>"
 
 
-def _bedrock() -> bool:
-    return os.environ.get("LLM_PROVIDER", "").strip().lower() == "bedrock"
+def _provider_name() -> str:
+    """LLM_PROVIDER = "bedrock" | "anthropic"; default: bedrock if a Bedrock token is present."""
+    explicit = os.environ.get("LLM_PROVIDER", "").strip().lower()
+    if explicit:
+        return explicit
+    return "bedrock" if os.environ.get("AWS_BEARER_TOKEN_BEDROCK") else "anthropic"
 
 
-def _has_credentials() -> bool:
-    if _bedrock():  # Bedrock API key; the SDK reads AWS_BEARER_TOKEN_BEDROCK itself
-        return bool(os.environ.get("AWS_BEARER_TOKEN_BEDROCK", "").strip())
-    return bool(os.environ.get("LLM_API_KEY", "").strip())
-
-
-def _client():
+def _make_client():
     import anthropic
 
-    if _bedrock():
-        # bedrock-runtime client: models like eu.anthropic.claude-sonnet-4-6 are served here
+    if _provider_name() == "bedrock":
+        # The SDK reads AWS_BEARER_TOKEN_BEDROCK itself; the token is never stored in files.
+        if not os.environ.get("AWS_BEARER_TOKEN_BEDROCK", "").strip():
+            raise LLMError("AWS_BEARER_TOKEN_BEDROCK not set")
+        region = os.environ.get("AWS_REGION") or os.environ.get("AWS_DEFAULT_REGION")
         return anthropic.AnthropicBedrock(
-            aws_region=os.environ.get("AWS_REGION", "").strip() or None,
-            timeout=TIMEOUT_S,
-            max_retries=0,
+            aws_region=region or DEFAULT_REGION, timeout=TIMEOUT_S, max_retries=0
         )
-    return anthropic.Anthropic(
-        api_key=os.environ["LLM_API_KEY"].strip(), timeout=TIMEOUT_S, max_retries=0
-    )
+    api_key = os.environ.get("LLM_API_KEY", "").strip()
+    if not api_key:
+        raise LLMError("LLM_API_KEY not set")
+    return anthropic.Anthropic(api_key=api_key, timeout=TIMEOUT_S, max_retries=0)
 
 
 def _provider_complete(system: str, user: str) -> tuple[str, int, int]:
     """One provider request -> (text, input_tokens, output_tokens). Swap provider here only."""
     model = os.environ.get("LLM_MODEL", "").strip()
-    if not model or not _has_credentials():
-        raise LLMError("LLM_MODEL or provider credentials not set")
+    if not model:
+        raise LLMError("LLM_MODEL not set")
     try:
-        client = _client()
-        msg = client.messages.create(
+        msg = _make_client().messages.create(
             model=model,
             max_tokens=MAX_TOKENS,
             system=system,
@@ -83,6 +83,8 @@ def _provider_complete(system: str, user: str) -> tuple[str, int, int]:
         )
         text = "".join(b.text for b in msg.content if getattr(b, "type", "") == "text")
         return text, msg.usage.input_tokens, msg.usage.output_tokens
+    except LLMError:
+        raise
     except Exception as exc:  # noqa: BLE001 - any provider failure means "use the fallback"
         raise LLMError(f"{type(exc).__name__}: {exc}") from exc
 

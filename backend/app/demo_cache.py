@@ -168,9 +168,18 @@ def reactions(personas_: list[Persona]) -> list[PersonaReaction]:
     ]
 
 
+def _heaviest_per_role(comments: list[Comment]) -> dict[str, str]:
+    """Comment id that speaks for each role: highest weight wins, the newer one on a tie."""
+    best: dict[str, Comment] = {}
+    for c in comments:  # chronological order, so ">=" lets the newer comment win a tie
+        if c.role not in best or c.weight >= best[c.role].weight:
+            best[c.role] = c
+    return {role: c.id for role, c in best.items()}
+
+
 def referee(comments: list[Comment], draft_: Draft, personas_: list[Persona]) -> RefereeResult:
     """Canned referee result built from the run's real comment ids / persona ids / caption."""
-    latest = {c.role: c.id for c in comments}  # newest comment per role wins
+    latest = _heaviest_per_role(comments)  # docs/comment-weighting.md
     labels = {"brand": "Brand", "legal": "Legal", "product": "Product"}
 
     def human(role: str) -> ConflictParty:

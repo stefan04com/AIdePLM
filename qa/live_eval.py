@@ -22,7 +22,6 @@ sys.path.insert(0, str(ROOT / "backend"))
 
 from app import adapters, demo_cache, store
 from app.llm import calls, usage
-from app.llm.client import _has_credentials as client_has_credentials
 from app.main import app
 from fastapi.testclient import TestClient
 
@@ -57,11 +56,16 @@ def one_run(client: TestClient) -> dict:
         "caption": (run["draft"] or {}).get("caption", ""),
     }
     if run["status"] != "DRAFTED":
-        return row | {"fallbacks": list(fallbacks), "seconds": time.monotonic() - started}
+        return row | {
+            "fallbacks": list(fallbacks),
+            "seconds": time.monotonic() - started,
+        }
 
     reactions = client.post(f"/runs/{run['id']}/reactions").json()
     for c in adapters.scripted_comments():
-        client.post(f"/runs/{run['id']}/comments", json={"role": c["role"], "text": c["text"]})
+        client.post(
+            f"/runs/{run['id']}/comments", json={"role": c["role"], "text": c["text"]}
+        )
     ref = client.post(f"/runs/{run['id']}/referee").json()
     return row | {
         "run_id": run["id"],
@@ -77,12 +81,19 @@ def conflict_line(conflict: dict) -> str:
     return f"{parties}: {conflict['summary']}"
 
 
-def report(rows: list[dict], model: str, personas: list[dict], persona_fallback: list[str]) -> str:
-    ok = [r for r in rows if r.get("referee", {}).get("conflicts") and not r["fallbacks"]]
+def report(
+    rows: list[dict], model: str, personas: list[dict], persona_fallback: list[str]
+) -> str:
+    ok = [
+        r for r in rows if r.get("referee", {}).get("conflicts") and not r["fallbacks"]
+    ]
     legal_product = [
         r
         for r in ok
-        if any({"legal", "product"} <= {p["id"] for p in c["between"]} for c in r["referee"]["conflicts"])
+        if any(
+            {"legal", "product"} <= {p["id"] for p in c["between"]}
+            for c in r["referee"]["conflicts"]
+        )
     ]
     total = usage.summary(None)
     lines = [
@@ -117,11 +128,15 @@ def report(rows: list[dict], model: str, personas: list[dict], persona_fallback:
             f"- Fallbacks: {r['fallbacks'] or 'none'}",
         ]
         for rx in r.get("reactions", []):
-            lines.append(f"- Persona `{rx['persona_id']}` ({rx['sentiment']:+.1f}): {rx['reaction']}")
+            lines.append(
+                f"- Persona `{rx['persona_id']}` ({rx['sentiment']:+.1f}): {rx['reaction']}"
+            )
         ref = r.get("referee")
         if ref:
             lines.append(f"- Referee status: `{ref['status']}`")
-            lines += [f"- Conflict: {conflict_line(c)}" for c in ref["conflicts"]] or ["- Conflict: **none**"]
+            lines += [f"- Conflict: {conflict_line(c)}" for c in ref["conflicts"]] or [
+                "- Conflict: **none**"
+            ]
             lines.append(f"- Final caption: {ref['final_caption']}")
         lines.append("")
     return "\n".join(lines)
@@ -130,12 +145,21 @@ def report(rows: list[dict], model: str, personas: list[dict], persona_fallback:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--runs", type=int, default=3)
-    parser.add_argument("--demo", action="store_true", help="smoke-test the script with canned data")
+    parser.add_argument(
+        "--demo", action="store_true", help="smoke-test the script with canned data"
+    )
     args = parser.parse_args()
 
     model = os.environ.get("LLM_MODEL", "")  # .env is loaded when app.main is imported
-    if not args.demo and (not client_has_credentials() or not model):
-        sys.exit("LLM_MODEL or provider credentials missing in .env: this would only test the canned fallbacks.")
+    if not args.demo and (
+        not (
+            os.environ.get("LLM_API_KEY") or os.environ.get("AWS_BEARER_TOKEN_BEDROCK")
+        )
+        or not model
+    ):
+        sys.exit(
+            "LLM_MODEL or provider credentials missing in .env: this would only test the canned fallbacks."
+        )
 
     tmp = Path(tempfile.mkdtemp(prefix="moment-qa-"))
     store.configure(tmp / "runs.json")

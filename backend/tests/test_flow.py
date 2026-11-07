@@ -133,3 +133,10 @@ def test_openapi_is_complete(client):
         for method, op in ops.items():
             schema = op["responses"]["200"]["content"]["application/json"]["schema"]
             assert schema != {}, f"{method.upper()} {path} has no response_model"
+
+
+def test_demo_mode_can_be_read_back(client):
+    assert client.post("/admin/demo-mode", json={"on": False}).json() == {"on": False}
+    assert client.get("/admin/demo-mode").json() == {"on": False}
+    client.post("/admin/demo-mode", json={"on": True})
+    assert client.get("/admin/demo-mode").json() == {"on": True}

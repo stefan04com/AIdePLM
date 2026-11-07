@@ -7,10 +7,15 @@ interface Props {
   onShip: (acceptAllEdits: boolean) => void
 }
 
-/** Human-in-the-loop gate: nothing reaches Express or Slack until every compromise is accepted. */
+function summary(accepted: number, total: number): string {
+  if (total === 0) return 'No conflicts to settle'
+  if (accepted === total) return `All ${total} compromises accepted`
+  return `Accepts all ${total} compromises (${accepted} reviewed one by one)`
+}
+
+/** One click ships (demo script). Nothing reaches Express or Slack without this human click. */
 export function ShipBar({ acceptedCount, totalConflicts, canShip, onShip }: Props) {
   const [acceptAllEdits, setAcceptAllEdits] = useState(true)
-  const missing = totalConflicts - acceptedCount
 
   return (
     <div className="ship-bar">
@@ -22,17 +27,9 @@ export function ShipBar({ acceptedCount, totalConflicts, canShip, onShip }: Prop
         />
         Also apply hashtag and visual edits
       </label>
-      <span className="muted">
-        {missing > 0
-          ? `Accept ${missing} more compromise${missing === 1 ? '' : 's'} to ship`
-          : `${acceptedCount}/${totalConflicts} compromises accepted`}
-      </span>
-      <button
-        className="primary"
-        disabled={!canShip || missing > 0}
-        onClick={() => onShip(acceptAllEdits)}
-      >
-        Apply &amp; ship
+      <span className="muted">{summary(acceptedCount, totalConflicts)}</span>
+      <button className="primary" disabled={!canShip} onClick={() => onShip(acceptAllEdits)}>
+        Apply compromise
       </button>
     </div>
   )
