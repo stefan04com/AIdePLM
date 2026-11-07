@@ -172,3 +172,28 @@ html.stage .post .post-visual img,
 html.stage .post .post-visual .image-placeholder {
   aspect-ratio: 16 / 9;
 }
+
+/* Buttons with their own look keep it on hover: the global `button:hover` (friendly.css) would
+   paint them light grey with a red border. */
+button.phone:hover:not(:disabled) {
+  background:
+    radial-gradient(120% 80% at 20% 0%, #ff7a3d 0%, transparent 60%),
+    radial-gradient(120% 90% at 100% 100%, #9b5cff 0%, transparent 55%),
+    linear-gradient(160deg, #eb1000, #5a1a6e);
+  border-color: #1b1b1f;
+}
+
+button.firefly-button:hover:not(:disabled) {
+  background: linear-gradient(100deg, #eb1000, #ff4d7a 45%, #9b5cff);
+  background-size: 200% 100%;
+}
+
+button.firefly-undo:hover:not(:disabled) {
+  background: #fff;
+}
+
+button.adobee-bee:hover:not(:disabled) {
+  background: none;
+  border: 0;
+  transform: none;
+}
