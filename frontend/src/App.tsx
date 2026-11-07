@@ -165,7 +165,13 @@ export default function App() {
             />
             <AnalysisPanel run={run} usage={usage} />
           </div>
-          <CanvasColumn run={run} />
+          <CanvasColumn
+            run={run}
+            busy={uiBusy}
+            onRegenerate={(caption, instruction) =>
+              act(() => (run ? api.regenerate(run.id, { caption, instruction }) : Promise.resolve()))
+            }
+          />
         </main>
       )}
 

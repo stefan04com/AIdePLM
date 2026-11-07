@@ -2,12 +2,20 @@ import type { Run } from '../api/types'
 import { useFirefly } from '../hooks/useFirefly'
 import { buildSlackPreview } from '../lib/slackPreview'
 import { ExpressPreview } from './canvas/ExpressPreview'
+import { EditPanel } from './canvas/EditPanel'
 import { FireflyPanel } from './canvas/FireflyPanel'
 import { BrandShield } from './wow/BrandShield'
 import { SlackPreview } from './canvas/SlackPreview'
 import { Muted, Pill, SectionHead } from './ui'
 
-export function CanvasColumn({ run }: { run: Run | null }) {
+interface Props {
+  run: Run | null
+  /** True while a request is in flight or the backend runs a step. */
+  busy: boolean
+  onRegenerate: (caption: string, instruction: string) => Promise<void>
+}
+
+export function CanvasColumn({ run, busy, onRegenerate }: Props) {
   const firefly = useFirefly(run?.id ?? null)
   // The variation picked from the Firefly mock replaces the post's visual everywhere on screen.
   const shown: Run | null =
@@ -23,6 +31,14 @@ export function CanvasColumn({ run }: { run: Run | null }) {
       {!run && <Muted>Start a run to generate a draft.</Muted>}
       {run?.status === 'REJECTED' && <BrandShield reason={run.fit?.reason ?? null} />}
       {shown?.draft && <ExpressPreview draft={shown.draft} />}
+      {run?.draft && (
+        <EditPanel
+          key={run.id}
+          draft={run.draft}
+          enabled={!busy && run.status !== 'SHIPPED'}
+          onRegenerate={onRegenerate}
+        />
+      )}
       {run?.draft && <FireflyPanel firefly={firefly} disabled={run.status === 'SHIPPED'} />}
       {slack && (
         <>
