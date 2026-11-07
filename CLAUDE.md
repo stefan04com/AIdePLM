@@ -10,13 +10,26 @@ Guidance for Claude Code (and humans) working in this repo. Read this first, the
 
 Feature freeze is on: fixes only.
 
-- **Works end to end** on `main`: trend → fit → draft → personas → human comments → referee → apply → Slack, plus the rejected "risky trend" beat. Backend 128 tests, frontend 20 tests, build and lint pass.
+- **Works end to end** on `main`: trend → fit → draft → personas → human comments → referee → apply → Slack, plus the rejected "risky trend" beat. Backend 130 tests, frontend 21 tests, build and lint pass.
 - **Real AI:** live eval 3/3 with a conflict, 0 fallbacks, **$0.0602 per post** (`qa/results/live_eval_20261107_142630.md`).
 - **Real Slack** webhook on ship (`Run.slack` = posted / simulated / failed). The time reads in seconds under a minute ("37s", not "0m"), `SLACK_IMAGE_URL` gives Slack a public image, and a message Slack rejects because of its image is retried once without it. The "Shipped" banner says what really happened to the Slack message.
 - **Browser-tested** with `VITE_USE_MOCKS=false` in Chromium (`qa/e2e_browser.py`): 3/3 clean runs, no console or HTTP errors; the `needs_human` banner shows and apply still ships. Run in demo mode, so a live-LLM click-through is still open.
 - **Backup video:** `qa/results/moment-backup-demo.mp4` (72 s, no sound, demo mode).
 - **Simulated by decision:** Adobe (Firefly / Express) and trends. Say so in the pitch.
 - **Open:** see `COORDINATION.md` (rehearsals on the presentation laptop, webhook on every laptop, cost slide, tag `v1.0.0-demo`).
+
+## Good to know (traps we already hit)
+
+- **The right model.** On our Bedrock account use `LLM_MODEL=eu.anthropic.claude-sonnet-4-6` (with `LLM_PROVIDER=bedrock`, `AWS_REGION`, `AWS_BEARER_TOKEN_BEDROCK`). `anthropic.claude-sonnet-5-5` returns **403**, and every call then silently falls back to canned content. If answers look suspiciously perfect, check the header for `CANNED: …` (`Run.fallback_calls`) and the logs.
+- **Demo mode vs live.** Demo mode answers from `demo_cache.py` ($0, model `demo-cache`). `LIVE_IN_DEMO=referee` (comma list: `referee`, `reactions`, `fit`, `draft`) keeps those calls on the real LLM even in demo mode, so comments typed on stage change the answer (~22 s, ~$0.06). It needs `LLM_MODEL`, and any failure still ends in the canned answer. Set it on every laptop.
+- **Cost numbers.** Official figure: **$0.0602 per post** (4 calls: fit, draft, reactions, referee; personas once), measured by `qa/live_eval.py`. Prices come from `LLM_PRICE_IN_PER_MTOK=3` and `LLM_PRICE_OUT_PER_MTOK=15`. The UI estimates from live calls only when all four call types were live; otherwise it shows the measured baseline.
+- **The Referee runs the room.** Its prompt compares every persona reaction with the human demands, so conflicts like Brand vs Origin Seeker appear live; `qa/live_eval.py` checks "human vs persona conflict" (3/3). If you change `prompts/referee.md`, re-run the eval (`cd backend && set -a && source ../.env && set +a && python ../qa/live_eval.py --runs 3`, ~$0.18).
+- **What "apply" really does.** It always ships the Referee's full `final_caption`; `conflict_ids` are accepted but not used, which is why the UI button says "Apply all & ship". `needs_human` still ships (the click is the human decision). A blank `final_caption` keeps the current caption.
+- **Last-good cache.** `data/last_good.json` (gitignored) only remembers a live fit that said **yes**; a live "no" never becomes the fallback. The risky trend is `GET /trend?which=rejected`, rejected in demo mode too.
+- **Env vars.** `main.py` loads `.env` but never overrides variables already exported. Scripts outside the app (`qa/live_eval.py`) need `set -a && source .env && set +a`.
+- **Browser e2e.** `qa/e2e_browser.py <label>` needs Playwright (`pip install playwright && python -m playwright install chromium`, in a venv outside the repo), the backend on :8000 and `VITE_USE_MOCKS=false npm run dev`. Its "post image rendered" check needs `ADOBE_MOCK_IMAGE_URL` set in `.env` as in `.env.example`.
+- **Housekeeping.** `npm install` rewrites `frontend/package-lock.json`: don't commit that by accident. Python style is `ruff` with line length 100 (`ruff check . && ruff format --check .`). Never commit `.env` or the Bedrock token.
+- **Branches.** `main` is open for direct pushes (team decision). After a PR into `main`, merge `main` back into `develop` so they don't drift. `v1.0.0-demo` is the tag to present from.
 
 ## Team and ownership
 

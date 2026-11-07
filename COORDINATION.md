@@ -21,7 +21,7 @@ Last updated: 2026-11-07 14:20 (Stefan)
 | Slack | **Real** webhook on ship (`Run.slack` = posted / simulated / failed). Image: `SLACK_IMAGE_URL` or `PUBLIC_BASE_URL` (never localhost); a message rejected because of its image is retried once without it |
 | Adobe / trends | Local simulations by team decision, no keys needed |
 | Backup video | **Done:** `qa/results/moment-backup-demo.mp4` (72 s, no sound, demo mode) |
-| Tag `v1.0.0-demo` | Not cut yet: after the rehearsals |
+| Tag `v1.0.0-demo` | **Cut** on `main` (see `git tag -n`); rehearsals on the presentation laptop still open |
 
 ## Open
 
@@ -31,7 +31,7 @@ Last updated: 2026-11-07 14:20 (Stefan)
 ### Stefan
 - [x] Persona conflict now shows up live: the referee prompt compares every persona reaction with the human demands, and `qa/live_eval.py` checks it. Eval 14:26: **human-vs-persona conflict 3/3**, conflicts backed by the persona's own reaction, $0.0602 per post (`qa/results/live_eval_20261107_142630.md`).
 - [x] Referee live on stage: set `LIVE_IN_DEMO=referee` (already in Stefan's `.env`; add it to every laptop). Demo mode stays on for the rest and is the automatic fallback if the LLM fails. Typed comments now change the answer (~22 s, ~$0.06). **Still open:** one full rehearsal with it on.
-- [ ] After the rehearsals: commit or revert the modified `frontend/package-lock.json`, cut `release/1.0.0`, tag `v1.0.0-demo` on `main`, merge back into `develop`.
+- [x] Tag `v1.0.0-demo` cut on `main`; `frontend/package-lock.json` is clean. (If a rehearsal finds a bug: fix on `main`, tag `v1.0.1-demo`.)
 - [ ] Pitch, with Anda: say what is real (LLM, Slack) and what is simulated (Adobe, trends; `adobe.py` is the integration seam). Show `qa/results/live_eval_*.md` as proof the AI is real and measured, since demo mode answers from the cache.
 
 ### Andu
