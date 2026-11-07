@@ -76,3 +76,39 @@ def test_posting_time_every_platform(client):
         assert out["platform"] == platform and out["time"] and out["reason"]
     assert client.get("/posting-time", params={"platform": "myspace"}).status_code == 422
     assert client.get("/posting-time").status_code == 422
+
+
+def test_posting_time_uses_the_verified_windows(client):
+    out = client.get("/posting-time", params={"platform": "instagram_reels"}).json()
+    assert out["confidence"] in {"high", "medium", "low"}
+    assert out["sources"] and all(url.startswith("https://") for url in out["sources"])
+    assert ":" in out["time"]  # e.g. "Tue, Wed 12:00-19:00; Thu 12:00-14:00"
+    assert "Industry average" in out["reason"]
+
+
+def test_posting_time_falls_back_to_the_guide_without_data(client, monkeypatch):
+    from app import posting_times
+
+    monkeypatch.setattr(posting_times, "recommend", lambda platform, path=None: None)
+    out = client.get("/posting-time", params={"platform": "linkedin"}).json()
+    assert out["time"].startswith("Wednesday-Thursday 15:00-18:00")
+    assert out["confidence"] is None and out["sources"] == []
+
+
+def test_hashtags_endpoint_suggests_sourced_tags(client):
+    out = client.get(
+        "/hashtags", params={"keywords": "pumpkin latte, cozy autumn, Bucharest"}
+    ).json()
+    assert out["source"] == "saved" and out["platform"] == "instagram"
+    assert 1 <= len(out["hashtags"]) <= 3  # Boabe brand cap
+    assert all(h["tag"].startswith("#") and h["source_url"] for h in out["hashtags"])
+    assert client.get("/hashtags").status_code == 422  # keywords required
+    empty = client.get("/hashtags", params={"keywords": " , "}).json()
+    assert empty["hashtags"] == []
+
+
+def test_live_trends_endpoint_returns_the_saved_feed(client):
+    out = client.get("/trends/live").json()
+    assert out["source"] == "saved" and out["collected_at"] == "2026-11-07"
+    assert len(out["trends"]) >= 3
+    assert all(t["url"].startswith("https://") for t in out["trends"])

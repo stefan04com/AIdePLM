@@ -1,9 +1,30 @@
-"""Recommended posting time per platform. Rules come from docs/what-makes-a-post-popular.md.
+"""Recommended posting time per platform.
 
-No LLM and no network: the times are industry averages from that guide, so the reason says so.
+The times come from data/posting_windows.json (posting_times.py): windows checked against the
+2025-26 Sprout Social, Buffer, Hootsuite, Metricool and Later reports, each with its confidence
+and sources. If that file can't be read, the rules below (docs/what-makes-a-post-popular.md)
+are the fallback. No LLM and no network: these are industry averages, so the reason says so.
 """
 
+from . import posting_times
 from .models import Platform, PostingTime
+
+# The data file has one entry per app; Reels and feed share it.
+_DATA_KEY = {
+    "instagram_reels": "instagram",
+    "instagram_feed": "instagram",
+    "facebook_reels": "facebook",
+    "facebook_feed": "facebook",
+}
+_DAY = {
+    "monday": "Mon",
+    "tuesday": "Tue",
+    "wednesday": "Wed",
+    "thursday": "Thu",
+    "friday": "Fri",
+    "saturday": "Sat",
+    "sunday": "Sun",
+}
 
 _AVERAGE = " (Industry average: replace it with the account's own 'followers online' data.)"
 
@@ -48,5 +69,23 @@ _RULES: dict[str, tuple[str, str]] = {
 
 
 def recommend(platform: Platform) -> PostingTime:
-    time, reason = _RULES[platform]
-    return PostingTime(platform=platform, time=time, reason=reason + _AVERAGE)
+    data = posting_times.recommend(_DATA_KEY.get(platform, platform))
+    if data is None:  # data file missing or malformed: the guide's rules
+        time, reason = _RULES[platform]
+        return PostingTime(platform=platform, time=time, reason=reason + _AVERAGE)
+    return PostingTime(
+        platform=platform,
+        time=_format_windows(data.windows),
+        reason=f"{data.reason}{_AVERAGE}",
+        confidence=data.confidence,
+        sources=[source.url for source in data.sources],
+    )
+
+
+def _format_windows(windows: tuple[posting_times.Window, ...]) -> str:
+    """'Tue, Wed 12:00-19:00; Thu 12:00-14:00', or 'Daily 18:00-21:00' for every day."""
+    parts = []
+    for window in windows:
+        days = "Daily" if len(window.days) == 7 else ", ".join(_DAY[d] for d in window.days)
+        parts.append(f"{days} {window.start}-{window.end}")
+    return "; ".join(parts)

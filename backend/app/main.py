@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from . import adapters, orchestrator, posting_time, store
+from . import adapters, hashtags, orchestrator, posting_time, store, trends
 from .llm import usage
 from .models import (
     ApplyRequest,
@@ -18,6 +18,7 @@ from .models import (
     CreateRunRequest,
     DemoModeRequest,
     DemoModeResponse,
+    LiveTrends,
     Persona,
     PersonaReaction,
     Platform,
@@ -115,6 +116,22 @@ def post_trend_score(body: TrendScoreRequest) -> TrendScore:
 @app.get("/posting-time", response_model=PostingTime)
 def get_posting_time(platform: Platform) -> PostingTime:
     return posting_time.recommend(platform)
+
+
+@app.get("/hashtags", response_model=hashtags.HashtagSuggestions)
+def get_hashtags(
+    keywords: str, platform: str = "instagram", limit: int | None = None
+) -> hashtags.HashtagSuggestions:
+    """Hashtags from the saved, sourced cache (data/hashtags.json). keywords: comma-separated."""
+    words = [word.strip() for word in keywords.split(",") if word.strip()]
+    return hashtags.suggest(words, platform, limit)
+
+
+@app.get("/trends/live", response_model=LiveTrends)
+def get_live_trends() -> LiveTrends:
+    """Current trends collected from the web (data/live_trends.json): saved, not fetched live."""
+    collected_at, items = trends.live_trends_feed()
+    return LiveTrends(source="saved", collected_at=collected_at, trends=items)
 
 
 @app.get("/usage", response_model=UsageSummary)
