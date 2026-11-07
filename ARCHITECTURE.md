@@ -103,12 +103,14 @@ sequenceDiagram
     UI->>API: GET /trend
     API-->>UI: trend (live or saved)
     UI->>API: POST /runs {trend_id}
+    API-->>UI: Run (SPOTTED), returns immediately
+    Note over API,AD: background task; UI polls GET /runs/{id}
     API->>LLM: #1 Fit check (trend + brand.md)
     LLM-->>API: {fits, score, reason}
     API->>LLM: #2 Draft (trend + brand.md)
     LLM-->>API: {brief, caption, visual_prompt}
     API->>AD: generate visual, create/update post
-    API-->>UI: run DRAFTED (caption, image, express link)
+    API-->>UI: poll shows DRAFTED (caption, image, express link)
 
     par Synthetic audience
         API->>LLM: #4 Persona reactions (draft + 3 cached personas)
@@ -150,13 +152,13 @@ Five prompts, each with a Pydantic output schema. The model is asked for JSON; t
 
 | # | Call | Input | Output | When |
 |---|---|---|---|---|
-| 1 | Fit check | trend, brand.md | `{fits, score 0–100, reason}` | per run |
+| 1 | Fit check | trend, brand.md | `FitResult` `{fits, score 0–100, reason}` | per run |
 | 2 | Draft | trend, brand.md | `{brief, caption, visual_prompt, hashtags}` | per run |
 | 3 | Build personas | reviews.csv | 3 × `{name, segment, cares_about, pet_peeves, sample_quotes}` | once, cached |
 | 4 | Persona reactions | draft, 3 personas | 3 × `{persona, reaction, sentiment -1..1, would_engage}` | per draft (one call for all 3) |
 | 5 | Referee | human comments, persona reactions, canvas text, brand.md | Referee JSON (§6) | per review round |
 
-Every call writes `{call, model, input_tokens, output_tokens, latency_ms}` to `logs/usage.jsonl`. That file is the input for the cost slide.
+Every call writes `{run_id, call, model, input_tokens, output_tokens, latency_ms}` to `logs/usage.jsonl` (`run_id` is null for call #3). `GET /usage` aggregates it and adds `cost_usd`, computed from a per-model price table. That file is the input for the cost slide.
 
 ### 4.4 Trend source (owner: Militaru)
 - One source: Reddit (subreddit `top`/`hot` JSON) or a news API. It's normalised to the `Trend` model.
@@ -182,14 +184,26 @@ Every call writes `{call, model, input_tokens, output_tokens, latency_ms}` to `l
 | Method | Path | Body | Returns |
 |---|---|---|---|
 | GET | `/trend` | | `Trend` |
-| POST | `/runs` | `{trend_id}` | `Run` (runs fit + draft) |
-| GET | `/runs/{id}` | | `Run` (UI polls this) |
-| POST | `/runs/{id}/reactions` | | `PersonaReaction[]` |
-| POST | `/runs/{id}/comments` | `{role, text}` | `Comment` |
-| POST | `/runs/{id}/referee` | | `RefereeResult` |
-| POST | `/runs/{id}/apply` | `{conflict_ids?, accept_all_edits}` | `Run` (status SHIPPED) |
-| GET | `/usage` | | token + cost totals per run |
-| POST | `/admin/demo-mode` | `{on}` | |
+| GET | `/personas` | | `Persona[]` (cached at startup) |
+| POST | `/runs` | `CreateRunRequest` `{trend_id}` | `Run` **immediately**, status `SPOTTED`. Fit + draft run in a background task |
+| GET | `/runs/{id}` | | `Run` (UI polls every 1s until `DRAFTED` or `REJECTED`; `step` shows progress) |
+| POST | `/runs/{id}/reactions` | | `PersonaReaction[]` (synchronous, must stay < ~10s) |
+| POST | `/runs/{id}/comments` | `CommentCreate` `{role, text}` | `Comment` |
+| POST | `/runs/{id}/referee` | | `RefereeResult` (synchronous, must stay < ~10s) |
+| POST | `/runs/{id}/apply` | `ApplyRequest` `{conflict_ids?, accept_all_edits}` | `Run` (status `SHIPPED`) |
+| GET | `/usage?run_id=` | | `UsageSummary` (no `run_id` = totals across all runs) |
+| POST | `/admin/demo-mode` | `DemoModeRequest` `{on}` | `DemoModeResponse` `{on}` |
+
+### Conventions
+
+- JSON uses the same **snake_case** names as Python, no aliases. Datetimes are **ISO 8601 UTC** strings.
+- Every route declares `response_model=...`, so `/openapi.json` is complete. The frontend generates its TS types from it with `openapi-typescript`.
+- Routes have **no `/api` prefix**. The Vite proxy rewrites `/api/*` → `:8000/*`.
+- Errors are `HTTPException` with `{"detail": str}`: **404** unknown run, **409** invalid state transition (e.g. `apply` before `referee`, `reactions` on a `REJECTED` run).
+- `POST /runs` is non-blocking: if fit says `fits=false` the run ends `REJECTED` (with `fit.reason`); a failure in draft falls back to the cached draft (demo mode) and never leaves the run stuck in `SPOTTED`.
+- `Run.step` is a human-readable string ("Checking brand fit…", "Generating visual…") while a background job runs, otherwise `null`.
+- `Conflict.positions` is keyed by `ConflictParty.id`. Persona ids never equal a comment role (`brand`, `legal`, `product`), so ids are unambiguous across both kinds.
+- Mock for the frontend: `backend/tests/fixtures/run_refereed.json` (a `Run` in status `REFEREED` with two conflicts).
 
 ---
 
@@ -200,20 +214,26 @@ class Trend(BaseModel):
     id: str
     title: str
     source: Literal["reddit", "news", "saved"]
-    url: str | None
+    url: str | None = None
     summary: str
     detected_at: datetime
+
+class FitResult(BaseModel):
+    fits: bool
+    score: int           # 0–100
+    reason: str
 
 class Draft(BaseModel):
     brief: str
     caption: str
     visual_prompt: str
-    image_url: str | None
-    express_doc_id: str | None
-    version: int  # bumps on every apply
+    hashtags: list[str] = []
+    image_url: str | None = None
+    express_doc_id: str | None = None
+    version: int = 1  # bumps on every apply
 
 class Persona(BaseModel):
-    id: str
+    id: str              # never equal to a Comment role
     name: str            # e.g. "Gen Z commuter"
     segment: str
     cares_about: list[str]
@@ -232,16 +252,21 @@ class Comment(BaseModel):
     text: str
     created_at: datetime
 
+class ConflictParty(BaseModel):
+    kind: Literal["human", "persona"]
+    id: str              # comment role ("legal") or persona_id
+    label: str           # display text, e.g. "Legal", "Gen Z commuter"
+
 class Conflict(BaseModel):
     id: str
-    between: list[str]   # ["Legal", "Product"] or ["Brand", "Persona: Gen Z"]
+    between: list[ConflictParty]
     summary: str
-    positions: dict[str, str]
+    positions: dict[str, str]   # keyed by ConflictParty.id
     compromise: str
 
 class Edit(BaseModel):
     target: Literal["caption", "visual_prompt", "hashtags"]
-    before: str
+    before: str          # for "hashtags": space-joined, e.g. "#a #b"
     after: str
     source_comment_id: str
 
@@ -250,26 +275,53 @@ class Task(BaseModel):
     task: str
     due: str
 
+class CommentStatus(BaseModel):
+    comment_id: str
+    status: Literal["applied", "in_conflict", "rejected"]
+    why: str
+
 class RefereeResult(BaseModel):
     conflicts: list[Conflict]
     edits: list[Edit]
     tasks: list[Task]
-    comment_status: list[dict]  # {comment_id, status: applied|in_conflict|rejected, why}
+    comment_status: list[CommentStatus]
     final_caption: str
     status: Literal["ready_to_ship", "needs_human"]
 
 class Run(BaseModel):
     id: str
     trend: Trend
-    fit: dict | None
-    draft: Draft | None
+    fit: FitResult | None = None
+    draft: Draft | None = None
     reactions: list[PersonaReaction] = []
     comments: list[Comment] = []
     referee: RefereeResult | None = None
     status: Literal["SPOTTED", "REJECTED", "DRAFTED", "IN_REVIEW", "REFEREED", "SHIPPED"]
+    step: str | None = None   # current background step, for loading states
     started_at: datetime
     shipped_at: datetime | None = None
+
+# Request bodies: CreateRunRequest{trend_id}, CommentCreate{role, text},
+# ApplyRequest{conflict_ids?: list[str], accept_all_edits: bool},
+# DemoModeRequest{on}, DemoModeResponse{on}
+
+class CallUsage(BaseModel):
+    call: str
+    model: str
+    input_tokens: int
+    output_tokens: int
+    latency_ms: int
+    cost_usd: float
+
+class UsageSummary(BaseModel):
+    run_id: str | None = None   # None = totals across all runs
+    calls: list[CallUsage]
+    total_input_tokens: int
+    total_output_tokens: int
+    total_cost_usd: float
 ```
+
+`backend/app/models.py` is the source of truth; this section mirrors it.
 
 Storage: a Python dict keyed by run id, snapshotted to `data/runs.json` after each transition, so a backend restart mid-demo doesn't lose the run.
 
