@@ -43,3 +43,15 @@
   margin: 0 0 6px;
   font-size: 14px;
 }
+
+/* Trend score card (left column of the Post page). */
+
+.trend-score {
+  margin: 12px 0 8px;
+}
+
+.trend-suggestions {
+  margin: 8px 0 0;
+  padding-left: 18px;
+  font-size: 14px;
+}
