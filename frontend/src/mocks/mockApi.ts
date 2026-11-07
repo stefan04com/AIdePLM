@@ -20,6 +20,7 @@ import type {
   RegenerateRequest,
   Run,
   Trend,
+  HashtagSuggestions,
   TrendScore,
   TrendScoreRequest,
   UsageSummary,
@@ -224,6 +225,38 @@ export async function apply(id: string, body: ApplyRequest): Promise<Run> {
     run.shipped_at = nowIso()
   })
   return weighed(run) // after withStep, so the returned run is no longer busy
+}
+
+/** Like orchestrator.set_hashtags: prefix, deduplicate, drop empties; the review is kept. */
+export async function setHashtags(id: string, hashtags: string[]): Promise<Run> {
+  const run = findRun(id)
+  requireStatus(run, ['DRAFTED', 'IN_REVIEW', 'REFEREED'], 'change hashtags of')
+  const cleaned: string[] = []
+  for (const raw of hashtags) {
+    const tag = '#' + raw.trim().replace(/^#+/, '').replace(/\s+/g, '')
+    if (tag.length > 1 && !cleaned.some((t) => t.toLowerCase() === tag.toLowerCase())) cleaned.push(tag)
+  }
+  if (run.draft) run.draft.hashtags = cleaned
+  return weighed(run)
+}
+
+const MOCK_TAGS: HashtagSuggestions['hashtags'] = [
+  { tag: '#CozyAutumn', kind: 'broad', topic: 'cozy autumn', evidence: 'saved mock', source_url: '', source: 'saved' },
+  { tag: '#BucharestCoffee', kind: 'local', topic: 'coffee', evidence: 'saved mock', source_url: '', source: 'saved' },
+  { tag: '#SpecialtyCoffee', kind: 'niche', topic: 'coffee', evidence: 'saved mock', source_url: '', source: 'saved' },
+]
+
+export async function getHashtagSuggestions(_keywords: string[], platform: string): Promise<HashtagSuggestions> {
+  return {
+    platform,
+    hashtags: MOCK_TAGS,
+    cap: 5,
+    matched_topics: ['cozy autumn', 'coffee'],
+    collected_at: '2026-11-07',
+    source: 'saved',
+    platform_note: 'Mock suggestions',
+    platform_source: '',
+  }
 }
 
 /** Like orchestrator.regenerate: keeps the person's edit, clears reactions and referee. */

@@ -3,13 +3,13 @@
 import logging
 import os
 from contextlib import asynccontextmanager
-from typing import Literal
+from typing import Annotated, Literal
 
 from dotenv import load_dotenv
-from fastapi import BackgroundTasks, FastAPI, Request
+from fastapi import BackgroundTasks, FastAPI, Query, Request
 from fastapi.responses import JSONResponse
 
-from . import adapters, orchestrator, posting_time, store
+from . import adapters, hashtags, orchestrator, posting_time, store
 from .llm import usage
 from .models import (
     ApplyRequest,
@@ -18,6 +18,7 @@ from .models import (
     CreateRunRequest,
     DemoModeRequest,
     DemoModeResponse,
+    HashtagsRequest,
     Persona,
     PersonaReaction,
     Platform,
@@ -105,6 +106,20 @@ def post_apply(run_id: str, body: ApplyRequest) -> Run:
 @app.post("/runs/{run_id}/regenerate", response_model=Run)
 def post_regenerate(run_id: str, body: RegenerateRequest) -> Run:
     return orchestrator.regenerate(run_id, body)
+
+
+@app.post("/runs/{run_id}/hashtags", response_model=Run)
+def post_hashtags(run_id: str, body: HashtagsRequest) -> Run:
+    return orchestrator.set_hashtags(run_id, body)
+
+
+@app.get("/hashtag-suggestions", response_model=hashtags.HashtagSuggestions)
+def get_hashtag_suggestions(
+    keywords: Annotated[list[str], Query(max_length=60)] = [],  # noqa: B006 - FastAPI query default
+    platform: str = "instagram",
+) -> hashtags.HashtagSuggestions:
+    """Saved hashtags (data/hashtags.json) for the post's keywords, capped for the platform."""
+    return hashtags.suggest(keywords, platform)
 
 
 @app.post("/trend-score", response_model=TrendScore)

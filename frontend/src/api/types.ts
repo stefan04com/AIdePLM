@@ -168,6 +168,26 @@ export interface TrendScore {
   suggestions: string[]
 }
 
+export interface HashtagSuggestion {
+  tag: string // "#CozyAutumn"
+  kind: 'niche' | 'local' | 'branded-generic' | 'broad'
+  topic: string
+  evidence: string // where the hashtag was seen
+  source_url: string
+  source: 'saved'
+}
+
+export interface HashtagSuggestions {
+  platform: string
+  hashtags: HashtagSuggestion[]
+  cap: number // most hashtags the platform allows (or the brand rule)
+  matched_topics: string[]
+  collected_at: string | null
+  source: 'saved'
+  platform_note: string
+  platform_source: string
+}
+
 export interface PostingTime {
   platform: Platform
   time: string // e.g. "Weekdays 08:00-11:00"

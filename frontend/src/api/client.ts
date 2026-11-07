@@ -18,6 +18,7 @@ import type {
   RegenerateRequest,
   Run,
   Trend,
+  HashtagSuggestions,
   TrendScore,
   TrendScoreRequest,
   UsageSummary,
@@ -71,6 +72,14 @@ const backendApi = {
   apply: (id: string, body: ApplyRequest) => post<Run>(runPath(id, '/apply'), body),
   /** Rewrites the edited caption; the review restarts (status DRAFTED, reactions cleared). */
   regenerate: (id: string, body: RegenerateRequest) => post<Run>(runPath(id, '/regenerate'), body),
+  /** Replaces the post's hashtags; no AI call, the review keeps its answers. */
+  setHashtags: (id: string, hashtags: string[]) =>
+    post<Run>(runPath(id, '/hashtags'), { hashtags }),
+  getHashtagSuggestions: (keywords: string[], platform: string) =>
+    get<HashtagSuggestions>(
+      `/hashtag-suggestions?platform=${encodeURIComponent(platform)}` +
+        keywords.map((k) => `&keywords=${encodeURIComponent(k)}`).join(''),
+    ),
   getTrendScore: (body: TrendScoreRequest) => post<TrendScore>('/trend-score', body),
   getPostingTime: (platform: Platform) =>
     get<PostingTime>(`/posting-time?platform=${encodeURIComponent(platform)}`),
