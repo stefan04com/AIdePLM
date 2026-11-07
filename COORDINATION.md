@@ -9,22 +9,23 @@ Rules and architecture live in `CLAUDE.md` and `ARCHITECTURE.md`; this file only
 - After the feature freeze (hour 8) only fixes go here; ideas go to "What's next" in the pitch.
 - Open PRs into `develop`; `main` only gets `develop` or `release/*` / `hotfix/*` PRs. Don't push straight to `main`.
 
-Last updated: 2026-11-07 (Stefan)
+Last updated: 2026-11-07 12:30 (Stefan)
 
 ## Status
 
 | Area | State |
 |---|---|
 | Backend flow (fit → draft → reactions → referee → apply) | Done in demo mode; 106 tests pass |
-| Real LLM (Bedrock) | Worked 3/3 in Ada's eval (~$0.056/run); re-run on final `main` pending |
+| Real LLM (Bedrock) | Live eval on final `main`: 3/3 conflict, 0 fallbacks, **$0.0566/run** (`qa/results/live_eval_20261107_122427.md`). Use `LLM_MODEL=eu.anthropic.claude-sonnet-4-6`; `anthropic.claude-sonnet-5-5` returns 403 on our Bedrock account |
 | Rejected trend (fit says no) | Backend done (`GET /trend?which=rejected`); UI button pending |
 | Adobe / Slack / trends | Local simulations by team decision, no keys needed |
 | Frontend | Builds and lints; not yet tested end to end in a real browser |
 | Tag `v1.0.0-demo` | Not cut yet |
 
 ## Stefan: AI core, backend
-- [ ] Run `qa/live_eval.py` (on `feature/ada-live-eval`) against the final `main`. Done when: 3/3 runs have a conflict and no canned fallback.
-- [ ] Take the cost numbers from `logs/usage.jsonl` / `GET /usage` after a live run and give them to Anda. Done when: one measured "$ per post" line exists.
+- [x] Run `qa/live_eval.py` against the final `main`: 3/3 runs with a conflict, no canned fallback (2026-11-07 12:24).
+- [x] Measured cost: **$0.0566 per post** (4 calls: fit, draft, reactions, referee; personas once, $0.17 total for 3 runs incl. personas). Prices $3 / $15 per Mtok set in `.env` (`LLM_PRICE_*`).
+- [ ] Hand the cost line to Anda for the slide (this file is the handoff; ping her).
 - [ ] After a clean rehearsal, cut `release/1.0.0` and tag `v1.0.0-demo` on `main`.
 - [ ] Decide how to stop direct pushes to `main` (GitHub branch protection or frequent main → develop syncs) and tell the team.
 
@@ -40,7 +41,7 @@ Last updated: 2026-11-07 (Stefan)
 - [ ] Use PRs into `develop` instead of pushing to `main`.
 
 ## Anda: data, demo script, pitch, QA
-- [ ] Put the measured cost line into the cost slide (from Stefan).
+- [ ] Put the measured cost line into the cost slide: **$0.0566 per post**, 3 live runs on `eu.anthropic.claude-sonnet-4-6` at $3 / $15 per Mtok (`qa/results/live_eval_20261107_122427.md`).
 - [ ] Run the 3/3 rehearsal with `docs/demo-script.md`, including the rejected-trend beat. Done when: three clean runs in a row on the demo laptop.
 - [ ] Record the backup video.
 - [ ] Update `docs/qa-report.md`: mark what is fixed, list what is left.
@@ -51,6 +52,8 @@ Last updated: 2026-11-07 (Stefan)
 - [ ] Two full end-to-end rehearsals on the presentation laptop before the demo.
 
 ## Done
+- [x] Live eval 3/3 and cost per post measured on the final `main` (2026-11-07)
+- [x] `.env` model fixed to one the Bedrock account can use
 - [x] `needs_human` can ship; a blank `final_caption` keeps the current caption (PR #13)
 - [x] Second saved trend rejected by the fit check, backend side (PR #13)
 - [x] Boabe canned demo content in `demo_cache.py`
