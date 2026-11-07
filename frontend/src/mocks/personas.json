@@ -1,0 +1,35 @@
+[
+  {
+    "id": "student_night_owl",
+    "name": "Student night owl",
+    "segment": "20–28, studies or works on a laptop for hours",
+    "cares_about": ["wifi and seats", "a calm corner", "honest, low-key posts"],
+    "pet_peeves": ["the weekend laptop ban", "posts that look like ads"],
+    "sample_quotes": [
+      "Nice cosy café in the heart of Bucharest. Perfect for chill or work.",
+      "Also you can work with laptop or just chat."
+    ]
+  },
+  {
+    "id": "busy_parent",
+    "name": "Busy parent",
+    "segment": "30–45, orders ahead, short on time",
+    "cares_about": ["ordering ahead in the app", "no queues", "clear prices"],
+    "pet_peeves": ["wrong or late orders", "prices shown too late"],
+    "sample_quotes": [
+      "I like to order my coffees in advance and collect. So very convenient for me.",
+      "Their app is so easy to manage and is very convenient in tight situations."
+    ]
+  },
+  {
+    "id": "coffee_purist",
+    "name": "Coffee purist",
+    "segment": "25–45, cares about beans, origin and brewing",
+    "cares_about": ["origin", "roast and extraction", "baristas who explain"],
+    "pet_peeves": ["over-roasted coffee", "old crop", "marketing hype"],
+    "sample_quotes": [
+      "Nice place, kind staff, good extraction in Hario V60 and espresso.",
+      "Not the best coffee (most probably over roasted)."
+    ]
+  }
+]
