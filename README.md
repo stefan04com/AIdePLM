@@ -56,8 +56,8 @@ Social media and brand teams at companies big enough to need sign-off from sever
 
 1. *"This trend broke 20 minutes ago."* Moment matches it to the brand and drafts the post, with a placeholder visual.
 2. Two judges play **Legal** and **Brand** and type real comments. At the same time, the customer personas react.
-3. A **conflict card** appears: Brand wants the joke, the customers say it will backfire, Legal flags the competitor's name. One click on "apply compromise" and the post updates.
-4. The final post and task list appear as the Slack message the team would get. **Trend to approved post: 1h 50m.**
+3. **Conflict cards** appear: Product wants "no added sugar" in the caption, Legal has no documentation for it; Brand wants the cozy moment to lead, Product wants the latte as the hero. One click on "apply compromise" and the post updates.
+4. The final post and task list appear as the Slack message the team would get. The header clock shows the real time from trend to approved post: a few minutes on stage, about two hours on a normal working day with reviewers answering between meetings, instead of the [eight days](https://filestage.io/blog/creative-collaboration-report) a review usually takes.
 
 ## What's next
 

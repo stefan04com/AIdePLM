@@ -41,8 +41,9 @@ Last updated: 2026-11-07 12:30 (Stefan)
 - [ ] Read the cost from `qa/results/live_eval_20261107_122427.md` (**$0.0566 per post**, 3 live runs on `eu.anthropic.claude-sonnet-4-6` at $3 / $15 per Mtok) and put it in the cost slide. No need to ask Stefan.
 - [ ] Run the 3/3 rehearsal with `docs/demo-script.md`, including the rejected-trend beat. Done when: three clean runs in a row on the demo laptop.
 - [ ] Record the backup video.
-- [ ] Update `docs/qa-report.md`: mark what is fixed, list what is left.
-- [ ] Check that `docs/demo-scenario.md` matches the canned content on `main`.
+- [x] Update `docs/qa-report.md`: mark what is fixed, list what is left.
+- [x] Check that `docs/demo-scenario.md` matches the canned content on `main`.
+- [x] Replace "1h 50m" with the on-screen clock + "about two hours vs eight days" (README, demo script).
 
 ## Everyone
 - [ ] No new features after the freeze; fixes only.
