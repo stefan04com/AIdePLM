@@ -57,7 +57,7 @@ with sync_playwright() as p:
     page.wait_for_function("() => !document.body.innerText.includes('Writing the draft')", timeout=30000)
     pause(3)
     check("fit card shows 'Fits the brand'", True)
-    check("post image rendered", page.locator("img[src*='boabe-latte']").count() > 0)
+    check("post image rendered", page.locator("img[src*='boabe-pumpkin-latte']").count() > 0)
 
     page.get_by_role("button", name="Persona reactions").click()
     page.wait_for_function(

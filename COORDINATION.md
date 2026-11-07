@@ -41,10 +41,10 @@ Last updated: 2026-11-07 14:20 (Stefan)
 - [x] Ship screen shows "37s vs 8 days for a typical review" instead of the multiplier.
 
 ### Militaru
-- [x] **Replaced the laptop photo** with a CC0 latte on a café table (`frontend/public/visuals/boabe-latte.jpg`, Matt Hoffman, `CREDITS.md`). `ADOBE_MOCK_IMAGE_URL=/visuals/boabe-latte.jpg`; `SLACK_IMAGE_URL` points at the same image on Wikimedia (public https), both defaults in `.env.example`. Tested: post shows it, a demo run posted to Slack with no image retry.
+- [x] **Replaced the laptop photo** with a pumpkin latte in a pumpkin mug (`frontend/public/visuals/boabe-pumpkin-latte.jpg`, provided by Militaru; license to confirm, see `CREDITS.md`). `ADOBE_MOCK_IMAGE_URL=/visuals/boabe-pumpkin-latte.jpg`; `SLACK_IMAGE_URL` = the same file's public GitHub raw URL; both defaults in `.env.example`.
 - [ ] Only if there's time and the team agrees (it's after the freeze): one real third integration, a live Reddit/news fetch in `trends.py` (fallback already there) or a Firefly call in `adobe.generate_visual()` if someone gets Adobe Developer credentials. Otherwise leave it in "What's next".
 - [ ] Give the team the webhook URL privately (not in git), so every laptop posts to the same channel.
-- [x] `SLACK_IMAGE_URL` set to the public Wikimedia copy of the post photo (default in `.env.example`, so every laptop gets it).
+- [x] `SLACK_IMAGE_URL` set to the public GitHub raw copy of the post photo (default in `.env.example`, so every laptop gets it).
 
 ### Anda
 - [ ] Pitch: say "37 s vs 8 days" rather than the multiplier, and state plainly what is real (LLM, Slack) and what is simulated (Adobe, trends).

@@ -14,7 +14,7 @@ Everything that blocked the demo is fixed on `main`; what's left is the rejected
 | 6 | Militaru | Slack and Express looked real but were mocks | Previews labelled as simulated; fake Express link removed; `CLAUDE.md` lists only LLM keys as required |
 | 7 | Militaru | `.env.example` merge conflict | Resolved in the merges into `main` |
 | 8b | Militaru | Backend not `ruff format`-ed | Formatted (line length 100) |
-| 8 | Militaru | The visual was a placeholder card | Real CC0 photo served locally: `ADOBE_MOCK_IMAGE_URL=/visuals/boabe-latte.jpg` (latte on a café table, matches the Boabe story) (default in `.env.example`; credits in `frontend/public/visuals/CREDITS.md`). No internet needed on stage |
+| 8 | Militaru | The visual was a placeholder card | Real CC0 photo served locally: `ADOBE_MOCK_IMAGE_URL=/visuals/boabe-pumpkin-latte.jpg` (pumpkin latte, matches the Boabe story) (default in `.env.example`; credits in `frontend/public/visuals/CREDITS.md`). No internet needed on stage |
 
 ## Fixed later
 
