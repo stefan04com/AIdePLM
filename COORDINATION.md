@@ -42,10 +42,10 @@ Last updated: 2026-11-07 14:20 (Stefan)
 - [ ] Consider showing only "37s vs 8 days" on the ship screen instead of "18,893× faster": on a run of a few seconds the multiplier looks inflated.
 
 ### Militaru
-- [ ] **Replace the laptop photo** (`frontend/public/visuals/boabe-laptop-mug.jpg`): every post shows the same laptop + keyboard while the visual prompt describes a pumpkin latte by a foggy window, so a judge sees they don't match. Use a CC0 image that fits the Boabe story (latte on a café table, window, autumn light), update `CREDITS.md` and `ADOBE_MOCK_IMAGE_URL`, and point `SLACK_IMAGE_URL` at a public copy of the same image. Done when: post and Slack show the new image.
+- [x] **Replaced the laptop photo** with a CC0 latte on a café table (`frontend/public/visuals/boabe-latte.jpg`, Matt Hoffman, `CREDITS.md`). `ADOBE_MOCK_IMAGE_URL=/visuals/boabe-latte.jpg`; `SLACK_IMAGE_URL` points at the same image on Wikimedia (public https), both defaults in `.env.example`. Tested: post shows it, a demo run posted to Slack with no image retry.
 - [ ] Only if there's time and the team agrees (it's after the freeze): one real third integration, a live Reddit/news fetch in `trends.py` (fallback already there) or a Firefly call in `adobe.generate_visual()` if someone gets Adobe Developer credentials. Otherwise leave it in "What's next".
 - [ ] Give the team the webhook URL privately (not in git), so every laptop posts to the same channel.
-- [ ] Set `SLACK_IMAGE_URL` (a public https image you've opened in a browser) or a public `PUBLIC_BASE_URL`, so Slack shows the photo.
+- [x] `SLACK_IMAGE_URL` set to the public Wikimedia copy of the post photo (default in `.env.example`, so every laptop gets it).
 
 ### Anda
 - [ ] Pitch: say "37 s vs 8 days" rather than the multiplier, and state plainly what is real (LLM, Slack) and what is simulated (Adobe, trends).

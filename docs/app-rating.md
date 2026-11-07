@@ -69,7 +69,7 @@ Pentru AI real și Slack real nu am chei pe laptopul meu, deci acolo nota se baz
 **Ce nu merge**
 - **Adobe Firefly și Adobe Express sunt simulate**, iar hackathonul e al Adobe. E cel mai mare minus la acest criteriu. `adobe.py` e gândit ca punct de integrare, dar pe scenă trebuie spus clar că e simulat.
 - Trendurile sunt și ele simulate; versiunea „live” citește trenduri reale salvate în prealabil.
-- Poza reală apare doar dacă `.env` are `ADOBE_MOCK_IMAGE_URL=/visuals/boabe-laptop-mug.jpg` (e în `.env.example`). Altfel postarea apare cu imaginea SVG simulată. Fiecare laptop trebuie să-și copieze `.env.example`.
+- Poza reală apare doar dacă `.env` are `ADOBE_MOCK_IMAGE_URL=/visuals/boabe-latte.jpg` (e în `.env.example`). Altfel postarea apare cu imaginea SVG simulată. Fiecare laptop trebuie să-și copieze `.env.example`.
 - Pentru imagine în Slack trebuie `SLACK_IMAGE_URL` sau un `PUBLIC_BASE_URL` public (nu localhost).
 
 ## 5. Demo: 8 / 10
