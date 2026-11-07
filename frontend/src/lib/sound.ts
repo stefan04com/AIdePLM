@@ -62,6 +62,12 @@ export const sound = {
       { freq: 783.99, at: 0.18, dur: 0.6, type: 'triangle', gain: 0.05 },
       { freq: 1046.5, at: 0.3, dur: 0.8, gain: 0.04 },
     ]),
+  /** A phone notification: two soft high notes. */
+  notify: () =>
+    play([
+      { freq: 1174.66, dur: 0.18, gain: 0.04 },
+      { freq: 1567.98, at: 0.14, dur: 0.3, gain: 0.035 },
+    ]),
   /** Brand safety said no. */
   bonk: () =>
     play([

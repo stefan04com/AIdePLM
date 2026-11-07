@@ -3,6 +3,7 @@ import { api, USE_MOCKS } from './api/client'
 import { errorMessage } from './api/errors'
 import type { ApplyRequest, CommentRole, Persona, Trend } from './api/types'
 import { Adobee } from './components/Adobee'
+import { Finale } from './components/wow/Finale'
 import { Intro } from './components/wow/Intro'
 import { PresenterHint } from './components/wow/PresenterHint'
 import { ShipCelebration } from './components/wow/ShipCelebration'
@@ -22,6 +23,7 @@ import { TrendColumn } from './components/TrendColumn'
 import { Badge, Banner } from './components/ui'
 import { useRun } from './hooks/useRun'
 import { usePresenter } from './hooks/usePresenter'
+import { useStage } from './hooks/useStage'
 import { useSpotlight } from './hooks/useSpotlight'
 import { useUsage } from './hooks/useUsage'
 import { isFinished, isRunBusy } from './lib/runStatus'
@@ -103,8 +105,11 @@ export default function App() {
   const step = uiBusy ? null : nextStep(run)
 
   // Presenter mode: one key per demo step, so the stage never depends on finding a button.
-  usePresenter(
-    () => {
+  const [stage, toggleStage] = useStage()
+  const [finale, setFinale] = useState(false)
+  const closeFinale = useCallback(() => setFinale(false), [])
+  usePresenter({
+    next: () => {
       if (step) setView(viewForStep(step))
       if (step === 'start') void startRun()
       else if (step === 'reactions') onRun(api.requestReactions)()
@@ -112,10 +117,12 @@ export default function App() {
       else if (step === 'referee') onRun(api.referee)()
       else if (step === 'apply') onRun((id) => api.apply(id, { accept_all_edits: true }))()
     },
-    () => {
+    risky: () => {
       if (canStart) void startRisky()
     },
-  )
+    stage: toggleStage,
+    finale: () => setFinale((open) => !open),
+  })
 
   const changeView = setView
 
@@ -149,14 +156,14 @@ export default function App() {
           {run && <RunMeta run={run} usage={usage} />}
           {USE_MOCKS && <Badge tone="warn">mock API</Badge>}
           <DemoModeToggle onError={showError} />
-          <PresenterHint step={step} />
+          <PresenterHint step={step} stage={stage} />
           <SoundToggle />
         </div>
       </header>
 
       {error && <Banner tone="bad">{error}</Banner>}
 
-      {view === 'post' && run && !isFinished(run) && run.status !== 'SPOTTED' && (
+      {!stage && view === 'post' && run && !isFinished(run) && run.status !== 'SPOTTED' && (
         <Banner tone="warn">
           Review, referee and ship happen in the Rules page.{' '}
           <button onClick={() => changeView('rules')}>Open Rules</button>
@@ -197,6 +204,7 @@ export default function App() {
 
       <ShipCelebration run={run} />
       <Intro />
+      {finale && <Finale run={run} onClose={closeFinale} />}
     </div>
   )
 }

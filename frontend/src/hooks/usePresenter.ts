@@ -1,14 +1,21 @@
 import { useEffect, useRef } from 'react'
 
+/** What each presenter key does. */
+export interface PresenterKeys {
+  next: () => void // → or PageDown (what a slide clicker sends): the next demo step
+  risky: () => void // B: the risky trend, for the brand-safety beat
+  stage: () => void // S: stage mode on / off
+  finale: () => void // E: the closing screen
+}
+
 /**
- * Presenter mode: → or PageDown (what a slide clicker sends) runs the next demo step; B starts
- * the risky trend for the brand-safety beat. Ignored while typing in a field
- * or moving between the page tabs.
+ * Presenter mode: one key per demo action, so the stage never depends on finding a button.
+ * Ignored while typing in a field or moving between the page tabs.
  */
-export function usePresenter(onNext: () => void, onRisky: () => void) {
-  const handlers = useRef({ onNext, onRisky })
+export function usePresenter(keys: PresenterKeys) {
+  const handlers = useRef(keys)
   useEffect(() => {
-    handlers.current = { onNext, onRisky } // always call the latest handlers
+    handlers.current = keys // always call the latest handlers
   })
 
   useEffect(() => {
@@ -17,12 +24,13 @@ export function usePresenter(onNext: () => void, onRisky: () => void) {
       // typing in a field, or arrowing between the Post / Rules tabs
       if (target?.closest('input, textarea, [contenteditable="true"], [role="tablist"]')) return
       if (event.metaKey || event.ctrlKey || event.altKey) return
+      const key = event.key.toLowerCase()
       if (event.key === 'ArrowRight' || event.key === 'PageDown') {
         event.preventDefault()
-        handlers.current.onNext()
-      } else if (event.key === 'b' || event.key === 'B') {
-        handlers.current.onRisky()
-      }
+        handlers.current.next()
+      } else if (key === 'b') handlers.current.risky()
+      else if (key === 's') handlers.current.stage()
+      else if (key === 'e') handlers.current.finale()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
