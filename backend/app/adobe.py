@@ -1,8 +1,12 @@
-"""Mock of the Adobe Firefly / Express integration.
+"""Local simulation of the visual and the post. Moment is not integrated with Adobe.
 
 Nothing contacts Adobe: no network calls, no credentials. Visuals are local SVG
 placeholders (or ``ADOBE_MOCK_IMAGE_URL``) and "posts" exist only as the values
 these functions return.
+
+This module is the integration point: a real version would generate the visual
+with Adobe Firefly in ``generate_visual`` and create and update the post with
+Adobe Express in ``create_post`` and ``update_post``, keeping the same signatures.
 
 Optional environment variables:
 - ``ADOBE_MOCK_IMAGE_URL``: image URL to use instead of the SVG placeholder.
