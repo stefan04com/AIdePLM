@@ -13,8 +13,9 @@ def test_current_trend_uses_saved_trend_file():
 
 
 def test_live_trend_reaches_trends_module():
-    # the adapter's own fallback only knows the saved trend, so "reddit" proves trends.py answered
-    assert adapters.current_trend(live=True).source == "reddit"
+    # the adapter's own fallback only knows the saved trend, so a non-"saved" source proves
+    # trends.py answered (data/live_trends.json gives "news", its built-in sample "reddit")
+    assert adapters.current_trend(live=True).source in {"news", "reddit"}
 
 
 def test_send_to_slack_reaches_slack_module():

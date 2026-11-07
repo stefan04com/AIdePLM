@@ -168,7 +168,7 @@ By team decision there is no live Adobe, Slack or Reddit integration. The three 
 
 | Module | What it does | Used by `adapters.py` |
 |---|---|---|
-| `trends.py` | `get_trend()` returns the saved trend from `data/demo_trend.json` (a placeholder if the file is missing or malformed). `live=True` returns a built-in sample trend with `source="reddit"`; nothing contacts Reddit | `current_trend()` |
+| `trends.py` | `get_trend()` returns the saved trend from `data/demo_trend.json` (a placeholder if the file is missing or malformed). `live=True` (env `LIVE_TRENDS=1`) returns the first of the real trends collected from the web into `data/live_trends.json` (each with its source article), or a built-in sample if that file is unusable; nothing contacts Reddit or news sites at runtime | `current_trend()` |
 | `adobe.py` | `generate_visual(prompt)` returns a placeholder SVG (same prompt, same image), labelled as a mock. `create_post(caption, image_url)` returns a mock post at version 1; `update_post(...)` returns a copy with `version + 1`. Its `url` is only the Express home page, not a post | `create_visual_and_post()`, `update_post()` |
 | `slack.py` | `send_final_post(caption, image_url, tasks, elapsed)` builds the Block Kit message (caption, image, tasks, "Trend → approved" time) and reports it as sent; the UI can show the blocks as a preview | `send_to_slack()` |
 

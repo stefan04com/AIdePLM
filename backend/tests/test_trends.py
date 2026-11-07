@@ -20,6 +20,24 @@ def saved_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     return path
 
 
+@pytest.fixture(autouse=True)
+def live_path(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """Missing by default, so live=True falls back to the built-in sample."""
+    path = tmp_path / "live_trends.json"
+    monkeypatch.setattr(trends, "LIVE_TRENDS_PATH", path)
+    return path
+
+
+LIVE_ITEM = {
+    "id": "live_one",
+    "title": "Live title",
+    "source": "news",
+    "url": "https://example.com/article",
+    "summary": "Live summary",
+    "detected_at": "2026-11-02T00:00:00",
+}
+
+
 def write_saved(path: Path, data: Any) -> None:
     path.write_text(json.dumps(data), encoding="utf-8")
 
@@ -90,6 +108,33 @@ def test_default_get_trend_returns_the_saved_trend(saved_path: Path) -> None:
     trend = trends.get_trend()
     assert trend.title == "Saved"
     assert trend.source == "saved"
+
+
+def test_live_get_trend_returns_the_first_collected_trend(live_path: Path) -> None:
+    second = {**LIVE_ITEM, "id": "live_two", "title": "Second"}
+    write_saved(live_path, {"about": "test", "trends": [LIVE_ITEM, second]})
+    trend = trends.get_trend(live=True)
+    assert trend.id == "live_one"
+    assert trend.source == "news"
+    assert trend.url == "https://example.com/article"
+    assert trend.detected_at == datetime(2026, 11, 2, tzinfo=UTC)  # naive read as UTC
+    assert [t.id for t in trends.load_live_trends()] == ["live_one", "live_two"]
+
+
+@pytest.mark.parametrize(
+    "content",
+    ["not json", "[]", '{"trends": {}}', '{"trends": [{"title": "no other fields"}]}'],
+)
+def test_unusable_live_file_falls_back_to_the_sample(live_path: Path, content: str) -> None:
+    live_path.write_text(content, encoding="utf-8")
+    assert trends.get_trend(live=True).id.startswith("mock-reddit-")
+
+
+def test_repo_live_trends_file_is_valid() -> None:
+    """data/live_trends.json, the real file used in the demo, loads and has sources."""
+    collected = trends.load_live_trends(trends.DATA_DIR / "live_trends.json")
+    assert len(collected) >= 3
+    assert all(t.url and t.url.startswith("https://") for t in collected)
 
 
 def test_live_get_trend_returns_the_mock_trend() -> None:
