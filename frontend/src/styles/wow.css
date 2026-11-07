@@ -548,358 +548,214 @@ button.risky {
   75% { transform: translateX(6px); }
 }
 
-/* --- the caption rewrites itself with flowing honey --- */
+/* --- the caption rewrites itself with flowing honey ---
+   Same font, size and line height as the plain caption, and nothing here takes layout space
+   (drops and the pour are absolutely placed), so the text never jumps when the morph ends. */
 
-.caption.is-morphing {
-  line-height: 1.95;
-  padding-bottom: 18px;
+@property --honey-glaze {
+  syntax: '<color>';
+  inherits: false;
+  initial-value: rgb(255 196 61 / 0);
 }
 
+/* cut words: turn amber, sag and melt down, then the gap closes */
 .caption.is-morphing .morph-removed {
   display: inline-block;
-  max-width: 30em;
+  max-width: 14em;
   overflow: hidden;
   white-space: pre;
-  vertical-align: baseline;
-  color: #c92a2a;
-  text-decoration: line-through 2px rgb(201 42 42 / 0.85);
-  transform-origin: bottom center;
-  animation: morph-melt-away 1s var(--d, 0s) cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  vertical-align: top; /* overflow: hidden moves an inline-block's baseline; top keeps the line */
+  transform-origin: 50% 100%;
+  animation:
+    honey-melt 0.9s var(--d, 0s) cubic-bezier(0.55, 0, 0.75, 0.4) forwards,
+    honey-close 0.55s calc(var(--d, 0s) + 0.7s) cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
-@keyframes morph-melt-away {
-  0% {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-  35% {
-    opacity: 0.7;
-    color: #e03131;
-    transform: translateY(1.5px) scale(0.98);
-  }
-  65% {
-    opacity: 0.3;
-    max-width: 30em;
-    transform: translateY(3.5px) scale(0.95);
-    filter: blur(1.5px);
+@keyframes honey-melt {
+  30% {
+    color: #c26a00;
+    transform: scaleY(1.04);
+    filter: blur(0);
   }
   100% {
+    color: #e8a317;
     opacity: 0;
-    max-width: 0;
-    padding: 0;
-    margin: 0;
-    transform: translateY(6px) scale(0.9);
+    transform: translateY(0.55em) scaleY(1.5) scaleX(0.9);
     filter: blur(3px);
   }
 }
 
-.caption.is-morphing .morph-added-phrase {
-  display: inline;
+@keyframes honey-close {
+  to {
+    max-width: 0;
+  }
 }
 
-.caption.is-morphing .honey-word {
-  display: inline-block;
+/* new words: a honey stream runs under the phrase, across lines, then dries away */
+.caption.is-morphing .honey-phrase {
   position: relative;
-  white-space: pre;
-  vertical-align: baseline;
-  padding: 2px 5px 3px;
-  margin: 0 0.5px;
-  border-radius: 6px 6px 12px 10px;
-  background: linear-gradient(180deg, #fff7b8 0%, #ffcf40 18%, #f59e0b 50%, #d97706 78%, #a84e00 100%);
-  box-shadow:
-    0 4px 14px rgb(217 119 6 / 0.45),
-    inset 0 2px 2px rgb(255 255 255 / 0.95),
-    inset 0 -1.5px 2.5px rgb(140 55 0 / 0.45);
-  color: #2e1400;
-  font-weight: 700;
-  text-shadow: 0 1px 0 rgb(255 255 255 / 0.5);
-  transform-origin: 50% -14px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  border-radius: 0.3em;
+  background-image: linear-gradient(var(--honey-glaze), var(--honey-glaze));
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  background-size: 0% 0.32em;
   animation:
-    honey-stream-in 0.75s var(--d, 0s) cubic-bezier(0.34, 1.56, 0.64, 1) backwards,
-    honey-liquid-wobble 2.4s calc(var(--d, 0s) + 0.75s) ease-in-out infinite alternate,
-    honey-settle-absorb 2.2s calc(var(--d, 0s) + 4.2s) cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    honey-stream var(--run, 1s) var(--d, 0s) cubic-bezier(0.5, 0, 0.3, 1) forwards,
+    honey-dry 1.4s calc(var(--d, 0s) + var(--run, 1s) + 1.4s) ease-in forwards;
 }
 
-@keyframes honey-stream-in {
+@keyframes honey-stream {
   0% {
-    opacity: 0;
-    transform: translateY(-24px) scaleY(1.6) scaleX(0.8);
-    filter: blur(5px) brightness(1.35) drop-shadow(0 12px 16px rgb(245 158 11 / 0.7));
-  }
-  42% {
-    opacity: 1;
-    transform: translateY(4px) scaleY(1.12) scaleX(0.94);
-    filter: blur(0.5px);
-  }
-  72% {
-    transform: translateY(-2px) scaleY(0.96) scaleX(1.03);
-    filter: none;
+    --honey-glaze: rgb(255 196 61 / 0.55);
+    background-size: 0% 0.32em;
   }
   100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: none;
+    --honey-glaze: rgb(255 196 61 / 0.55);
+    background-size: 100% 0.32em;
   }
 }
 
-@keyframes honey-liquid-wobble {
-  0% {
-    border-radius: 6px 6px 12px 10px;
-    transform: translateY(0);
+@keyframes honey-dry {
+  from {
+    --honey-glaze: rgb(255 196 61 / 0.55);
+    background-size: 100% 0.32em;
   }
-  50% {
-    border-radius: 6px 6px 14px 8px;
-    transform: translateY(1.2px) scaleY(1.02);
-  }
-  100% {
-    border-radius: 8px 6px 9px 13px;
-    transform: translateY(0);
+  to {
+    --honey-glaze: rgb(255 196 61 / 0);
+    background-size: 100% 0.32em;
   }
 }
 
-@keyframes honey-settle-absorb {
+/* each word fills with golden honey from the left, glistens, then dries into ink */
+.caption.is-morphing .honey-word {
+  position: relative;
+  background: linear-gradient(100deg, #8a4300 0%, #d97706 30%, #ffd256 48%, #f59e0b 62%, #b45309 100%) 0 0 / 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation:
+    honey-fill 0.7s var(--d, 0s) cubic-bezier(0.3, 0.7, 0.2, 1) backwards,
+    honey-glisten 1.5s calc(var(--d, 0s) + 0.5s) ease-in-out,
+    honey-ink 1.2s calc(var(--d, 0s) + 2s) ease-in backwards;
+}
+
+@keyframes honey-fill {
   0% {
-    background: linear-gradient(180deg, #fff7b8 0%, #ffcf40 18%, #f59e0b 50%, #d97706 78%, #a84e00 100%);
-    box-shadow:
-      0 4px 14px rgb(217 119 6 / 0.45),
-      inset 0 2px 2px rgb(255 255 255 / 0.95),
-      inset 0 -1.5px 2.5px rgb(140 55 0 / 0.45);
-    color: #2e1400;
-    text-shadow: 0 1px 0 rgb(255 255 255 / 0.5);
+    color: transparent;
+    clip-path: inset(-0.4em 100% -0.6em 0);
+    filter: blur(2px);
+    text-shadow: 0 0 0 transparent;
   }
   60% {
-    background: rgb(245 166 35 / 0.25);
-    box-shadow: 0 1px 4px rgb(223 133 0 / 0.15);
-    color: inherit;
-    text-shadow: none;
+    filter: blur(0);
   }
   100% {
-    background: transparent;
-    box-shadow: none;
-    color: inherit;
-    text-shadow: none;
+    color: transparent;
+    clip-path: inset(-0.4em -0.2em -0.6em 0);
+    text-shadow: 0 2px 10px rgb(245 158 11 / 0.35);
   }
 }
 
-/* --- authentic viscous dripping honey: stream from above + neck strand + hanging & falling drops --- */
-
-/* Golden stream of honey pouring down from above onto the words */
-.honey-pour-stream {
-  position: absolute;
-  top: -26px;
-  left: 50%;
-  margin-left: -2px;
-  width: 4px;
-  height: 28px;
-  border-radius: 2px;
-  background: linear-gradient(180deg, transparent 0%, #fff099 25%, #f59e0b 65%, #d97706 100%);
-  box-shadow: 0 0 8px rgb(245 158 11 / 0.65);
-  pointer-events: none;
-  transform-origin: top center;
-  animation: honey-stream-pour 1.5s var(--d, 0s) cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+@keyframes honey-glisten {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
 }
 
-@keyframes honey-stream-pour {
+/* while it pours and glistens the word is pure honey; then the ink comes back */
+@keyframes honey-ink {
+  0% {
+    color: transparent;
+    text-shadow: 0 2px 10px rgb(245 158 11 / 0.35);
+  }
+  100% {
+    color: var(--text);
+    text-shadow: 0 0 0 transparent;
+  }
+}
+
+/* a thin stream pours onto the first new word of each phrase */
+.caption.is-morphing .honey-pour {
+  position: absolute;
+  left: 0.35em;
+  bottom: 0.9em;
+  width: 3px;
+  height: 2.6em;
+  border-radius: 2px;
+  background: linear-gradient(#ffe08a00, #ffc93d 35%, #e58a00);
+  box-shadow: 0 0 6px rgb(245 158 11 / 0.5);
+  transform: scaleY(0);
+  transform-origin: 50% 0;
+  pointer-events: none;
+  animation: honey-pour 1.1s calc(var(--d, 0s) - 0.25s) cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes honey-pour {
   0% {
     transform: scaleY(0);
-    opacity: 0;
+    transform-origin: 50% 0;
   }
-  30% {
-    transform: scaleY(1.3);
-    opacity: 1;
-  }
-  65% {
+  35% {
     transform: scaleY(1);
-    opacity: 0.9;
+    transform-origin: 50% 0;
+  }
+  36% {
+    transform: scaleY(1);
+    transform-origin: 50% 100%;
   }
   100% {
-    transform: scaleY(0.2) translateY(20px);
-    opacity: 0;
+    transform: scaleY(0) scaleX(0.4);
+    transform-origin: 50% 100%;
   }
 }
 
-.honey-drip-container {
+/* a drop gathers under the word, stretches, lets go and falls */
+.caption.is-morphing .honey-drop {
   position: absolute;
-  bottom: -4px;
-  right: 5px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  pointer-events: none;
-  z-index: 2;
-  transform-origin: top center;
-  animation:
-    honey-drip-flow 3.5s calc(var(--d, 0s) + 0.15s) cubic-bezier(0.4, 0.05, 0.45, 0.98) backwards,
-    honey-drip-fade 0.8s calc(var(--d, 0s) + 4s) ease-out forwards;
-}
-
-.honey-drip-container.drip-lg {
-  right: 7px;
-}
-
-.honey-drip-container.drip-sm {
-  right: 3px;
-  transform: scale(0.75);
-}
-
-/* The thin viscous neck connecting the word to the drop */
-.honey-strand {
-  width: 2.5px;
-  height: 7px;
-  background: linear-gradient(180deg, #f59e0b 0%, #d97706 70%, #b45309 100%);
-  border-radius: 1px;
-  opacity: 0.9;
-  transform-origin: top center;
-  box-shadow: 0 0 4px rgb(245 158 11 / 0.4);
-}
-
-.drip-lg .honey-strand {
-  width: 3px;
-  height: 10px;
-}
-
-/* The heavy, bulbous, glossy amber honey drop that hangs and wobbles */
-.honey-hanging-drop {
-  width: 8px;
-  height: 11px;
-  margin-top: -1px;
-  border-radius: 50% 50% 60% 60% / 35% 35% 65% 65%;
-  background: radial-gradient(circle at 35% 28%, #ffffff 0%, #fff7be 25%, #f59e0b 65%, #b45309 100%);
-  box-shadow:
-    0 4px 10px rgb(180 83 9 / 0.55),
-    inset 0 1.5px 2px rgb(255 255 255 / 0.95),
-    inset 0 -1.5px 2px rgb(130 50 0 / 0.4);
-  transform-origin: top center;
-  animation: honey-drop-wobble 2s calc(var(--d, 0s) + 0.3s) ease-in-out infinite alternate;
-}
-
-.drip-lg .honey-hanging-drop {
-  width: 10px;
-  height: 14px;
-  border-radius: 50% 50% 65% 65% / 30% 30% 70% 70%;
-}
-
-@keyframes honey-drop-wobble {
-  0% { transform: scaleX(0.92) scaleY(1.08) translateY(0); }
-  50% { transform: scaleX(1.08) scaleY(0.94) translateY(2px); }
-  100% { transform: scaleX(0.88) scaleY(1.22) translateY(3.5px); }
-}
-
-/* Golden honey droplet that actually detaches and drips downwards */
-.honey-falling-drop {
-  position: absolute;
-  top: 8px;
-  left: 50%;
-  margin-left: -3px;
-  width: 6px;
-  height: 9px;
-  border-radius: 50% 50% 60% 60% / 35% 35% 65% 65%;
-  background: radial-gradient(circle at 35% 28%, #ffffff 0%, #fff7be 25%, #f59e0b 65%, #b45309 100%);
-  box-shadow: 0 3px 8px rgb(180 83 9 / 0.6);
-  pointer-events: none;
-  animation: honey-drop-fall 2.2s calc(var(--d, 0s) + 0.55s) cubic-bezier(0.45, 0, 0.9, 0.6) infinite;
-}
-
-.drip-lg .honey-falling-drop {
-  width: 7px;
-  height: 10px;
-  margin-left: -3.5px;
-}
-
-@keyframes honey-drop-fall {
-  0% {
-    transform: translateY(0) scale(0.4);
-    opacity: 0;
-  }
-  15% {
-    transform: translateY(3px) scale(0.9);
-    opacity: 1;
-  }
-  45% {
-    transform: translateY(16px) scaleX(0.7) scaleY(1.7);
-    opacity: 0.95;
-  }
-  75% {
-    transform: translateY(34px) scaleX(0.85) scaleY(1.25);
-    opacity: 0.85;
-  }
-  100% {
-    transform: translateY(50px) scale(0.3);
-    opacity: 0;
-    filter: blur(1.5px);
-  }
-}
-
-@keyframes honey-drip-flow {
-  0% {
-    opacity: 0;
-    transform: translateY(-4px) scaleY(0.2) scaleX(0.5);
-  }
-  20% {
-    opacity: 1;
-    transform: translateY(0px) scaleY(0.8) scaleX(0.9);
-  }
-  45% {
-    transform: translateY(4px) scaleY(1.3) scaleX(0.95);
-  }
-  65% {
-    transform: translateY(8px) scaleY(1.6) scaleX(0.85);
-  }
-  82% {
-    transform: translateY(13px) scaleY(1.4) scaleX(0.9);
-    opacity: 0.95;
-  }
-  92% {
-    transform: translateY(16px) scaleY(1.2) scaleX(0.95);
-    opacity: 0.9;
-  }
-  100% {
-    transform: translateY(18px) scale(0.9);
-    opacity: 0.85;
-  }
-}
-
-@keyframes honey-drip-fade {
-  to {
-    opacity: 0;
-    transform: translateY(28px) scale(0.3);
-    filter: blur(1.5px);
-  }
-}
-
-/* Liquid specular sheen passing over the honey words */
-.honey-sheen {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  pointer-events: none;
-  background: linear-gradient(110deg, transparent 20%, rgb(255 255 255 / 0.9) 50%, rgb(255 240 180 / 0.5) 60%, transparent 80%);
-  background-size: 200% 100%;
+  right: 0.55em;
+  top: 82%;
+  width: 0.36em;
+  height: 0.44em;
+  border-radius: 50% 50% 50% 50% / 38% 38% 62% 62%;
+  background: radial-gradient(circle at 35% 35%, #fff2b3 0 12%, #ffc93d 30%, #e08600 85%);
+  box-shadow: 0 2px 4px rgb(194 106 0 / 0.35);
   opacity: 0;
-  animation: honey-sheen-sweep 1.2s calc(var(--d, 0s) + 0.3s) ease-out forwards;
+  transform: scale(0);
+  transform-origin: 50% 0;
+  pointer-events: none;
+  animation: honey-drop 2s calc(var(--d, 0s) + 0.55s) cubic-bezier(0.5, 0, 0.75, 0) forwards;
 }
 
-@keyframes honey-sheen-sweep {
+@keyframes honey-drop {
   0% {
-    background-position: 180% 0;
-    opacity: 0;
+    opacity: 1;
+    transform: scale(0);
   }
   25% {
     opacity: 1;
+    transform: scale(1);
   }
-  75% {
-    opacity: 0.8;
+  50% {
+    opacity: 1;
+    transform: translateY(0.45em) scaleY(1.2);
+  }
+  56% {
+    opacity: 1;
+    transform: translateY(0.6em) scaleY(1.05);
   }
   100% {
-    background-position: -80% 0;
     opacity: 0;
+    transform: translateY(2.6em) scaleY(1.2) scaleX(0.85);
   }
 }
 
 /* Express post card honey pulse on version bump */
 .express.is-updated {
-  animation: express-honey-pulse 1.6s 4.3s ease-out backwards;
+  animation: express-honey-pulse 1.6s 4.6s ease-out backwards;
 }
 
 @keyframes express-honey-pulse {
@@ -954,11 +810,15 @@ button.risky {
   .caption.is-morphing span,
   .express.is-updated,
   .bee-stop,
+  .caption.is-morphing .honey-phrase,
   .trend-life-bar span {
     animation: none !important;
   }
   .shield-x {
     stroke-dashoffset: 0;
+  }
+  .caption.is-morphing .morph-removed {
+    display: none;
   }
 }
 
@@ -967,4 +827,46 @@ button.risky {
   transform: scaleX(-1);
   transform-box: fill-box;
   transform-origin: center;
+}
+
+/* --- page change (Post / Rules): the page fades up, the opened tab glows as Adobee swoops by --- */
+
+main[hidden] {
+  display: none !important; /* both pages stay mounted; `display: grid` would override [hidden] */
+}
+
+.post-page,
+.rules-page {
+  animation: page-in 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.view-tab.tab-glow {
+  animation: tab-glow 1.1s ease-out;
+}
+
+@keyframes tab-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgb(255 183 3 / 0.75);
+  }
+  40% {
+    box-shadow: 0 0 0 8px rgb(255 183 3 / 0.35), 0 0 22px 4px rgb(255 183 3 / 0.45);
+  }
+  100% {
+    box-shadow: 0 0 0 14px rgb(255 183 3 / 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post-page,
+  .rules-page,
+  .view-tab.tab-glow {
+    animation: none;
+  }
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Run } from '../api/types'
+import type { View } from '../lib/view'
 import { ADOBEE_TIPS, adobeeSpot, adobeeState, hiveCells, type AdobeeSpot } from '../lib/adobee'
 import { sound } from '../lib/sound'
 import { BeeSvg } from './adobee/BeeSvg'
@@ -18,7 +19,7 @@ const CARRY_MAX = 9 // pollen hexes carried from reviewers to the referee
 const TARGETS: Record<Exclude<AdobeeSpot, 'home'>, string[]> = {
   spot: ['.gauge', '.trend'],
   draft: ['.express', '.post'],
-  review: ['.comment', '.persona'],
+  review: ['.column:has(.persona)', '.comment', '.persona'], // beside the review column's "in review" pill
   referee: ['.referee-panel'],
   ship: ['.slack', '.ship-bar', '.referee-panel'],
 }
@@ -32,13 +33,20 @@ const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)'
 
 const clamp = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
 
+/** The first element matching `selector` that is on the open page (the other page is hidden). */
+function visible(selector: string): HTMLElement | null {
+  const all = document.querySelectorAll<HTMLElement>(selector)
+  return [...all].find((el) => el.getClientRects().length > 0) ?? null
+}
+
+/** The spot's element on the open page; if that page doesn't show it, the page's first section. */
 function findTarget(spot: AdobeeSpot, nest: HTMLElement | null): HTMLElement | null {
   if (spot === 'home') return nest
   for (const selector of TARGETS[spot]) {
-    const el = document.querySelector<HTMLElement>(selector)
+    const el = visible(selector)
     if (el) return el
   }
-  return nest
+  return visible('main .section-head') ?? nest
 }
 
 /** The pill on the right of the target's section title ("simulated", "ready to ship"), if any. */
@@ -59,7 +67,7 @@ function perchFor(el: HTMLElement | null, home: boolean): Point {
   if (home) return { x: box.left + box.width / 2 - BEE_W / 2, y: box.top + box.height / 2 - BEE_H / 2 }
   // Never cover the sticky header or the ship bar docked at the bottom.
   const ceiling = (document.querySelector('.topbar')?.getBoundingClientRect().bottom ?? 0) + 4
-  const dock = document.querySelector('.ship-bar')?.getBoundingClientRect().top ?? window.innerHeight
+  const dock = visible('.ship-bar')?.getBoundingClientRect().top ?? window.innerHeight
   const floor = Math.min(window.innerHeight, dock) - BEE_H - 12
   const pill = sectionAside(el)?.getBoundingClientRect()
   const spot = pill
@@ -98,7 +106,9 @@ function spawn(sky: HTMLElement, className: string, style: Record<string, string
  * the referee reads them all at once. Returns the time the last one lands.
  */
 function pollinate(sky: HTMLElement, target: HTMLElement): number {
-  const sources = [...document.querySelectorAll<HTMLElement>('.comment, .persona')].slice(0, CARRY_MAX)
+  const sources = [...document.querySelectorAll<HTMLElement>('.comment, .persona')]
+    .filter((el) => el.getClientRects().length > 0)
+    .slice(0, CARRY_MAX)
   const box = target.getBoundingClientRect()
   const end = { x: box.left + box.width / 2, y: Math.max(box.top + 24, 90) }
   sources.forEach((source, i) => {
@@ -121,9 +131,10 @@ function pollinate(sky: HTMLElement, target: HTMLElement): number {
 /**
  * Adobee, the busy robot bee. It lives in the header hive and flies, on an arc and leaving a pollen
  * trail, to the part of the screen where the run is happening: the fit gauge, the post, the
- * personas, the referee's conflicts, the Slack message. It is a guide, not a chatbot: no input.
+ * personas, the referee's conflicts, the Slack message. When the page changes (Post / Rules) it
+ * swoops through the new page's tab, so the eye follows it. It is a guide, not a chatbot: no input.
  */
-export function Adobee({ run, busy }: { run: Run | null; busy: boolean }) {
+export function Adobee({ run, busy, view }: { run: Run | null; busy: boolean; view: View }) {
   const { mood, message } = adobeeState(run, busy)
   const spot = adobeeSpot(run)
   const [look, setLook] = useState<Point>({ x: 0, y: 0 })
@@ -134,6 +145,7 @@ export function Adobee({ run, busy }: { run: Run | null; busy: boolean }) {
   const skyRef = useRef<HTMLDivElement>(null)
   const pos = useRef<Point | null>(null)
   const lastSpot = useRef<AdobeeSpot>(spot)
+  const lastView = useRef<View>(view)
   const flying = useRef(false)
   const tipIndex = useRef(0)
 
@@ -151,6 +163,8 @@ export function Adobee({ run, busy }: { run: Run | null; busy: boolean }) {
     const from = pos.current
     const cameFrom = lastSpot.current
     lastSpot.current = spot
+    const tab = view !== lastView.current ? document.getElementById(`tab-${view}`) : null
+    lastView.current = view
     if (!from || reducedMotion()) {
       place(to)
       return
@@ -165,7 +179,7 @@ export function Adobee({ run, busy }: { run: Run | null; busy: boolean }) {
       // after the celebration, show the post with its caption rewriting itself
       later.push(
         window.setTimeout(() => {
-          const caption = document.querySelector('.express .caption')
+          const caption = visible('.express .caption')
           if (!caption) return
           const box = caption.getBoundingClientRect()
           const top = box.top + window.scrollY - window.innerHeight / 2 + box.height / 2
@@ -176,7 +190,17 @@ export function Adobee({ run, busy }: { run: Run | null; busy: boolean }) {
 
     const distance = Math.hypot(to.x - from.x, to.y - from.y)
     if (distance < 4) return
-    const control = { x: (from.x + to.x) / 2, y: Math.min(from.y, to.y) - 60 - distance * 0.18 }
+    let control = { x: (from.x + to.x) / 2, y: Math.min(from.y, to.y) - 60 - distance * 0.18 }
+    if (tab) {
+      // a page change: swoop past the tab that was just opened, and make it glow
+      const box = tab.getBoundingClientRect()
+      const via = { x: box.left + box.width / 2 - BEE_W / 2, y: box.bottom - BEE_H / 2 }
+      control = { x: 2 * via.x - (from.x + to.x) / 2, y: 2 * via.y - (from.y + to.y) / 2 }
+      tab.classList.remove('tab-glow')
+      void tab.offsetWidth // restart the glow if it is still running
+      tab.classList.add('tab-glow')
+      later.push(window.setTimeout(() => tab.classList.remove('tab-glow'), 1200))
+    }
     const duration = clamp(650 + distance * 0.7, 800, 1700)
     const tilt = to.x < from.x ? -14 : 14
     flyer.dataset.facing = to.x < from.x ? 'left' : 'right'
@@ -201,7 +225,8 @@ export function Adobee({ run, busy }: { run: Run | null; busy: boolean }) {
     const land = () => {
       flying.current = false
       flyer.classList.remove('is-flying')
-      place(to)
+      // the page may have moved under the bee while it flew (a page fading in, scrolling)
+      place(perchFor(findTarget(spot, nestRef.current), spot === 'home'))
       if (target && spot !== 'home') {
         const box = target.getBoundingClientRect()
         spawn(sky, 'adobee-ring', {
@@ -236,7 +261,7 @@ export function Adobee({ run, busy }: { run: Run | null; busy: boolean }) {
       flyer.classList.remove('is-flying')
       place(to)
     }
-  }, [spot, run?.id])
+  }, [spot, run?.id, view])
 
   // Stay perched while the page scrolls, resizes or the layout moves (images loading, new cards).
   useEffect(() => {
@@ -261,7 +286,7 @@ export function Adobee({ run, busy }: { run: Run | null; busy: boolean }) {
       observer.disconnect()
       cancelAnimationFrame(frame)
     }
-  }, [spot])
+  }, [spot, view])
 
   // Eyes follow the cursor.
   useEffect(() => {

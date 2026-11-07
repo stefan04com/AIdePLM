@@ -1,7 +1,7 @@
 import type { Draft } from '../../api/types'
 import { BRAND_HANDLE, BRAND_NAME } from '../../lib/brand'
 import { Badge } from '../ui'
-import { MorphCaption } from '../wow/MorphCaption'
+import { AFTER_SHIP_S, MorphCaption } from '../wow/MorphCaption'
 
 /**
  * The draft as a social post (demo script 0:40 and 2:10). A local simulation: the backend
@@ -36,7 +36,8 @@ export function ExpressPreview({ draft }: { draft: Draft }) {
         ) : (
           <div className="image-placeholder">{draft.visual_prompt}</div>
         )}
-        <MorphCaption caption={draft.caption} />
+        {/* after a ship the celebration plays first; a regenerated caption pours in right away */}
+        <MorphCaption caption={draft.caption} start={updated ? AFTER_SHIP_S : 0.2} />
         <p className="hashtags">{draft.hashtags.join(' ')}</p>
       </div>
 

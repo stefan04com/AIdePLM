@@ -13,9 +13,9 @@ const TONE: Record<Confidence, 'ok' | 'warn' | 'neutral'> = {
 }
 
 /** Review workflow (departments, personas, referee, ship) next to what the scoring is based on. */
-export function RulesPage({ usage, review }: { usage: Usage; review: ReactNode }) {
+export function RulesPage({ usage, review, hidden }: { usage: Usage; review: ReactNode; hidden: boolean }) {
   return (
-    <main className="rules-page" id="panel-rules" role="tabpanel" aria-labelledby="tab-rules">
+    <main className="rules-page" id="panel-rules" role="tabpanel" aria-labelledby="tab-rules" hidden={hidden}>
       {review}
       <div className="column">
         <SectionHead id="01" title="Scoring factors" />
