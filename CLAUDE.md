@@ -162,6 +162,28 @@ Types: `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `style`. Scopes: `llm
 
 ---
 
+## Note for Stefan: integrations handoff (from Militaru)
+
+`backend/app/adobe.py`, `slack.py` and `trends.py` are on `feature/militaru-adobe-integration`, which includes `develop` at `d28bf71`. They aren't wired into the app yet, because `main.py` and `orchestrator.py` don't exist.
+
+**All three integrations are mocks, by team decision.** None of them makes a network call or needs a key: no Adobe, no Slack webhook, no Reddit. They return results as if the call had worked, so the demo flow runs end to end. `trends.py` returns `models.Trend` and `slack.py` takes `models.Task`. Apart from `models.py`, they use only the standard library.
+
+| When | Call | What to do with the result |
+|---|---|---|
+| `GET /trend` | `trends.get_trend()` | Return it as is: it's a `models.Trend`. The default is the saved trend; `live=True` returns a built-in sample with `source="reddit"` |
+| Draft | `adobe.generate_visual(prompt)`, then `adobe.create_post(caption, image_url)` | Set `Draft.image_url`, `express_doc_id` (`post.doc_id`) and `version` (`post.version`) |
+| Apply | `adobe.update_post(post, caption=..., image_url=...)` | Returns a new post with `version + 1`. `caption=""` really blanks the caption, so guard against empty LLM output |
+| Apply | `slack.send_final_post(caption, image_url, tasks, elapsed)` | Pass `RefereeResult.tasks` as is. Always returns `sent=True` plus `blocks`, the Slack message a real webhook would post; the UI can show it as a preview |
+
+What you need to handle:
+
+- **Mock latency:** `ADOBE_MOCK_LATENCY_S` (default 0) makes the Adobe calls sleep, to show loading states. It blocks, so outside the `POST /runs` background task use `def` endpoints or `asyncio.to_thread`.
+- **Express link:** `Draft` has no field for `post.url`. If the UI needs the link, add an optional field. It only opens the Express home page, not the post.
+- **Saved trend:** `data/demo_trend.json` is missing (Anda), so `get_trend()` returns "Demo trend (placeholder)" for now.
+- **Stale docs:** these still describe real integrations: the "Required" env list above (`SLACK_WEBHOOK_URL`, `ADOBE_CLIENT_*`), the same keys and `REDDIT_*`/`NEWS_API_KEY` in `.env.example`, `ARCHITECTURE.md` (§4.4–4.6, ADR-003, §10), and the README on `feature/stefan-contract`.
+
+Decision we need from you: what happens when the Referee returns `needs_human`? The state machine has no transition for it.
+
 ## Guidance for Claude Code specifically
 
 - Ask which area/branch you're working on if it isn't clear; don't edit files outside that owner's paths unprompted.
