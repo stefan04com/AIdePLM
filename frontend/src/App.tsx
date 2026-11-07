@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { api, USE_MOCKS } from './api/client'
 import { errorMessage } from './api/errors'
-import type { ApplyRequest, CommentRole, Persona, Trend } from './api/types'
+import type { ApplyRequest, CommentRole, Persona, Run, Trend } from './api/types'
 import { Adobee } from './components/Adobee'
 import { Finale } from './components/wow/Finale'
 import { Intro } from './components/wow/Intro'
@@ -45,14 +45,21 @@ export default function App() {
   // A refresh (no status seen yet) keeps the page from the URL.
   const status = run ? `${run.id}:${run.status}` : null
   const [seenStatus, setSeenStatus] = useState(status)
+  // The closing screen shows the last shipped run, even after the risky trend has started a new one.
+  const [lastShipped, setLastShipped] = useState<Run | null>(null)
   if (status !== seenStatus) {
     setSeenStatus(status)
     if (run && seenStatus !== null) setView(viewForStatus(run.status))
+    if (run?.status === 'SHIPPED') setLastShipped(run)
   }
   useEffect(() => {
     writeViewToUrl(view)
     window.scrollTo({ top: 0 })
   }, [view])
+  // A new run starts at the top of the page, so the trend, the fit and the shield are in view.
+  useEffect(() => {
+    if (runId) window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [runId])
   useSpotlight()
   const usage = useUsage(run)
 
@@ -204,7 +211,7 @@ export default function App() {
 
       <ShipCelebration run={run} />
       <Intro />
-      {finale && <Finale run={run} onClose={closeFinale} />}
+      {finale && <Finale run={lastShipped ?? run} onClose={closeFinale} />}
     </div>
   )
 }

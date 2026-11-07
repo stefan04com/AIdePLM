@@ -166,3 +166,9 @@ html.stage .rules-page > :not(:first-child) {
   background: var(--accent);
   border-color: var(--accent);
 }
+
+/* a wide photo on stage, so the Firefly button stays on screen without scrolling */
+html.stage .post .post-visual img,
+html.stage .post .post-visual .image-placeholder {
+  aspect-ratio: 16 / 9;
+}
