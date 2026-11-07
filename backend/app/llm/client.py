@@ -43,16 +43,37 @@ def wrap(tag: str, text: str, **attrs: str) -> str:
     return f"<{tag}{attr_str}>\n{safe}\n</{tag}>"
 
 
+def _bedrock() -> bool:
+    return os.environ.get("LLM_PROVIDER", "").strip().lower() == "bedrock"
+
+
+def _has_credentials() -> bool:
+    if _bedrock():  # Bedrock API key; the SDK reads AWS_BEARER_TOKEN_BEDROCK itself
+        return bool(os.environ.get("AWS_BEARER_TOKEN_BEDROCK", "").strip())
+    return bool(os.environ.get("LLM_API_KEY", "").strip())
+
+
+def _client():
+    import anthropic
+
+    if _bedrock():
+        return anthropic.AnthropicBedrockMantle(
+            aws_region=os.environ.get("AWS_REGION", "").strip() or None,
+            timeout=TIMEOUT_S,
+            max_retries=0,
+        )
+    return anthropic.Anthropic(
+        api_key=os.environ["LLM_API_KEY"].strip(), timeout=TIMEOUT_S, max_retries=0
+    )
+
+
 def _provider_complete(system: str, user: str) -> tuple[str, int, int]:
     """One provider request -> (text, input_tokens, output_tokens). Swap provider here only."""
-    api_key = os.environ.get("LLM_API_KEY", "").strip()
     model = os.environ.get("LLM_MODEL", "").strip()
-    if not api_key or not model:
-        raise LLMError("LLM_API_KEY / LLM_MODEL not set")
+    if not model or not _has_credentials():
+        raise LLMError("LLM_MODEL or provider credentials not set")
     try:
-        import anthropic
-
-        client = anthropic.Anthropic(api_key=api_key, timeout=TIMEOUT_S, max_retries=0)
+        client = _client()
         msg = client.messages.create(
             model=model,
             max_tokens=MAX_TOKENS,

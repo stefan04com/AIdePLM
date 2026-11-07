@@ -3,7 +3,7 @@
 Answers the question the demo depends on: with data/demo_trend.json and data/demo_comments.json,
 does the Referee find the conflict every time, and does any call silently fall back to canned data?
 
-Usage (needs LLM_API_KEY and LLM_MODEL in the repo's .env):
+Usage (needs LLM_MODEL plus LLM_API_KEY, or the Bedrock vars, in the repo's .env):
     cd backend && source .venv/bin/activate
     python ../qa/live_eval.py --runs 3
 Writes a Markdown report to qa/results/. Uses a temp dir for runs/usage, so data/ is untouched.
@@ -22,6 +22,7 @@ sys.path.insert(0, str(ROOT / "backend"))
 
 from app import adapters, demo_cache, store
 from app.llm import calls, usage
+from app.llm.client import _has_credentials as client_has_credentials
 from app.main import app
 from fastapi.testclient import TestClient
 
@@ -133,8 +134,8 @@ def main() -> None:
     args = parser.parse_args()
 
     model = os.environ.get("LLM_MODEL", "")  # .env is loaded when app.main is imported
-    if not args.demo and (not os.environ.get("LLM_API_KEY") or not model):
-        sys.exit("LLM_API_KEY / LLM_MODEL missing in .env: this would only test the canned fallbacks.")
+    if not args.demo and (not client_has_credentials() or not model):
+        sys.exit("LLM_MODEL or provider credentials missing in .env: this would only test the canned fallbacks.")
 
     tmp = Path(tempfile.mkdtemp(prefix="moment-qa-"))
     store.configure(tmp / "runs.json")
