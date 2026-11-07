@@ -160,7 +160,7 @@ Five prompts, each with a Pydantic output schema. The model is asked for JSON; t
 
 Every call writes `{run_id, call, model, input_tokens, output_tokens, latency_ms}` to `logs/usage.jsonl` (`run_id` is null for call #3). `GET /usage` aggregates it and adds `cost_usd`, computed from a per-model price table. That file is the input for the cost slide.
 
-> **Note (by team decision):** the trend, Adobe and Slack integrations below are mocks. They make no network calls and need no keys; the sections describe the intended real design.
+> **Note (by team decision):** the trend, Adobe and Slack integrations below are local mocks. They make no network calls and need no keys; each section says what the mock does and where a real integration would plug in.
 
 ### 4.4 Trend source (owner: Militaru)
 - `trends.get_trend()` returns the saved `data/demo_trend.json` by default, normalised to the `Trend` model.

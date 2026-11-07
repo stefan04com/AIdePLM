@@ -1,9 +1,9 @@
-// The Slack preview must show what backend/app/slack.py would post.
+// The Slack preview mirrors backend/app/slack.py, and shows the post's image even when local.
 
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import type { Run } from '../src/api/types.ts'
-import { buildSlackPreview, formatMinutes, isWebUrl, taskLine } from '../src/lib/slackPreview.ts'
+import { buildSlackPreview, formatMinutes, taskLine } from '../src/lib/slackPreview.ts'
 
 test('elapsed is rounded down to the minute, like slack.format_elapsed', () => {
   assert.equal(formatMinutes(0), '0m')
@@ -11,14 +11,6 @@ test('elapsed is rounded down to the minute, like slack.format_elapsed', () => {
   assert.equal(formatMinutes(4 * 60_000 + 59_000), '4m')
   assert.equal(formatMinutes(110 * 60_000), '1h 50m')
   assert.equal(formatMinutes(-5_000), '0m')
-})
-
-test('only public http(s) images reach Slack', () => {
-  assert.equal(isWebUrl('https://example.com/a.png'), true)
-  assert.equal(isWebUrl('http://example.com/a.png'), true)
-  assert.equal(isWebUrl('data:image/svg+xml;base64,AAAA'), false)
-  assert.equal(isWebUrl('https://exa mple.com/a.png'), false)
-  assert.equal(isWebUrl(null), false)
 })
 
 test('task lines collapse whitespace and default the owner', () => {
@@ -38,7 +30,7 @@ test('a shipped run builds the full preview', () => {
   assert.deepEqual(buildSlackPreview(shippedRun), {
     header: 'Moment: post approved',
     caption: 'Grey week, warm corner.',
-    imageUrl: null,
+    imageUrl: 'data:image/svg+xml;base64,AA', // the simulated preview shows the local image
     taskLines: ['Product: Send the sugar docs (due: this week)'],
     elapsed: '4m',
   })
