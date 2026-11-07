@@ -2,13 +2,14 @@
 
 import json
 import logging
+import re
 import threading
 from copy import deepcopy
 from pathlib import Path
 
 from pydantic import BaseModel
 
-from .llm.schemas import DraftContent
+from .llm.schemas import DraftContent, RegenerateContent
 from .models import (
     Comment,
     CommentStatus,
@@ -22,6 +23,7 @@ from .models import (
     RefereeResult,
     Task,
     Trend,
+    TrendScore,
 )
 from .store import ROOT
 
@@ -282,3 +284,46 @@ def referee(comments: list[Comment], draft_: Draft, personas_: list[Persona]) ->
         final_caption=final_caption,
         status="ready_to_ship",
     )
+
+
+# --- regenerate and trend score (saved-data fallbacks) -----------------------------------------
+
+
+def regenerate(edited_caption: str, draft_: Draft) -> RegenerateContent:
+    """Fallback: keep what the person wrote; never throw their edit away."""
+    return RegenerateContent(caption=edited_caption.strip(), hashtags=list(draft_.hashtags))
+
+
+def saved_trends() -> list[Trend]:
+    """The trends saved in data/ (the demo trend plus the ones collected from the web)."""
+    trends: list[Trend] = []
+    for name, key in (("demo_trend.json", None), ("live_trends.json", "trends")):
+        try:
+            raw = json.loads((ROOT / "data" / name).read_text())
+            for item in [raw] if key is None else raw.get(key, []):
+                trends.append(Trend.model_validate(item))
+        except (OSError, ValueError, AttributeError):
+            log.warning("could not read saved trends from %s", name)
+    return trends
+
+
+def _tokens(text: str) -> set[str]:
+    return {w for w in re.findall(r"[a-zăâîșț0-9]+", text.lower()) if len(w) > 3}
+
+
+def trend_score(words: str, hashtags: list[str]) -> TrendScore:
+    """Fallback: overlap with the saved trends plus the hashtag rules of the popularity guide."""
+    mine = _tokens(words) | _tokens(" ".join(hashtags))
+    best = max((len(mine & _tokens(f"{t.title} {t.summary}")) for t in saved_trends()), default=0)
+    tags = [h for h in hashtags if h.strip()]
+    score = 30 + min(best, 5) * 10 + (10 if 1 <= len(tags) <= 5 else 0)
+    suggestions = []
+    if best < 2:
+        suggestions.append("Name the trend or its key words in the first line.")
+    if not tags:
+        suggestions.append("Add 2-3 specific hashtags (a trend tag and a niche tag).")
+    elif len(tags) > 5:
+        suggestions.append("Keep it to 5 hashtags or fewer; more looks spammy.")
+    if len(words.split()) > 40:
+        suggestions.append("Shorten it: put the hook in the first line.")
+    return TrendScore(score=min(score, 100), suggestions=suggestions or ["Looks on trend."])
