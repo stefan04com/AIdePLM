@@ -1,0 +1,26 @@
+[
+  {
+    "id": "gen_z_commuter",
+    "name": "Gen Z commuter",
+    "segment": "18–25, daily train commuter, heavy social user",
+    "cares_about": ["humour", "authenticity", "not being sold to"],
+    "pet_peeves": ["hard-sell CTAs", "brands trying too hard"],
+    "sample_quotes": ["Love the app but the push notifications feel like ads.", "Finally a transit app that doesn't take itself too seriously."]
+  },
+  {
+    "id": "busy_parent",
+    "name": "Busy parent",
+    "segment": "30–45, school run + office commute",
+    "cares_about": ["saving time", "reliability", "concrete benefits"],
+    "pet_peeves": ["vague promises", "extra taps"],
+    "sample_quotes": ["Saves me 10 minutes every morning, that's all I need.", "When it's wrong about delays I'm late for drop-off."]
+  },
+  {
+    "id": "skeptical_veteran",
+    "name": "Skeptical veteran",
+    "segment": "45+, long-time commuter, low trust in ads",
+    "cares_about": ["honesty", "accuracy", "no fluff"],
+    "pet_peeves": ["guarantees", "marketing speak"],
+    "sample_quotes": ["Every app says it's faster. Prove it.", "Accurate delay info is the only feature I care about."]
+  }
+]
