@@ -20,7 +20,7 @@ Last updated: 2026-11-07 (Andu)
 | Browser e2e, `VITE_USE_MOCKS=false` | **Done in Chromium** (`qa/e2e_browser.py`): 3/3 clean runs, no console or HTTP errors, risky trend rejected, `needs_human` banner shows and apply still ships. Run in demo mode |
 | Slack | **Real** webhook on ship (`Run.slack` = posted / simulated / failed). Image: `SLACK_IMAGE_URL` or `PUBLIC_BASE_URL` (never localhost); a message rejected because of its image is retried once without it |
 | Adobe / trends | Local simulations by team decision, no keys needed |
-| Backup video | **Re-recorded 14:50:** `qa/results/moment-backup-demo.mp4` (72 s, no sound, demo mode): pumpkin latte photo, "Apply all & ship", 3 conflicts incl. **Brand vs Origin Seeker (synthetic customer)**, "37s vs 8 days", Slack, risky trend |
+| Backup video | **Full demo, 18:30 (Ada):** `qa/results/adobee-demo.mp4` (1:57, 1600×900, no sound, demo mode, $0), made by `qa/record_demo.py`: risky trend rejected, Firefly, rewrite, hashtags, posting time, trend score, review, referee clashes, Adobee ships it, phone, Rules, closing screen. Older 72 s backup: `qa/results/moment-backup-demo.mp4` |
 | Tag `v1.0.0-demo` | **Cut** on `main`; re-tag `v1.0.1-demo` after this fix commit if you want the tag to match the video |
 
 ## Next: Post / Rules layout, Trend score, regenerate, posting time (proposed 2026-11-07, Andu)
