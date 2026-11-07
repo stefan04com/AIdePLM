@@ -39,6 +39,6 @@ Built by call #3 from `reviews.csv`; demo mode uses the set from the live run:
 | `curious_coffee_enthusiast` | Origin Seeker | origin, V60, roast, "old crop", baristas who explain |
 | `on_the_go_commuter` | App-First Commuter | app ordering, queues, wrong or late orders, prices |
 
-## Still open
+## Status
 
-- Rejected-trend UI button (Andu, see `COORDINATION.md`).
+- All scenario elements complete on `main`, including the rejected-trend bonus beat ("Try a risky trend" button, key B).
