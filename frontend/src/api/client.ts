@@ -73,6 +73,9 @@ const backendApi = {
   apply: (id: string, body: ApplyRequest) => post<Run>(runPath(id, '/apply'), body),
   /** Rewrites the edited caption; the review restarts (status DRAFTED, reactions cleared). */
   regenerate: (id: string, body: RegenerateRequest) => post<Run>(runPath(id, '/regenerate'), body),
+  /** Replaces the post's hashtags; no AI call, the review keeps its answers. */
+  setHashtags: (id: string, hashtags: string[]) =>
+    post<Run>(runPath(id, '/hashtags'), { hashtags }),
   getTrendScore: (body: TrendScoreRequest) => post<TrendScore>('/trend-score', body),
   getPostingTime: (platform: Platform) =>
     get<PostingTime>(`/posting-time?platform=${encodeURIComponent(platform)}`),

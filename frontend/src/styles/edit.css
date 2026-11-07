@@ -55,3 +55,46 @@
   padding-left: 18px;
   font-size: 14px;
 }
+
+/* Hashtag card (Post page). */
+
+.hashtag-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.hashtag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.hashtag-chip {
+  padding: 4px 12px;
+  font-size: 14px;
+  border-radius: 999px;
+}
+
+.hashtag-chip.current {
+  border-color: var(--highlight);
+  color: var(--highlight);
+}
+
+.hashtag-suggestions {
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.hashtag-suggestions li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}

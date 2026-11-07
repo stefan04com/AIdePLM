@@ -186,6 +186,9 @@ export default function App() {
         <CanvasColumn
           run={run}
           busy={uiBusy}
+          onHashtags={(hashtags) =>
+            act(() => (run ? api.setHashtags(run.id, hashtags) : Promise.resolve()))
+          }
           onRegenerate={(caption, instruction) =>
             act(() => (run ? api.regenerate(run.id, { caption, instruction }) : Promise.resolve()))
           }

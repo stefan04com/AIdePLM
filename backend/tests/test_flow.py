@@ -245,3 +245,15 @@ def test_comment_is_refused_while_a_step_is_running(client):
     r = client.post(f"/runs/{run['id']}/comments", json={"role": "brand", "text": "late"})
     assert r.status_code == 409
     assert client.get(f"/runs/{run['id']}").json()["comments"] == []
+
+
+def test_hashtag_suggestions_and_setting_hashtags(client):
+    s = client.get("/hashtags", params={"keywords": "autumn,coffee", "platform": "instagram"})
+    assert s.status_code == 200 and s.json()["cap"] <= 5
+    assert all(h["tag"].startswith("#") for h in s.json()["hashtags"])
+
+    run = start_run(client)
+    r = client.post(f"/runs/{run['id']}/hashtags", json={"hashtags": ["a", "#B", " #a ", "", "#"]})
+    assert r.status_code == 200
+    assert r.json()["draft"]["hashtags"] == ["#a", "#B"]  # prefixed, deduplicated, empties dropped
+    assert client.post("/runs/nope/hashtags", json={"hashtags": []}).status_code == 404

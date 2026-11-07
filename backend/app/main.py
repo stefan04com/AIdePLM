@@ -18,6 +18,7 @@ from .models import (
     CreateRunRequest,
     DemoModeRequest,
     DemoModeResponse,
+    HashtagsRequest,
     LiveTrends,
     Persona,
     PersonaReaction,
@@ -106,6 +107,11 @@ def post_apply(run_id: str, body: ApplyRequest) -> Run:
 @app.post("/runs/{run_id}/regenerate", response_model=Run)
 def post_regenerate(run_id: str, body: RegenerateRequest) -> Run:
     return orchestrator.regenerate(run_id, body)
+
+
+@app.post("/runs/{run_id}/hashtags", response_model=Run)
+def post_hashtags(run_id: str, body: HashtagsRequest) -> Run:
+    return orchestrator.set_hashtags(run_id, body)
 
 
 @app.post("/trend-score", response_model=TrendScore)

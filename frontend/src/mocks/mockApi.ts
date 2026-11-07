@@ -230,6 +230,19 @@ export async function apply(id: string, body: ApplyRequest): Promise<Run> {
   return weighed(run) // after withStep, so the returned run is no longer busy
 }
 
+/** Like orchestrator.set_hashtags: prefix, deduplicate, drop empties; the review is kept. */
+export async function setHashtags(id: string, hashtags: string[]): Promise<Run> {
+  const run = findRun(id)
+  requireStatus(run, ['DRAFTED', 'IN_REVIEW', 'REFEREED'], 'change hashtags of')
+  const cleaned: string[] = []
+  for (const raw of hashtags) {
+    const tag = '#' + raw.trim().replace(/^#+/, '').replace(/\s+/g, '')
+    if (tag.length > 1 && !cleaned.some((t) => t.toLowerCase() === tag.toLowerCase())) cleaned.push(tag)
+  }
+  if (run.draft) run.draft.hashtags = cleaned
+  return weighed(run)
+}
+
 /** Like orchestrator.regenerate: keeps the person's edit, clears reactions and referee. */
 export async function regenerate(id: string, body: RegenerateRequest): Promise<Run> {
   const run = findRun(id)
