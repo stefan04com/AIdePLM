@@ -11,7 +11,7 @@ Guidance for Claude Code (and humans) working in this repo. Read this first, the
 Feature freeze is on: fixes only.
 
 - **Works end to end** on `main`: trend → fit → draft → personas → human comments → referee → apply → Slack, plus the rejected "risky trend" beat. Backend 128 tests, frontend 20 tests, build and lint pass.
-- **Real AI:** live eval 3/3 with a conflict, 0 fallbacks, **$0.0566 per post** (`qa/results/live_eval_20261107_122427.md`).
+- **Real AI:** live eval 3/3 with a conflict, 0 fallbacks, **$0.0602 per post** (`qa/results/live_eval_20261107_142630.md`).
 - **Real Slack** webhook on ship (`Run.slack` = posted / simulated / failed). The time reads in seconds under a minute ("37s", not "0m"), `SLACK_IMAGE_URL` gives Slack a public image, and a message Slack rejects because of its image is retried once without it. The "Shipped" banner says what really happened to the Slack message.
 - **Browser-tested** with `VITE_USE_MOCKS=false` in Chromium (`qa/e2e_browser.py`): 3/3 clean runs, no console or HTTP errors; the `needs_human` banner shows and apply still ships. Run in demo mode, so a live-LLM click-through is still open.
 - **Backup video:** `qa/results/moment-backup-demo.mp4` (72 s, no sound, demo mode).

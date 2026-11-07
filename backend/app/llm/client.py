@@ -100,6 +100,15 @@ def _extract_json(text: str) -> object:
     return json.loads(text[start : end + 1])
 
 
+def _live_in_demo(call: str) -> bool:
+    """LIVE_IN_DEMO=referee,reactions: these calls hit the real LLM even in demo mode.
+
+    Needs a configured LLM; any failure still ends in the canned fallback, so the demo is safe.
+    """
+    names = os.environ.get("LIVE_IN_DEMO", "").replace(" ", "").lower().split(",")
+    return call in names and bool(os.environ.get("LLM_MODEL", "").strip())
+
+
 def call_structured(
     *,
     call: str,
@@ -114,7 +123,7 @@ def call_structured(
 
     `check` raises ValueError for semantic errors (e.g. unknown ids); treated like a schema error.
     """
-    if store.demo_mode():
+    if store.demo_mode() and not _live_in_demo(call):
         usage.log_call(
             run_id=run_id,
             call=call,
