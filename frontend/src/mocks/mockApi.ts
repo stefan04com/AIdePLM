@@ -12,6 +12,8 @@ import type {
   CommentCreate,
   Draft,
   DemoModeResponse,
+  HashtagSuggestions,
+  LiveTrends,
   Persona,
   PersonaReaction,
   Platform,
@@ -25,6 +27,8 @@ import type {
   UsageSummary,
 } from '../api/types'
 import expertsJson from '../../../data/industry_experts.json'
+import hashtagsJson from '../../../data/hashtags.json'
+import liveTrendsJson from '../../../data/live_trends.json'
 import {
   COMMENT_HALF_LIFE_MS,
   type ExpertsFile,
@@ -308,4 +312,54 @@ export async function getDemoMode(): Promise<DemoModeResponse> {
 export async function setDemoMode(on: boolean): Promise<DemoModeResponse> {
   demoMode = on
   return { on: demoMode }
+}
+
+// --- Hashtags and current trends: read the same saved data files as the backend -------------
+
+interface CachedTopic {
+  topic: string
+  keywords: string[]
+  hashtags: { tag: string; kind: string; evidence: string; source: string }[]
+}
+
+const KIND_ORDER = ['niche', 'local', 'branded-generic', 'broad']
+const words = (text: string) => text.toLowerCase().match(/[a-z0-9]+/g) ?? []
+
+/** Simplified version of backend/app/hashtags.suggest: topic keyword match, niche first, cap 3. */
+export async function getHashtags(keywords: string[], platform = 'instagram'): Promise<HashtagSuggestions> {
+  const given = new Set(keywords.flatMap(words))
+  const topics = (hashtagsJson.topics as CachedTopic[]).filter((topic) =>
+    topic.keywords.some((keyword) => words(keyword).every((word) => given.has(word))),
+  )
+  const seen = new Set<string>()
+  const tags = topics
+    .flatMap((topic) => topic.hashtags.map((h) => ({ ...h, topic: topic.topic })))
+    .filter((h) => !seen.has(h.tag.toLowerCase()) && seen.add(h.tag.toLowerCase()))
+    .sort((a, b) => KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind))
+    .slice(0, 3)
+  return {
+    platform,
+    hashtags: tags.map((h) => ({
+      tag: h.tag,
+      kind: h.kind as HashtagSuggestions['hashtags'][number]['kind'],
+      topic: h.topic,
+      evidence: h.evidence,
+      source_url: h.source,
+      source: 'saved',
+    })),
+    cap: 3,
+    matched_topics: topics.map((topic) => topic.topic),
+    collected_at: hashtagsJson.collected_at ?? null,
+    source: 'saved',
+    platform_note: 'Mock answer from data/hashtags.json.',
+    platform_source: '',
+  }
+}
+
+export async function getLiveTrends(): Promise<LiveTrends> {
+  return {
+    source: 'saved',
+    collected_at: liveTrendsJson.collected_at ?? null,
+    trends: liveTrendsJson.trends as Trend[],
+  }
 }
