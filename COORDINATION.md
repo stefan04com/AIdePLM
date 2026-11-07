@@ -9,7 +9,7 @@ Rules and architecture live in `CLAUDE.md` and `ARCHITECTURE.md`; this file only
 - **Feature freeze is on:** only fixes go here; ideas go to "What's next" in the pitch.
 - `main` is open: push or merge there as you like (team decision, 2026-11-07). Before you push, `git pull` first and run the tests (`pytest -q`, `npm run build && npm run lint && npm test`) so `main` still runs the demo. Never force-push `main`. Merge `main` back into `develop` after you push.
 
-Last updated: 2026-11-07 14:15 (Stefan)
+Last updated: 2026-11-07 14:20 (Stefan)
 
 ## Status
 
@@ -29,23 +29,31 @@ Last updated: 2026-11-07 14:15 (Stefan)
 - [ ] 3 clean rehearsals in a row on the **presentation laptop** with `docs/demo-script.md`, including the risky-trend beat. At least one with demo mode **off**, so the referee answers the comments typed live. Before each: `python qa/e2e_browser.py rehearsal` must exit 0.
 
 ### Stefan
+- [ ] Push the board update: `git push origin main develop`.
+- [ ] **Persona conflict never shows up live** (AI 25%): all 6 live runs gave only human-vs-human conflicts, but the README promises customers at the review table. Make one persona clearly push back on a human demand (e.g. Origin Seeker vs Product's "latte as the hero"), add "≥1 human-vs-persona conflict" to `qa/live_eval.py`. Done when: 3/3 live runs show a persona on a conflict card.
+- [ ] **Referee live on stage:** in demo mode the referee answer is canned, so comments the judges type don't change it. Run at least the referee step with demo mode off (~$0.06, ~22 s); keep demo mode only as the automatic fallback. Done when: one rehearsal passes live.
 - [ ] After the rehearsals: commit or revert the modified `frontend/package-lock.json`, cut `release/1.0.0`, tag `v1.0.0-demo` on `main`, merge back into `develop`.
 - [ ] Pitch, with Anda: say what is real (LLM, Slack) and what is simulated (Adobe, trends; `adobe.py` is the integration seam). Show `qa/results/live_eval_*.md` as proof the AI is real and measured, since demo mode answers from the cache.
 
 ### Andu
+- [ ] **"Accept compromise" doesn't change what ships:** `apply()` checks the `conflict_ids` but never uses them; it always ships the referee's full `final_caption`. Quick fix: rename the button "Apply all & ship" and drop or relabel the per-conflict "Accept" buttons (with Stefan if the backend should use them). Done when: the UI doesn't promise a choice it doesn't make.
+- [ ] **Cost panel shows "n/a" in demo mode:** show the measured **$0.0566 per post** (from the live eval) when there are no live calls, labelled "measured in live eval".
 - [ ] One human click-through on the presentation laptop with `VITE_USE_MOCKS=false` in `frontend/.env.local` (the automated run can't judge how it looks on the projector).
 - [ ] Consider showing only "37s vs 8 days" on the ship screen instead of "18,893× faster": on a run of a few seconds the multiplier looks inflated.
 
 ### Militaru
+- [ ] **Replace the laptop photo** (`frontend/public/visuals/boabe-laptop-mug.jpg`): every post shows the same laptop + keyboard while the visual prompt describes a pumpkin latte by a foggy window, so a judge sees they don't match. Use a CC0 image that fits the Boabe story (latte on a café table, window, autumn light), update `CREDITS.md` and `ADOBE_MOCK_IMAGE_URL`, and point `SLACK_IMAGE_URL` at a public copy of the same image. Done when: post and Slack show the new image.
+- [ ] Only if there's time and the team agrees (it's after the freeze): one real third integration, a live Reddit/news fetch in `trends.py` (fallback already there) or a Firefly call in `adobe.generate_visual()` if someone gets Adobe Developer credentials. Otherwise leave it in "What's next".
 - [ ] Give the team the webhook URL privately (not in git), so every laptop posts to the same channel.
 - [ ] Set `SLACK_IMAGE_URL` (a public https image you've opened in a browser) or a public `PUBLIC_BASE_URL`, so Slack shows the photo.
 
 ### Anda
+- [ ] Pitch: say "37 s vs 8 days" rather than the multiplier, and state plainly what is real (LLM, Slack) and what is simulated (Adobe, trends).
 - [ ] Cost slide: **$0.0566 per post** (4 LLM calls, ~22 s of model time) next to "a review takes 8 days and 3+ versions" (Filestage, vendor-reported). If you add hours saved × hourly cost, label it as an assumption.
 
 ## Not now (put in "What's next" in the pitch)
 
-A real Adobe Firefly / Express call, a live Reddit/news fetch, CI, `MAX_TOKENS` (2048) possibly cutting the referee JSON, file write under the lock in `store.mutate`, `_guarded` not stopping timed-out threads, the retry time budget (up to ~30 s), auth on `/admin/demo-mode`, persona-vs-human conflicts showing up more often in live runs.
+CI, `MAX_TOKENS` (2048) possibly cutting the referee JSON, file write under the lock in `store.mutate`, `_guarded` not stopping timed-out threads, the retry time budget (up to ~30 s), auth on `/admin/demo-mode`, a real Adobe Express post (open/update in Express).
 
 ## Done
 
