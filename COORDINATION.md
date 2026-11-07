@@ -98,7 +98,7 @@ Read first: `docs/trending-research.md` (data sources and limits) and `docs/what
 - [x] `SLACK_IMAGE_URL` set to the public GitHub raw copy of the post photo (default in `.env.example`, so every laptop gets it).
 - [x] **Visual after review:** ~~switches automatically on apply~~. Changed by Ada: the image changes only when someone presses **"Generate with Firefly"** on the post (`boabe-pumpkin-latte-revised.jpg`, `lib/firefly.ts`). **Everyone: empty `ADOBE_MOCK_REVISED_IMAGE_URL=` in your `.env`** (Stefan's laptop too), or apply still swaps it.
     - The Slack message shows the same image (`SLACK_IMAGE_URL`, public GitHub raw URL).
-    - **That photo has a dreamstime.com watermark: replace it with a licensed image before the demo** (`CREDITS.md`).
+    - Watermarked photo replaced (2026-11-07) with a clean one, same file name; license to confirm (`CREDITS.md`).
 
 ### Anda
 - [ ] Pitch: say "37 s vs 8 days" rather than the multiplier, and state plainly what is real (LLM, Slack) and what is simulated (Adobe, trends).

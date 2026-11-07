@@ -8,11 +8,11 @@ These stand in for images a real Adobe Firefly integration would generate.
 - Source: provided by the team (Militaru), 2026-11-07.
 - License: to confirm before any public use outside the hackathon demo.
 
-## `boabe-pumpkin-latte-revised.jpg` (601 × 900)
+## `boabe-pumpkin-latte-revised.jpg` (1024 × 572)
 
 - Used for: the image the Firefly mock "generates": the post switches to it only when someone presses "Generate with Firefly" (`FIREFLY_IMAGE` in `src/lib/firefly.ts`). Also the Slack message image (`SLACK_IMAGE_URL`).
 - Source: provided by the team (Militaru), 2026-11-07.
-- License: **not licensed.** It is a stock preview with a "dreamstime.com" watermark. Replace it with a licensed or own image before showing it publicly.
+- License: to confirm before any public use outside the hackathon demo. (Replaced on 2026-11-07 an earlier version that had a stock watermark; this one has none.)
 
 ## `boabe-latte.jpg` (1280 px)
 
