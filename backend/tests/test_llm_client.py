@@ -82,3 +82,29 @@ def test_demo_mode_makes_no_provider_call(monkeypatch):
 
     monkeypatch.setattr(llm, "_provider_complete", boom)
     assert check_fit(TREND, "brand", "r") == demo_cache.CANNED_FIT
+
+
+def test_bedrock_is_chosen_from_token_and_needs_no_api_key(monkeypatch):
+    monkeypatch.setenv("AWS_BEARER_TOKEN_BEDROCK", "secret")
+    assert llm._provider_name() == "bedrock"
+    monkeypatch.setenv("LLM_PROVIDER", "anthropic")
+    assert llm._provider_name() == "anthropic"
+
+
+def test_bedrock_client_uses_region_and_token(monkeypatch):
+    monkeypatch.setenv("LLM_PROVIDER", "bedrock")
+    monkeypatch.setenv("AWS_BEARER_TOKEN_BEDROCK", "secret")
+    monkeypatch.setenv("AWS_REGION", "eu-west-1")
+    c = llm._make_client()
+    assert c.aws_region == "eu-west-1" and c.api_key == "secret"
+    monkeypatch.delenv("AWS_REGION")
+    monkeypatch.delenv("AWS_DEFAULT_REGION", raising=False)
+    assert llm._make_client().aws_region == llm.DEFAULT_REGION
+
+
+def test_bedrock_without_token_is_a_fallback_not_a_crash(monkeypatch):
+    store.set_demo_mode(False)
+    monkeypatch.setenv("LLM_PROVIDER", "bedrock")
+    monkeypatch.setenv("LLM_MODEL", "anthropic.claude-sonnet-5-5")
+    monkeypatch.delenv("AWS_BEARER_TOKEN_BEDROCK", raising=False)
+    assert check_fit(TREND, "brand", "r") == demo_cache.CANNED_FIT
