@@ -60,6 +60,8 @@ Read first: `docs/trending-research.md` (data sources and limits) and `docs/what
 - [x] Posting windows: `data/posting_windows.json` (7 platforms, Sprout/Buffer/Hootsuite/Metricool/Later 2025-26, confidence each; TikTok low).
     - `backend/app/posting_times.py`: `recommend(platform)` for the posting-time endpoint.
     - Differs from `docs/trending-research.md` §3 for Instagram, LinkedIn, Facebook: the JSON follows the verified reports.
+- [x] **Wired into the app:** `/posting-time` now answers from `data/posting_windows.json` (confidence + source URLs; guide rules only as fallback).
+    - New `GET /hashtags` and `GET /trends/live`. Rules page, section 04: "Fetch current trends" (simulated fetch steps, saved snapshot) and hashtag suggestions per platform.
 - [ ] Replace the simulated Firefly photos in `frontend/public/visuals/` with real Firefly output if someone gets Adobe credentials (update `CREDITS.md`).
 
 ### Anda (data, content, QA)
