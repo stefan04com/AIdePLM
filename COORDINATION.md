@@ -28,6 +28,25 @@ Last updated: 2026-11-07 12:30 (Stefan)
 - [x] Measured cost: **$0.0566 per post** (4 calls: fit, draft, reactions, referee; personas once, $0.17 total for 3 runs incl. personas). Prices $3 / $15 per Mtok set in `.env` (`LLM_PRICE_*`).
 - [ ] After a clean rehearsal, cut `release/1.0.0` and tag `v1.0.0-demo` on `main`.
 
+### Stefan: review against the judging criteria (2026-11-07, hackathon only)
+Can break the demo (do first, in this order):
+- [ ] 1. Race in `add_comment` (`orchestrator.py:185`): a comment added while the referee runs is lost (status ends `REFEREED`, comment never refereed). Return 409 when `run.step` is set. Done when: a test covers it.
+- [ ] 2. Show when a fallback was used: add an optional `used_fallback` field (adding an optional field is allowed by the contract) so the UI can tell canned content from a real LLM answer in live mode. Tell Andu to show it.
+- [ ] 3. Browser e2e with `VITE_USE_MOCKS=false` (draft, comments, referee, apply). Same item as Andu's above; Stefan checks it too.
+- [ ] 4. 3 clean rehearsals on the presentation laptop, including the rejected-trend beat, plus the backup video (with Anda).
+- [ ] 5. Before the tag: commit or revert the modified `frontend/package-lock.json`, then cut `release/1.0.0` and tag `v1.0.0-demo`.
+
+Can cost points:
+- [ ] 6. Third-party (15%) is the weakest criterion: only Slack is real. In the pitch, say what is real and what is simulated; present Adobe as "integration-ready" (`adobe.py` is the seam). A real Firefly/Reddit call goes to "What's next" (feature freeze).
+- [ ] 7. Demo mode is canned content (0 tokens). In the pitch, show `qa/results/live_eval_*.md` and `logs/usage.jsonl` as proof that the AI is real and measured.
+- [ ] 8. Cost bonus (+10): put $0.0566 per post next to "about 2 hours vs 8 days" on the slide (with Anda).
+- [ ] 9. The image never reaches the real Slack message: `ADOBE_MOCK_IMAGE_URL` is a relative path and `slack._is_web_url` rejects it (the UI preview shows it). Use an absolute URL, or don't draw attention to it.
+
+Cleanup:
+- [ ] 10. Docs out of sync: the test count here (106, now 119) and `docs/qa-report.md` still lists the rejected-trend button as "Left".
+
+Not now, put in "What's next" in the pitch: CI, `MAX_TOKENS` (2048) cutting the referee JSON, file write under the lock in `store.mutate`, `_guarded` not stopping timed-out threads, the retry time budget (up to ~30s), auth on `/admin/demo-mode`, a real Adobe call.
+
 ## Andu: frontend
 - [x] "Try another trend" button: `GET /trend?which=rejected`, then `POST /runs`; show `run.fit.reason` on `REJECTED`. Done by Ada on `feature/ada-friendly-adobe-theme` ("Try a risky trend", key B, brand-safety shield).
 - [ ] Test the full flow in a real browser with `VITE_USE_MOCKS=false` in `frontend/.env.local` (draft, comments, referee, apply).
