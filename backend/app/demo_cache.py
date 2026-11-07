@@ -228,9 +228,31 @@ def referee(comments: list[Comment], draft_: Draft, personas_: list[Persona]) ->
             )
         )
 
+    # The synthetic audience at the table: the coffee-curious persona (second canned reaction,
+    # the sceptical one) pushes back on Brand's "mood only" post, like the live runs do.
+    if "brand" in latest and len(personas_) >= 2:
+        persona = personas_[1]
+        conflicts.append(
+            Conflict(
+                id="conf_3",
+                between=[
+                    human("brand"),
+                    ConflictParty(kind="persona", id=persona.id, label=persona.name),
+                ],
+                summary=f"Brand wants a mood-led post with a soft product mention; {persona.name} "
+                "finds no coffee detail in it and would scroll past.",
+                positions={
+                    "brand": "Lead with the moment; keep the product mention light.",
+                    persona.id: "Tell me what's in the cup, or it's just another autumn ad.",
+                },
+                compromise="Keep the mood first, but give coffee people one concrete reason to "
+                "stop: the latte is built on our house espresso.",
+            )
+        )
+
     final_caption = (
-        "Grey Tuesday. A Pumpkin & Cinnamon Latte, real pumpkin and Ceylon cinnamon, still warm "
-        "in the corner. Bucharest does autumn slowly when you let it. Order ahead in the app."
+        "Grey Tuesday. A Pumpkin & Cinnamon Latte on our house espresso, real pumpkin and Ceylon "
+        "cinnamon, still warm in the corner. Bucharest does autumn slowly. Order ahead in the app."
     )
     edits: list[Edit] = []
     if "legal" in latest or "product" in latest:

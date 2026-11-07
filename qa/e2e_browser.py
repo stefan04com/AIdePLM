@@ -57,7 +57,7 @@ with sync_playwright() as p:
     page.wait_for_function("() => !document.body.innerText.includes('Writing the draft')", timeout=30000)
     pause(3)
     check("fit card shows 'Fits the brand'", True)
-    check("post image rendered", page.locator("img[src*='boabe-latte']").count() > 0)
+    check("post image rendered", page.locator("img[src*='boabe-pumpkin-latte']").count() > 0)
 
     page.get_by_role("button", name="Persona reactions").click()
     page.wait_for_function(
@@ -91,11 +91,14 @@ with sync_playwright() as p:
         page.get_by_text("Product vs Legal").first.scroll_into_view_if_needed()
         page.mouse.wheel(0, 250)
     pause(5)
-    if video_dir:
-        page.mouse.wheel(0, 500)
-        pause(4)
     conflicts = page.locator(".conflict, [class*=conflict-card]").count()
+    persona_conflict = page.locator(".conflict").filter(has_text="synthetic customer").count()
+    if video_dir and persona_conflict:  # linger on the customer-vs-Brand card
+        page.locator(".conflict").filter(has_text="synthetic customer").first.scroll_into_view_if_needed()
+        page.mouse.wheel(0, 200)
+        pause(6)
     check("referee shows conflict cards", conflicts > 0 or page.locator("text=conflicts").count() > 0)
+    check("a synthetic customer is in a conflict", persona_conflict > 0)
     page.screenshot(path=f"{OUT}/{label}_refereed.png", full_page=True)
 
     page.get_by_role("button", name="Apply all & ship").click()
