@@ -28,6 +28,7 @@ const shippedRun = {
 
 test('a shipped run builds the full preview', () => {
   assert.deepEqual(buildSlackPreview(shippedRun), {
+    delivery: null, // run has no `slack` field: treated as not posted
     header: 'Moment: post approved',
     caption: 'Grey week, warm corner.',
     imageUrl: 'data:image/svg+xml;base64,AA', // the simulated preview shows the local image
@@ -35,4 +36,5 @@ test('a shipped run builds the full preview', () => {
     elapsed: '4m',
   })
   assert.equal(buildSlackPreview({ ...shippedRun, shipped_at: null }), null)
+  assert.equal(buildSlackPreview({ ...shippedRun, slack: 'posted' })?.delivery, 'posted')
 })

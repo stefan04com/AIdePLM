@@ -116,7 +116,11 @@ export interface Run {
   step: string | null // loading label while a background job runs
   started_at: IsoDateTime
   shipped_at: IsoDateTime | null
+  /** Set on ship: the Slack message was posted, simulated (no webhook) or failed. */
+  slack?: SlackDelivery | null
 }
+
+export type SlackDelivery = 'posted' | 'simulated' | 'failed'
 
 // --- Request bodies ---------------------------------------------------------
 
