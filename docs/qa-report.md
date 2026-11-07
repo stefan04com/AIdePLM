@@ -16,11 +16,17 @@ Everything that blocked the demo is fixed on `main`; what's left is the rejected
 | 8b | Militaru | Backend not `ruff format`-ed | Formatted (line length 100) |
 | 8 | Militaru | The visual was a placeholder card | Real CC0 photo served locally: `ADOBE_MOCK_IMAGE_URL=/visuals/boabe-laptop-mug.jpg` (default in `.env.example`; credits in `frontend/public/visuals/CREDITS.md`). No internet needed on stage |
 
+## Fixed later
+
+- Rejected trend: "Try a risky trend" button in the UI (Ada), REJECTED shows the fit reason.
+- Race in `add_comment`: a comment while a step runs now gets 409 instead of being lost.
+- Canned content in live mode is now visible: `Run.fallback_calls` and "CANNED: …" in the run line.
+- Slack image: a relative image path is made absolute with `PUBLIC_BASE_URL`.
+
 ## Left
 
 | # | Owner | What | Done when |
 |---|---|---|---|
-| 9 | Andu | No UI for the rejected trend (backend `GET /trend?which=rejected` is ready) | "Try another trend" shows REJECTED with the fit reason |
 | 10 | Everyone | No rehearsal on the presentation laptop yet | Three clean runs in a row |
 
 ## Minor (unchanged, harmless)

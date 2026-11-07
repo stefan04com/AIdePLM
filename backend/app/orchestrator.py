@@ -143,6 +143,9 @@ def _finish_with_cached_draft(run_id: str) -> None:
     with store.mutate(run_id) as r:
         if r is not None and r.status == "SPOTTED":
             r.fit = r.fit or demo_cache.fit(r.trend)
+            for name in ("fit", "draft"):
+                if name not in r.fallback_calls and not store.demo_mode():
+                    r.fallback_calls.append(name)
             if not r.fit.fits:
                 r.status, r.step = "REJECTED", None
                 return
@@ -197,6 +200,8 @@ def add_comment(run_id: str, body: CommentCreate) -> Comment:
             raise NotFoundError(f"run {run_id} not found")
         if run.status not in REVIEWABLE | {"REFEREED"}:
             raise InvalidTransitionError(f"cannot comment while status is {run.status}")
+        if run.step is not None:  # the referee/reactions are running: this comment would be lost
+            raise InvalidTransitionError(f"run is busy: {run.step}")
         run.comments.append(comment)
         run.status = "IN_REVIEW"  # a new comment after REFEREED means: referee again
     return comment

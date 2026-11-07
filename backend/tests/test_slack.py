@@ -200,3 +200,19 @@ def test_truncation_never_cuts_an_entity_in_half(prefix: int) -> None:
 )
 def test_format_elapsed(elapsed: timedelta, expected: str) -> None:
     assert format_elapsed(elapsed) == expected
+
+
+def test_relative_image_becomes_absolute_with_public_base_url(monkeypatch) -> None:
+    monkeypatch.setenv("PUBLIC_BASE_URL", "https://moment.example/")
+    blocks = build_blocks("Caption", "/visuals/photo.jpg", TASKS, ELAPSED)
+    assert {
+        "type": "image",
+        "image_url": "https://moment.example/visuals/photo.jpg",
+        "alt_text": "Final post image",
+    } in blocks
+
+
+def test_relative_image_is_dropped_without_public_base_url(monkeypatch) -> None:
+    monkeypatch.delenv("PUBLIC_BASE_URL", raising=False)
+    blocks = build_blocks("Caption", "/visuals/photo.jpg", TASKS, ELAPSED)
+    assert all(b["type"] != "image" for b in blocks)

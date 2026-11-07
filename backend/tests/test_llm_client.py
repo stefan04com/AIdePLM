@@ -115,3 +115,19 @@ def test_bedrock_without_token_is_a_fallback_not_a_crash(monkeypatch):
     monkeypatch.setenv("LLM_MODEL", "anthropic.claude-sonnet-5-5")
     monkeypatch.delenv("AWS_BEARER_TOKEN_BEDROCK", raising=False)
     assert check_fit(TREND, "brand", "r") == demo_cache.CANNED_FIT
+
+
+def test_live_fallback_is_marked_on_the_run(live):
+    from app.models import Run
+
+    replies, _ = live
+    run = Run(
+        id="run_x",
+        trend=TREND,
+        status="SPOTTED",
+        started_at="2026-11-07T10:00:00Z",
+    )
+    store.save_run(run)
+    replies.append(llm.LLMError("down"))
+    check_fit(TREND, "brand", "run_x")
+    assert store.get_run("run_x").fallback_calls == ["fit"]

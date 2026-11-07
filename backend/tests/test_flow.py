@@ -209,3 +209,14 @@ def test_demo_mode_can_be_read_back(client):
     assert client.get("/admin/demo-mode").json() == {"on": False}
     client.post("/admin/demo-mode", json={"on": True})
     assert client.get("/admin/demo-mode").json() == {"on": True}
+
+
+def test_comment_is_refused_while_a_step_is_running(client):
+    from app import store
+
+    run = start_run(client)
+    with store.mutate(run["id"]) as r:
+        r.step = "Referee is resolving the feedback…"
+    r = client.post(f"/runs/{run['id']}/comments", json={"role": "brand", "text": "late"})
+    assert r.status_code == 409
+    assert client.get(f"/runs/{run['id']}").json()["comments"] == []
