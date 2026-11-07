@@ -47,19 +47,31 @@
       "id": "c_brand",
       "role": "brand",
       "text": "This reads like an ad. The trend is about the cozy moment, not about us. Lead with the moment, keep the latte in the background and make the call to action softer.",
-      "created_at": "2026-11-07T09:20:00Z"
+      "created_at": "2026-11-07T09:20:00Z",
+      "author": null,
+      "author_title": null,
+      "industry_verified": false,
+      "weight": 1.0
     },
     {
       "id": "c_legal",
       "role": "legal",
       "text": "The caption can't say 'no added sugar', 'healthy' or 'the best latte in town'. We have no documentation for the sugar claim, and health claims and superlatives we can't prove are off-limits.",
-      "created_at": "2026-11-07T09:22:00Z"
+      "created_at": "2026-11-07T09:22:00Z",
+      "author": null,
+      "author_title": null,
+      "industry_verified": false,
+      "weight": 1.0
     },
     {
       "id": "c_product",
       "role": "product",
       "text": "The Pumpkin & Cinnamon Latte launches this week. Add that it has no added sugar, it's our main selling point, and make the drink the hero of the visual.",
-      "created_at": "2026-11-07T09:24:00Z"
+      "created_at": "2026-11-07T09:24:00Z",
+      "author": null,
+      "author_title": null,
+      "industry_verified": false,
+      "weight": 1.0
     }
   ],
   "referee": {

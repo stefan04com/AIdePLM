@@ -7,7 +7,7 @@ import logging
 import uuid
 from datetime import UTC, datetime
 
-from . import adapters, demo_cache, store
+from . import adapters, demo_cache, store, weighting
 from .llm import calls
 from .models import (
     ApplyRequest,
@@ -58,7 +58,8 @@ def get_run(run_id: str) -> Run:
     run = store.get_run(run_id)
     if run is None:
         raise NotFoundError(f"run {run_id} not found")
-    return run
+    # Comment weights decay with time, so they are computed at read time.
+    return run.model_copy(update={"comments": weighting.weigh_comments(run.comments, _now())})
 
 
 # --- personas (call #3, once) -------------------------------------------------
@@ -176,9 +177,15 @@ def run_reactions(run_id: str) -> list[PersonaReaction]:
 
 
 def add_comment(run_id: str, body: CommentCreate) -> Comment:
+    now = _now()
     comment = Comment(
-        id=f"c_{uuid.uuid4().hex[:8]}", role=body.role, text=body.text, created_at=_now()
+        id=f"c_{uuid.uuid4().hex[:8]}",
+        role=body.role,
+        text=body.text,
+        created_at=now,
+        **weighting.author_fields(body.author),  # type: ignore[arg-type]
     )
+    comment = weighting.weigh_comments([comment], now)[0]
     with store.mutate(run_id) as run:
         if run is None:
             raise NotFoundError(f"run {run_id} not found")
@@ -195,7 +202,7 @@ def run_referee(run_id: str) -> RefereeResult:
         assert run.draft is not None
         result = calls.referee(
             run.draft,
-            run.comments,
+            weighting.weigh_comments(run.comments, _now()),
             run.reactions,
             ensure_personas(),
             adapters.brand_guidelines(),

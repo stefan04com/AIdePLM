@@ -13,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime, timedelta
 from typing import Any, TypeVar
 
-from . import store
+from . import store, weighting
 from .models import Draft, Task, Trend
 
 log = logging.getLogger(__name__)
@@ -58,13 +58,26 @@ def brand_guidelines() -> str:
 
 
 def reviews_text(limit: int = 100) -> str | None:
-    """Review text + rating only (no usernames). None if reviews.csv doesn't exist."""
+    """Reviews heaviest first, one per line with their weight (docs/comment-weighting.md).
+
+    Review text + rating only (no usernames). None if reviews.csv doesn't exist.
+    """
     try:
-        with (DATA / "reviews.csv").open(newline="") as f:
-            rows = [f"({r.get('rating', '?')}/5) {r.get('text', '')}" for r in csv.DictReader(f)]
+        with (DATA / "reviews.csv").open(newline="", encoding="utf-8") as f:
+            rows = list(csv.DictReader(f))
     except OSError:
         return None
-    return "\n".join(rows[:limit]) or None
+    reviews = weighting.weigh_reviews(rows, datetime.now(UTC))[:limit]
+    return "\n".join(_review_line(r) for r in reviews) or None
+
+
+def _review_line(review: weighting.WeightedReview) -> str:
+    tags = [f"weight {review.weight:.2f}"]
+    if review.verified:
+        tags.append("verified industry reviewer")
+    if review.date:
+        tags.append(review.date)
+    return f"[{', '.join(tags)}] ({review.rating}/5) {review.text}"
 
 
 def scripted_comments() -> list[dict]:

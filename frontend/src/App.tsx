@@ -81,8 +81,8 @@ export default function App() {
           run={run}
           personas={personas}
           busy={uiBusy}
-          onComment={(role: CommentRole, text: string) =>
-            onRun((id) => api.addComment(id, { role, text }))()
+          onComment={(role: CommentRole, text: string, author: string | null) =>
+            onRun((id) => api.addComment(id, { role, text, author }))()
           }
           onRequestReactions={onRun(api.requestReactions)}
           onFillScripted={onRun(fillScripted)}
