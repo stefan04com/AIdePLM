@@ -12,7 +12,7 @@
   --radius: 10px;
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
 
-  font: 15px/1.5 var(--sans);
+  font: 16px/1.5 var(--sans); /* readable on a projector */
   color: var(--text);
   background: var(--bg);
   color-scheme: light dark;
@@ -175,7 +175,7 @@ input {
   margin-left: 6px;
   padding: 1px 8px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 13px;
   background: var(--bg);
   border: 1px solid var(--tone, var(--border));
   color: var(--tone, var(--muted));
@@ -281,7 +281,7 @@ input {
   flex-wrap: wrap;
   align-items: center;
   gap: 4px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .comment-meta .badge {
@@ -298,9 +298,14 @@ input {
 
 .comment-box {
   display: flex;
-  gap: 6px;
+  flex-direction: column;
   align-items: flex-end;
-  margin-top: 6px;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.comment-box textarea {
+  width: 100%;
 }
 
 textarea {
@@ -321,7 +326,7 @@ textarea {
 
 .timer {
   margin-left: 8px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 400;
   color: var(--warn);
   font-variant-numeric: tabular-nums;
@@ -534,10 +539,38 @@ ins {
 }
 
 .slack-note {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .slack-clock {
   font-weight: 700;
   color: var(--ok);
+}
+
+/* --- Cost panel ------------------------------------------------------------ */
+
+.cost-big {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.cost-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cost-table th,
+.cost-table td {
+  padding: 4px 6px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.cost-table th {
+  color: var(--muted);
+  font-weight: 600;
 }
