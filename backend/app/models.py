@@ -117,6 +117,8 @@ class Run(BaseModel):
     step: str | None = None  # human-readable current step while a background job runs
     started_at: datetime
     shipped_at: datetime | None = None
+    # Set on ship: the Slack message was posted, simulated (no webhook) or failed.
+    slack: Literal["posted", "simulated", "failed"] | None = None
 
 
 # --- Request bodies -------------------------------------------------------

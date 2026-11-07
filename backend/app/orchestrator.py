@@ -253,10 +253,11 @@ def apply(run_id: str, body: ApplyRequest) -> Run:
         new_draft = _applied_draft(run.draft, run.referee, body.accept_all_edits)
         new_draft = adapters.update_post(run.draft, new_draft)
         shipped_at = _now()
-        adapters.send_to_slack(new_draft, run.referee.tasks, shipped_at - run.started_at)
+        slack = adapters.send_to_slack(new_draft, run.referee.tasks, shipped_at - run.started_at)
         with store.mutate(run_id) as r:
             if r is not None:
                 r.draft, r.status, r.shipped_at = new_draft, "SHIPPED", shipped_at
+                r.slack = slack
         return get_run(run_id)
     finally:
         _release(run_id)

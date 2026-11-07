@@ -1,8 +1,11 @@
-"""Tests for the Slack mock: message content and that nothing is sent."""
+"""Tests for Slack: the real webhook post (urlopen faked) and the simulation without one."""
 
+import json
 import socket
+import urllib.error
 import urllib.request
 from datetime import timedelta
+from email.message import Message
 from typing import Any
 
 import pytest
@@ -11,6 +14,7 @@ from app.models import Task
 from app.slack import SlackResult, build_blocks, format_elapsed, send_final_post
 
 IMAGE_URL = "https://cdn.example.invalid/post.png"
+WEBHOOK = "https://hooks.slack.com/services/T000/B000/secretsecret"
 ELAPSED = timedelta(hours=1, minutes=50)
 TASKS = [Task(owner="Legal", task="Check the claim", due="Today 17:00")]
 
@@ -19,32 +23,95 @@ def sections(blocks: list[dict[str, Any]]) -> list[str]:
     return [b["text"]["text"] for b in blocks if b["type"] == "section"]
 
 
-# --- mock send --------------------------------------------------------------
+class FakeResponse:
+    def __init__(self, status: int = 200) -> None:
+        self.status = status
+
+    def __enter__(self) -> "FakeResponse":
+        return self
+
+    def __exit__(self, *exc: object) -> None:
+        return None
 
 
-def test_send_returns_sent_mock_result_with_the_built_blocks() -> None:
+def fake_urlopen(monkeypatch: pytest.MonkeyPatch, result: object) -> list[Any]:
+    """Replace urlopen; record (request, timeout); return or raise `result`."""
+    calls: list[Any] = []
+
+    def urlopen(request: urllib.request.Request, timeout: float) -> object:
+        calls.append((request, timeout))
+        if isinstance(result, Exception):
+            raise result
+        return result
+
+    monkeypatch.setattr(urllib.request, "urlopen", urlopen)
+    return calls
+
+
+# --- no webhook: simulated ---------------------------------------------------
+
+
+def test_without_webhook_the_post_is_simulated_with_the_built_blocks() -> None:
     result = send_final_post("Caption", IMAGE_URL, TASKS, ELAPSED)
     assert result == SlackResult(
-        sent=True,
-        blocks=build_blocks("Caption", IMAGE_URL, TASKS, ELAPSED),
-        is_mock=True,
+        delivery="simulated", blocks=build_blocks("Caption", IMAGE_URL, TASKS, ELAPSED)
     )
+    assert result.sent
 
 
-def test_send_makes_no_network_call(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_without_webhook_no_network_call(monkeypatch: pytest.MonkeyPatch) -> None:
     def no_network(*args: object, **kwargs: object) -> None:
         raise AssertionError("network call attempted")
 
     monkeypatch.setattr(urllib.request, "urlopen", no_network)
     monkeypatch.setattr(socket.socket, "connect", no_network)
-
-    assert send_final_post("Caption", IMAGE_URL, TASKS, ELAPSED).sent
+    monkeypatch.setenv("SLACK_WEBHOOK_URL", "http://not-https.example")
+    assert send_final_post("Caption", IMAGE_URL, TASKS, ELAPSED).delivery == "simulated"
 
 
 def test_send_accepts_blank_inputs() -> None:
     result = send_final_post("", None, [], timedelta(0))
     assert result.sent
     assert sections(result.blocks) == ["Trend → approved: 0m"]
+
+
+# --- webhook set: real post --------------------------------------------------
+
+
+def test_with_webhook_posts_the_blocks(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("SLACK_WEBHOOK_URL", f" {WEBHOOK} ")
+    calls = fake_urlopen(monkeypatch, FakeResponse(200))
+    result = send_final_post("Caption", IMAGE_URL, TASKS, ELAPSED)
+
+    assert result.delivery == "posted" and result.sent and result.error is None
+    ((request, timeout),) = calls
+    assert request.full_url == WEBHOOK and request.get_method() == "POST"
+    assert request.get_header("Content-type") == "application/json"
+    assert timeout == 15.0
+    body = json.loads(request.data)
+    assert body["blocks"] == result.blocks
+    assert "Caption" in body["text"]
+
+
+@pytest.mark.parametrize(
+    "outcome",
+    [
+        FakeResponse(500),
+        urllib.error.HTTPError(WEBHOOK, 403, "Forbidden", Message(), None),
+        urllib.error.URLError(TimeoutError()),
+        urllib.error.URLError(f"cannot reach {WEBHOOK}"),
+        TimeoutError(),
+        OSError(f"socket error for {WEBHOOK}"),
+    ],
+)
+def test_failed_post_is_reported_without_raising_or_leaking_the_url(
+    monkeypatch: pytest.MonkeyPatch, outcome: object
+) -> None:
+    monkeypatch.setenv("SLACK_WEBHOOK_URL", WEBHOOK)
+    fake_urlopen(monkeypatch, outcome)
+    result = send_final_post("Caption", IMAGE_URL, TASKS, ELAPSED)
+    assert result.delivery == "failed" and not result.sent
+    assert result.error and "secretsecret" not in repr(result)
 
 
 # --- message content --------------------------------------------------------
