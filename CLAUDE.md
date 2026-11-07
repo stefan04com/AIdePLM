@@ -162,6 +162,37 @@ Types: `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `style`. Scopes: `llm
 
 ---
 
+## Note for Stefan: integrations handoff (from Militaru)
+
+`backend/app/adobe.py`, `slack.py` and `trends.py` are on `feature/militaru-adobe-integration`. They aren't wired into the app yet, because `main.py`, `orchestrator.py` and `models.py` don't exist. They use only the standard library and don't import `models.py`.
+
+**Adobe is a mock.** We don't use `ADOBE_CLIENT_ID` or `ADOBE_CLIENT_SECRET`, and `adobe.py` makes no network calls. The "Required" env list above and `ARCHITECTURE.md` (§4.5, ADR-003, §10) still describe the real integration and need updating.
+
+| When | Call | What to do with the result |
+|---|---|---|
+| `GET /trend` | `trends.get_trend(live=False)` | Map `trends.Trend` to `models.Trend`; the fields match §6. `live=True` tries Reddit and falls back to the saved trend |
+| Draft | `adobe.generate_visual(prompt)`, then `adobe.create_post(caption, image_url)` | Set `Draft.image_url`, `express_doc_id` (`post.doc_id`) and `version` (`post.version`) |
+| Apply | `adobe.update_post(post, caption=..., image_url=...)` | Returns a new post with `version + 1`. `caption=""` really blanks the caption, so guard against empty LLM output |
+| Apply | `slack.send_final_post(caption, image_url, tasks, elapsed, demo_mode=...)` | Convert each `Task` to `slack.SlackTask`. It doesn't raise on send failures, so check `result.mode`: `live`, `demo`, `not_configured` or `failed` |
+
+What you need to handle:
+
+- **Blocking calls:** Slack, Reddit and `ADOBE_MOCK_LATENCY_S` all block. Use `def` endpoints or `asyncio.to_thread`, or they stall the 1-second polling.
+- **`.env`:** the modules read `os.environ` only, so `main.py` must load `.env`.
+- **`.env.example`:** add `SLACK_WEBHOOK_URL`, `REDDIT_SUBREDDIT`, `ADOBE_MOCK_IMAGE_URL` and `ADOBE_MOCK_LATENCY_S`.
+- **`express_url`:** `Draft` has no field for `post.url`. If the UI needs the link, add an optional field. It only opens the Express home page, not the post.
+- **Slack image:** the default placeholder is a `data:` URL, which Slack can't display, so the message goes out without an image. Set `ADOBE_MOCK_IMAGE_URL` to a public PNG or JPG to include one.
+- **Saved trend:** `data/demo_trend.json` is missing (Anda), so `get_trend()` returns "Demo trend (placeholder)" for now.
+
+Not tested: a real Slack send and a real Reddit fetch. All tests use mocks.
+
+Decisions we need from you:
+
+1. Create `develop`. It doesn't exist yet, so this branch starts from `main` and has nowhere to open its PR.
+2. Add a root `.gitignore`, which doesn't exist yet. `.env` isn't protected until it does.
+3. Add `hashtags` to `Draft`: the draft call returns it and `Edit.target` allows it, but the model has no such field.
+4. Define what happens when the Referee returns `needs_human`: the state machine has no transition for it.
+
 ## Guidance for Claude Code specifically
 
 - Ask which area/branch you're working on if it isn't clear; don't edit files outside that owner's paths unprompted.
