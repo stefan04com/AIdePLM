@@ -72,7 +72,7 @@ def test_without_webhook_no_network_call(monkeypatch: pytest.MonkeyPatch) -> Non
 def test_send_accepts_blank_inputs() -> None:
     result = send_final_post("", None, [], timedelta(0))
     assert result.sent
-    assert sections(result.blocks) == ["Trend → approved: 0m"]
+    assert sections(result.blocks) == ["Trend → approved: 0s"]
 
 
 # --- webhook set: real post --------------------------------------------------
@@ -195,7 +195,9 @@ def test_truncation_never_cuts_an_entity_in_half(prefix: int) -> None:
     [
         (timedelta(hours=1, minutes=50, seconds=59), "1h 50m"),
         (timedelta(minutes=45), "45m"),
-        (timedelta(minutes=-5), "0m"),
+        (timedelta(seconds=4, milliseconds=900), "4s"),
+        (timedelta(seconds=59), "59s"),
+        (timedelta(minutes=-5), "0s"),
     ],
 )
 def test_format_elapsed(elapsed: timedelta, expected: str) -> None:
@@ -216,3 +218,28 @@ def test_relative_image_is_dropped_without_public_base_url(monkeypatch) -> None:
     monkeypatch.delenv("PUBLIC_BASE_URL", raising=False)
     blocks = build_blocks("Caption", "/visuals/photo.jpg", TASKS, ELAPSED)
     assert all(b["type"] != "image" for b in blocks)
+
+
+def test_slack_image_url_overrides_the_post_image(monkeypatch) -> None:
+    monkeypatch.setenv("SLACK_IMAGE_URL", "https://example.com/public.jpg")
+    blocks = build_blocks("Caption", "/visuals/x.jpg", [], ELAPSED)
+    images = [b["image_url"] for b in blocks if b["type"] == "image"]
+    assert images == ["https://example.com/public.jpg"]
+
+
+def test_rejected_image_is_retried_without_it(monkeypatch) -> None:
+    import app.slack as slack
+
+    calls: list[dict] = []
+
+    def fake_post(url: str, payload: dict, timeout_s: float) -> str | None:
+        calls.append(payload)
+        has_image = any(b["type"] == "image" for b in payload["blocks"])
+        return "Slack returned HTTP 400" if has_image else None
+
+    monkeypatch.setenv("SLACK_WEBHOOK_URL", "https://hooks.slack.com/services/T/B/X")
+    monkeypatch.setattr(slack, "_post_json", fake_post)
+    result = send_final_post("Caption", "https://example.com/missing.jpg", [], ELAPSED)
+    assert result.delivery == "posted"
+    assert len(calls) == 2
+    assert all(b["type"] != "image" for b in result.blocks)

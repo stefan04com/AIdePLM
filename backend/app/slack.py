@@ -27,6 +27,9 @@ logger = logging.getLogger(__name__)
 
 WEBHOOK_ENV = "SLACK_WEBHOOK_URL"
 BASE_URL_ENV = "PUBLIC_BASE_URL"  # makes a relative image path (/visuals/x.jpg) reachable by Slack
+# Optional public https image for the Slack message, used instead of the post's own image.
+# Lets Slack show a picture when the frontend has no public URL (no PUBLIC_BASE_URL needed).
+IMAGE_URL_ENV = "SLACK_IMAGE_URL"
 TIMEOUT_S = 15.0
 MAX_SECTION_CHARS = 3000  # Slack's limit for a section's text
 ELLIPSIS = "…"
@@ -63,6 +66,11 @@ def send_final_post(
 
     payload = {"text": f"Moment: post approved. {caption}"[:MAX_SECTION_CHARS], "blocks": blocks}
     error = _post_json(webhook_url, payload, timeout_s)
+    if error == "Slack returned HTTP 400" and any(b["type"] == "image" for b in blocks):
+        # Slack rejects the whole message when it can't download the image: post it without.
+        logger.warning("Slack: rejected with the image, retrying without it")
+        blocks = [b for b in blocks if b["type"] != "image"]
+        error = _post_json(webhook_url, {**payload, "blocks": blocks}, timeout_s)
     if error:
         logger.warning("Slack: post failed: %s", error)
         return SlackResult(delivery="failed", blocks=blocks, error=error)
@@ -87,7 +95,7 @@ def build_blocks(
     # Slack rejects a section with blank text, which would fail the whole message.
     if caption.strip():
         blocks.append(_section(_escape(caption)))
-    image_url = _absolute(image_url)
+    image_url = os.environ.get(IMAGE_URL_ENV, "").strip() or _absolute(image_url)
     if image_url and _is_web_url(image_url):
         blocks.append({"type": "image", "image_url": image_url, "alt_text": "Final post image"})
     if tasks:
@@ -98,8 +106,14 @@ def build_blocks(
 
 
 def format_elapsed(elapsed: timedelta) -> str:
-    """Format as "1h 50m" or "45m", rounding down to the minute. Negative is 0m."""
-    minutes = max(elapsed, timedelta(0)) // timedelta(minutes=1)
+    """Format as "1h 50m", "45m" or, under a minute, "4s" (rounded down). Negative is 0s.
+
+    Seconds matter on stage: a live demo ships in seconds, and "0m" would contradict the clock.
+    """
+    elapsed = max(elapsed, timedelta(0))
+    if elapsed < timedelta(minutes=1):
+        return f"{int(elapsed.total_seconds())}s"
+    minutes = elapsed // timedelta(minutes=1)
     hours, minutes = divmod(minutes, 60)
     return f"{hours}h {minutes}m" if hours else f"{minutes}m"
 

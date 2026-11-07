@@ -16,9 +16,11 @@ export interface SlackPreview {
   elapsed: string
 }
 
-/** Same as slack.format_elapsed: "1h 50m" or "45m", rounded down to the minute. */
+/** Same as slack.format_elapsed: "1h 50m", "45m", or "4s" under a minute (rounded down). */
 export function formatMinutes(ms: number): string {
-  const totalMinutes = Math.floor(Math.max(0, ms) / 60_000)
+  const safe = Math.max(0, ms)
+  if (safe < 60_000) return `${Math.floor(safe / 1000)}s`
+  const totalMinutes = Math.floor(safe / 60_000)
   const hours = Math.floor(totalMinutes / 60)
   const minutes = totalMinutes % 60
   return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
