@@ -87,6 +87,19 @@ def react(draft: Draft, personas: list[Persona], run_id: str) -> list[PersonaRea
     return out.reactions
 
 
+def _comment_block(c: Comment) -> str:
+    """<comment> with its weight (docs/comment-weighting.md), so the referee can rank feedback."""
+    attrs = {
+        "id": c.id,
+        "role": c.role,
+        "weight": f"{c.weight:.2f}",
+        "verified": "yes" if c.industry_verified else "no",
+    }
+    if c.author_title:
+        attrs["author_title"] = c.author_title
+    return wrap("comment", c.text, **attrs)
+
+
 def referee(  # call #5
     draft: Draft,
     comments: list[Comment],
@@ -101,7 +114,8 @@ def referee(  # call #5
         f"caption: {draft.caption}\nhashtags: {' '.join(draft.hashtags)}\n"
         f"visual_prompt: {draft.visual_prompt}",
     )
-    human = "\n".join(wrap("comment", c.text, id=c.id, role=c.role) for c in comments)
+    heaviest_first = sorted(comments, key=lambda c: c.weight, reverse=True)
+    human = "\n".join(_comment_block(c) for c in heaviest_first)
     personas_xml = "\n".join(
         wrap(
             "reaction",

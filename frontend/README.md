@@ -6,6 +6,7 @@ React 19 + TypeScript (strict) + Vite. Owner: Andu.
 npm install
 npm run dev            # http://localhost:5173
 npm run build && npm run lint   # must pass before every PR
+npm test               # comment-weighting formula (docs/comment-weighting.md)
 ```
 
 ## Mock vs real backend

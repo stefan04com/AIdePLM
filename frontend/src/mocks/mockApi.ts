@@ -1,7 +1,8 @@
-// In-browser fake backend with the coffee demo scenario (see ./fixtures.ts).
+// In-browser fake backend with the Boabe demo scenario (see ./fixtures.ts).
 // It mirrors backend/app/orchestrator.py: the same lifecycle
 // (SPOTTED → DRAFTED → IN_REVIEW → REFEREED → SHIPPED), Run.step while a call runs,
-// 409 when the run is busy or in the wrong status, 404 for unknown runs/conflicts.
+// 409 when the run is busy or in the wrong status, 404 for unknown runs/conflicts,
+// and comment weighting (docs/comment-weighting.md).
 
 import { ApiError } from '../api/errors'
 import type {
@@ -18,7 +19,16 @@ import type {
   Trend,
   UsageSummary,
 } from '../api/types'
+import expertsJson from '../../../data/industry_experts.json'
+import {
+  COMMENT_HALF_LIFE_MS,
+  type ExpertsFile,
+  findVerifiedExpert,
+  weight,
+} from '../lib/weighting'
 import { fixturePersonas as personas, fixtureRun as fixture } from './fixtures'
+
+const experts = expertsJson as ExpertsFile
 
 // Background "fit + draft" job: [delay from start in ms, step label]
 const DRAFT_STEPS: [number, string][] = [
@@ -91,8 +101,19 @@ export async function createRun(trendId: string): Promise<Run> {
   return clone(run)
 }
 
+/** Copy of the run with comment weights at the current time, like the backend's get_run. */
+function weighed(run: Run): Run {
+  const now = new Date()
+  const copy = clone(run)
+  copy.comments = copy.comments.map((c) => ({
+    ...c,
+    weight: weight(c.industry_verified, new Date(c.created_at), now, COMMENT_HALF_LIFE_MS),
+  }))
+  return copy
+}
+
 export async function getRun(id: string): Promise<Run> {
-  return clone(findRun(id))
+  return weighed(findRun(id))
 }
 
 /** Marks the run busy with a step label while a synchronous call runs, like the backend. */
@@ -120,21 +141,32 @@ export async function requestReactions(id: string): Promise<PersonaReaction[]> {
 export async function addComment(id: string, body: CommentCreate): Promise<Comment> {
   const run = findRun(id)
   requireStatus(run, ['DRAFTED', 'IN_REVIEW', 'REFEREED'], 'comment on')
+  const expert = findVerifiedExpert(body.author, experts)
+  // Verified: the name as on the list; otherwise what was typed, with spaces tidied.
+  const author = expert?.name ?? (body.author?.trim().split(/\s+/).join(' ') || null)
   const comment: Comment = {
     id: `c_${body.role}_${run.comments.length + 1}`,
     role: body.role,
     text: body.text,
     created_at: nowIso(),
+    author,
+    author_title: expert?.title ?? null,
+    industry_verified: expert !== null,
+    weight: 1,
   }
   run.comments.push(comment)
   run.status = 'IN_REVIEW' // REFEREED → IN_REVIEW on new comments
-  return clone(comment)
+  return weighed(run).comments.at(-1)!
 }
 
-/** Maps a fixture comment id (c_legal) to this run's comment with the same role. */
+/** Maps a fixture comment id (c_legal) to the heaviest comment with that role (newest on a tie). */
 function runCommentId(run: Run, fixtureCommentId: string): string | undefined {
   const role = fixture.comments.find((c) => c.id === fixtureCommentId)?.role
-  return run.comments.find((c) => c.role === role)?.id
+  const candidates = weighed(run).comments.filter((c) => c.role === role)
+  return candidates.reduce<Comment | undefined>(
+    (best, c) => (!best || c.weight >= best.weight ? c : best),
+    undefined,
+  )?.id
 }
 
 function refereeForRun(run: Run): RefereeResult {
@@ -185,7 +217,7 @@ export async function apply(id: string, body: ApplyRequest): Promise<Run> {
     run.status = 'SHIPPED'
     run.shipped_at = nowIso()
   })
-  return clone(run) // after withStep, so the returned run is no longer busy
+  return weighed(run) // after withStep, so the returned run is no longer busy
 }
 
 function mockCall(

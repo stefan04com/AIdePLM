@@ -1,0 +1,8 @@
+{
+  "brand_industry": "coffee",
+  "experts": [
+    { "name": "Ioana Marin", "title": "Head barista", "industry": "coffee" },
+    { "name": "Radu Popescu", "title": "Green coffee buyer", "industry": "coffee" },
+    { "name": "Andrei Stan", "title": "Wine sommelier", "industry": "wine" }
+  ]
+}

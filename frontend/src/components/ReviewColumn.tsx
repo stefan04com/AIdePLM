@@ -10,7 +10,7 @@ interface Props extends ReviewHandlers {
   personas: Persona[]
   /** True while a request is in flight or the backend is running a step. */
   busy: boolean
-  onComment: (role: CommentRole, text: string) => void
+  onComment: (role: CommentRole, text: string, author: string | null) => void
   onApply: (body: ApplyRequest) => void
 }
 
