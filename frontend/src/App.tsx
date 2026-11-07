@@ -26,7 +26,7 @@ import { useSpotlight } from './hooks/useSpotlight'
 import { useUsage } from './hooks/useUsage'
 import { isFinished, isRunBusy } from './lib/runStatus'
 import { readRunIdFromUrl, writeRunIdToUrl } from './lib/runUrl'
-import { readViewFromUrl, type View, writeViewToUrl } from './lib/view'
+import { readViewFromUrl, type View, viewForStatus, viewForStep, writeViewToUrl } from './lib/view'
 import { nextStep } from './lib/wow'
 import { scriptedComments } from './mocks/scriptedComments'
 
@@ -38,6 +38,19 @@ export default function App() {
   const [busy, setBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const { run, error: pollError, refresh, setRun } = useRun(runId)
+
+  // The page follows the run: when its status changes, show the page where that step lives.
+  // A refresh (no status seen yet) keeps the page from the URL.
+  const status = run ? `${run.id}:${run.status}` : null
+  const [seenStatus, setSeenStatus] = useState(status)
+  if (status !== seenStatus) {
+    setSeenStatus(status)
+    if (run && seenStatus !== null) setView(viewForStatus(run.status))
+  }
+  useEffect(() => {
+    writeViewToUrl(view)
+    window.scrollTo({ top: 0 })
+  }, [view])
   useSpotlight()
   const usage = useUsage(run)
 
@@ -92,6 +105,7 @@ export default function App() {
   // Presenter mode: one key per demo step, so the stage never depends on finding a button.
   usePresenter(
     () => {
+      if (step) setView(viewForStep(step))
       if (step === 'start') void startRun()
       else if (step === 'reactions') onRun(api.requestReactions)()
       else if (step === 'comments') onRun(fillScripted)()
@@ -103,10 +117,7 @@ export default function App() {
     },
   )
 
-  const changeView = (next: View) => {
-    setView(next)
-    writeViewToUrl(next)
-  }
+  const changeView = setView
 
   const reviewColumn = (
     <ReviewColumn
@@ -131,7 +142,7 @@ export default function App() {
           view={view}
           onChange={changeView}
         />
-        <Adobee run={run} busy={uiBusy} />
+        <Adobee run={run} busy={uiBusy} view={view} />
         <div className="topbar-status">
           <TrendLife trend={run?.trend ?? trend} run={run} />
           {run && <RunClock run={run} />}
@@ -152,30 +163,37 @@ export default function App() {
         </Banner>
       )}
 
-      {view === 'rules' ? (
-        <RulesPage usage={usage} review={reviewColumn} />
-      ) : (
-        <main className="columns post-page" id="panel-post" role="tabpanel" aria-labelledby="tab-post">
-          <div className="column">
-            <TrendColumn
-              trend={run?.trend ?? trend}
-              fit={run?.fit ?? null}
-              canStart={canStart}
-              onStart={startRun}
-              onTryRisky={USE_MOCKS ? undefined : startRisky}
-            />
-            <AnalysisPanel run={run} usage={usage} />
-            <TrendScoreCard key={run?.id ?? 'none'} draft={run?.draft ?? null} />
-          </div>
-          <CanvasColumn
-            run={run}
-            busy={uiBusy}
-            onRegenerate={(caption, instruction) =>
-              act(() => (run ? api.regenerate(run.id, { caption, instruction }) : Promise.resolve()))
-            }
+      {/* Both pages stay mounted, so the post's caption can rewrite itself after a ship on Rules. */}
+      <RulesPage usage={usage} review={reviewColumn} hidden={view !== 'rules'} />
+      <main
+        className="columns post-page"
+        id="panel-post"
+        role="tabpanel"
+        aria-labelledby="tab-post"
+        hidden={view !== 'post'}
+      >
+        <div className="column">
+          <TrendColumn
+            trend={run?.trend ?? trend}
+            fit={run?.fit ?? null}
+            canStart={canStart}
+            onStart={startRun}
+            onTryRisky={USE_MOCKS ? undefined : startRisky}
           />
-        </main>
-      )}
+          <AnalysisPanel run={run} usage={usage} />
+          <TrendScoreCard key={run?.id ?? 'none'} draft={run?.draft ?? null} />
+        </div>
+        <CanvasColumn
+          run={run}
+          busy={uiBusy}
+          onHashtags={(hashtags) =>
+            act(() => (run ? api.setHashtags(run.id, hashtags) : Promise.resolve()))
+          }
+          onRegenerate={(caption, instruction) =>
+            act(() => (run ? api.regenerate(run.id, { caption, instruction }) : Promise.resolve()))
+          }
+        />
+      </main>
 
       <ShipCelebration run={run} />
       <Intro />
