@@ -4,7 +4,7 @@ Guidance for Claude Code (and humans) working in this repo. Read this first, the
 
 ## Project in one paragraph
 
-**Moment** gets a trend to an approved social post in ~2 hours. Flow: **Spot** (trend from Reddit/news → AI brand-fit check) → **Draft** (AI brief, caption, Firefly visual, post in Adobe Express) → **Review** (Brand/Legal/Product humans + 3 synthetic customer personas built from real reviews, side by side) → **Referee** (one structured LLM call → conflict cards, concrete edits, compromise, tasks) → **Ship** ("apply" updates Express, final post + tasks go to Slack). Built in 12 hours at the IT Fest Adobe Hackathon ("Marketing Reimagined"). The demo is 3 minutes and must work 3/3 times.
+**Moment** gets a trend to an approved social post in ~2 hours. Flow: **Spot** (trend from Reddit/news → AI brand-fit check) → **Draft** (AI brief, caption, visual prompt; the visual and the post are a local simulation, integration-ready for Adobe Firefly / Express) → **Review** (Brand/Legal/Product humans + 3 synthetic customer personas built from real reviews, side by side) → **Referee** (one structured LLM call → conflict cards, concrete edits, compromise, tasks) → **Ship** ("apply" bumps the post version, final post + tasks are built as a Slack message; Slack is mocked too). Built in 12 hours at the IT Fest Adobe Hackathon ("Marketing Reimagined"). The demo is 3 minutes and must work 3/3 times.
 
 ## Team and ownership
 
@@ -39,7 +39,7 @@ npm run build && npm run lint     # must pass before every PR
 curl -X POST localhost:8000/admin/demo-mode -d '{"on": true}' -H 'Content-Type: application/json'
 ```
 
-Copy `.env.example` to `.env` and fill in keys. Required: `LLM_API_KEY`, `LLM_MODEL`, `SLACK_WEBHOOK_URL`, `ADOBE_CLIENT_ID`, `ADOBE_CLIENT_SECRET`. Optional: `REDDIT_*` or `NEWS_API_KEY`.
+Copy `.env.example` to `.env` and fill in keys. Required: `LLM_PROVIDER` and `LLM_MODEL`, plus `LLM_API_KEY` (direct Anthropic API) or `AWS_BEARER_TOKEN_BEDROCK` exported in your shell (`LLM_PROVIDER=bedrock`, optional `AWS_REGION`). No Adobe keys and no `SLACK_WEBHOOK_URL` are needed: those integrations are local mocks (see "Integrations" below). Optional: `ADOBE_MOCK_IMAGE_URL`, `ADOBE_MOCK_LATENCY_S`.
 
 ---
 
@@ -111,7 +111,7 @@ Conventional Commits, scoped by area:
 ```
 feat(llm): add referee call with JSON schema validation
 feat(ui): conflict card with apply-compromise button
-fix(adobe): fall back to preview when Express update fails
+fix(adobe): keep the previous visual when the mock update fails
 chore(data): add 80 reviews to reviews.csv
 docs: update cost model numbers
 ```
@@ -142,9 +142,9 @@ Types: `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `style`. Scopes: `llm
 - Untrusted text (trends, reviewer comments, reviews) goes into prompts inside delimited tags (`<trend>…</trend>`, `<comment role="legal">…</comment>`) with an instruction to treat it as data. Never concatenate it into the instruction part of a prompt.
 
 ### Reliability
-- Every external call (LLM, Firefly, Express, Slack, Reddit/news) needs a timeout (default 15s) and a fallback in demo mode. If you add an integration without a fallback, the PR isn't done.
+- Every external call (today the LLM; any future Adobe, Slack or Reddit/news integration) and every integration module call needs a timeout (default 15s) and a fallback in demo mode; `adapters.py` already wraps the mocks this way. If you add an integration without a fallback, the PR isn't done.
 - The saved trend `data/demo_trend.json` is the default for the demo. Live trend fetch must never block the flow.
-- Nothing is sent to Express or Slack without the user clicking "apply".
+- Nothing is applied to the post or the Slack message without the user clicking "apply".
 
 ### Security
 - Never commit `.env`, keys, tokens or webhook URLs. `.env` is gitignored; add new variables to `.env.example` with an empty value.
@@ -162,27 +162,22 @@ Types: `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `style`. Scopes: `llm
 
 ---
 
-## Note for Stefan: integrations handoff (from Militaru)
+## Integrations (all local mocks)
 
-`backend/app/adobe.py`, `slack.py` and `trends.py` are on `feature/militaru-adobe-integration`, which includes `develop` at `d28bf71`. They aren't wired into the app yet, because `main.py` and `orchestrator.py` don't exist.
+By team decision there is no live Adobe, Slack or Reddit integration. The three modules (owner: Militaru) make no network calls and need no keys; they return results as if the call had worked, so the demo flow runs end to end. Apart from `models.py`, they use only the standard library. `backend/app/adapters.py` already wires them into the flow, each call with a 15s timeout and a fallback.
 
-**All three integrations are mocks, by team decision.** None of them makes a network call or needs a key: no Adobe, no Slack webhook, no Reddit. They return results as if the call had worked, so the demo flow runs end to end. `trends.py` returns `models.Trend` and `slack.py` takes `models.Task`. Apart from `models.py`, they use only the standard library.
-
-| When | Call | What to do with the result |
+| Module | What it does | Used by `adapters.py` |
 |---|---|---|
-| `GET /trend` | `trends.get_trend()` | Return it as is: it's a `models.Trend`. The default is the saved trend; `live=True` returns a built-in sample with `source="reddit"` |
-| Draft | `adobe.generate_visual(prompt)`, then `adobe.create_post(caption, image_url)` | Set `Draft.image_url`, `express_doc_id` (`post.doc_id`) and `version` (`post.version`) |
-| Apply | `adobe.update_post(post, caption=..., image_url=...)` | Returns a new post with `version + 1`. `caption=""` really blanks the caption, so guard against empty LLM output |
-| Apply | `slack.send_final_post(caption, image_url, tasks, elapsed)` | Pass `RefereeResult.tasks` as is. Always returns `sent=True` plus `blocks`, the Slack message a real webhook would post; the UI can show it as a preview |
+| `trends.py` | `get_trend()` returns the saved trend from `data/demo_trend.json` (a placeholder if the file is missing or malformed). `live=True` returns a built-in sample trend with `source="reddit"`; nothing contacts Reddit | `current_trend()` |
+| `adobe.py` | `generate_visual(prompt)` returns a placeholder SVG (same prompt, same image), labelled as a mock. `create_post(caption, image_url)` returns a mock post at version 1; `update_post(...)` returns a copy with `version + 1`. Its `url` is only the Express home page, not a post | `create_visual_and_post()`, `update_post()` |
+| `slack.py` | `send_final_post(caption, image_url, tasks, elapsed)` builds the Block Kit message (caption, image, tasks, "Trend → approved" time) and reports it as sent; the UI can show the blocks as a preview | `send_to_slack()` |
 
-What you need to handle:
+Environment (both optional, read by `adobe.py`):
 
-- **Mock latency:** `ADOBE_MOCK_LATENCY_S` (default 0) makes the Adobe calls sleep, to show loading states. It blocks, so outside the `POST /runs` background task use `def` endpoints or `asyncio.to_thread`.
-- **Express link:** `Draft` has no field for `post.url`. If the UI needs the link, add an optional field. It only opens the Express home page, not the post.
-- **Saved trend:** `data/demo_trend.json` is missing (Anda), so `get_trend()` returns "Demo trend (placeholder)" for now.
-- **Stale docs:** these still describe real integrations: the "Required" env list above (`SLACK_WEBHOOK_URL`, `ADOBE_CLIENT_*`), the same keys and `REDDIT_*`/`NEWS_API_KEY` in `.env.example`, `ARCHITECTURE.md` (§4.4–4.6, ADR-003, §10), and the README on `feature/stefan-contract`.
+- `ADOBE_MOCK_IMAGE_URL`: an image URL to use instead of the SVG placeholder.
+- `ADOBE_MOCK_LATENCY_S`: simulated delay per Adobe call in seconds (default 0, max 15), to show loading states. It blocks, so call it from a worker thread (as `adapters.py` does), not directly from async code.
 
-Decision we need from you: what happens when the Referee returns `needs_human`? The state machine has no transition for it.
+**Integration-ready.** For the pitch: Moment can be integrated with Adobe Firefly (image generation) and Adobe Express (the post) later. `adobe.py` is the seam: a real integration would replace its function bodies and keep the same signatures. Likewise, `slack.py` builds valid Block Kit that a real webhook could post unchanged, and `trends.py` is where a live Reddit/news fetch would go. The LLM calls are real (Anthropic API or Amazon Bedrock).
 
 ## Guidance for Claude Code specifically
 

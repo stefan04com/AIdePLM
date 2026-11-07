@@ -29,11 +29,11 @@ The Product comment is pre-filled in the form. The driver sends it. Judges do no
 |---|---|---|---|---|
 | 0:00 to 0:20 | Title slide: Moment, Boabe. | Nobody. | "Brands miss trends because approval takes days. Moment gets a trend to an approved post in about two hours." | Problem 25 |
 | 0:20 to 0:40 | Saved trend card: cozy autumn setup. Fit score and reason appear. | Driver clicks "Run" on the saved trend. | "This trend broke 20 minutes ago. Moment checks the fit against Boabe's brand rules." | AI 25 |
-| 0:40 to 1:05 | Caption, visual and Express preview panel. | Nobody. | "The brief, caption and visual are ready. The post sits in an Express preview." | Integrations 15, Technical 25 |
+| 0:40 to 1:05 | Caption, visual and post preview panel (simulated, Express-style). | Nobody. | "The brief, caption and visual are ready. The post sits in a preview, ready to plug into Adobe Express." | Integrations 15, Technical 25 |
 | 1:05 to 1:35 | Three human cards with timers. Three persona cards beside them. | Judges type cards B and L and send. Driver sends the pre-filled Product comment. | "Three humans and three personas review at the same time." "The personas are built from 65 real public reviews of Bucharest specialty cafés and coffee-ordering apps." "Boabe is fictional, so they are not its customers." | Problem 25, AI 25 |
 | 1:35 to 2:10 | Conflict cards: Legal vs Product on "no added sugar". Brand and student persona vs Product on the product as hero. Compromise text. | Driver clicks "Run referee" at the start of this beat. | "The referee reads all the feedback together." "Legal has no sugar documentation, so Product's claim cannot stay." "The compromise names the latte, drops the claim and softens the call to action." | AI 25 |
-| 2:10 to 2:30 | Caption updated in the canvas and Express preview. | Driver clicks "Apply compromise". | "One click. Nothing goes out without a human." | Integrations 15, Technical 25 |
-| 2:30 to 2:45 | Slack channel: final caption, image, task list, "Trend to approved" clock. | Driver switches to the Slack tab. | "The final post and task list reach Slack." "Product's task: send the sugar documentation to Legal before any later post." | Integrations 15, Demo 10 |
+| 2:10 to 2:30 | Caption updated in the canvas and post preview. | Driver clicks "Apply compromise". | "One click. Nothing goes out without a human." | Integrations 15, Technical 25 |
+| 2:30 to 2:45 | Slack message preview in the app (simulated): final caption, task list, "Trend to approved" clock. | Driver scrolls to the Slack message preview. | "This is the message the team gets in Slack." "Product's task: send the sugar documentation to Legal before any later post." | Integrations 15, Demo 10 |
 | 2:45 to 2:55 | Architecture slide, then cost slide. | Driver advances the slides. | "Five AI calls per post, schema-checked and logged." "About $X per post, against Y hours of review time." | Technical 25, Cost bonus |
 | 2:55 to 3:00 | Close slide with the one-line pitch. | Nobody. | "Moment turns a trend into an approved post, with customers at the table. Thank you." | Demo 10 |
 
@@ -46,8 +46,8 @@ Note for the Slack row: do not say "1h 50m" unless the on-screen clock shows it.
 | Model call is slow or times out (over 15 s) | "The live model is slow. Here is the saved result." | Confirm demo mode is on. Reopen the saved run. |
 | No conflict cards after referee | "The referee is still reviewing. Here is the saved conflict." | Load the saved referee result. Do not run the referee again. |
 | Trend fetch fails or looks wrong | "Today we use our saved trend. The flow is the same." | Select the saved trend `trend_cozy_autumn_setup`. |
-| Express preview does not load | "This preview shows the same content." | Switch to the preview panel with the pre-generated image. |
-| Slack does not show the message | "Here is the message the channel receives." | Show the saved Slack screenshot. |
+| Post preview does not load | "This preview shows the same content." | Switch to the preview panel with the pre-generated image. |
+| Slack message preview does not appear | "Here is the message the team receives." | Show the saved screenshot of the Slack preview. |
 | Wi-Fi drops | "We are on our phone hotspot now." | Move the laptop to the hotspot. Re-run only if needed. |
 | Laptop or all paths fail | "Here is the recorded run." | Play the backup video full screen. |
 
@@ -56,7 +56,7 @@ Note for the Slack row: do not say "1h 50m" unless the on-screen clock shows it.
 - [ ] Demo mode on: `POST /admin/demo-mode` with `{"on": true}`, response confirmed.
 - [ ] Fresh start: restart the backend. Pass the full flow three times in a row.
 - [ ] Saved trend `trend_cozy_autumn_setup` selected.
-- [ ] Tabs open: Moment app, Slack demo channel, Express preview, architecture slide, backup video.
+- [ ] Tabs open: Moment app, architecture slide, backup video.
 - [ ] Browser zoom checked on the projector from the back of the room.
 - [ ] Notifications off and Focus mode on.
 - [ ] Phone hotspot on and tested. Laptop joined to it.

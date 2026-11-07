@@ -16,7 +16,7 @@ Mocks and canned responses should copy from these files, not the other way round
 ## The story in one run
 
 1. **Trend:** people share their cozy autumn work-from-anywhere corner. Fit is high: Boabe's core moment is the slow cup in a warm corner.
-2. **Draft (expected shape):** a cozy caption that mentions the new **Pumpkin & Cinnamon Latte**, plus a Firefly visual of a latte on a cozy desk. The draft prompt obeys the legal no-gos, so it will **not** contain "no added sugar"; the comments are written to work either way.
+2. **Draft (expected shape):** a cozy caption that mentions the new **Pumpkin & Cinnamon Latte**, plus a visual prompt for a latte on a cozy desk (the visual is a local placeholder, Firefly-ready). The draft prompt obeys the legal no-gos, so it will **not** contain "no added sugar"; the comments are written to work either way.
 3. **Comments:**
    - Product: add "no added sugar", make the drink the hero.
    - Legal: the caption can't say "no added sugar" (no documentation), "healthy" or "the best" (health claim, superlative).
