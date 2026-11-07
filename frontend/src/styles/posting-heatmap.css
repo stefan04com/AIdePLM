@@ -1,0 +1,275 @@
+/* "When we post" heatmap (components/spot/PostingHeatmap.tsx).
+   Only transform and opacity animate. Everything moving is off under prefers-reduced-motion. */
+
+.ph {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: var(--gap);
+}
+
+.ph-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ph-head h4 {
+  margin: 0;
+}
+
+.ph-tabs {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.ph-tabs button {
+  padding: 3px 10px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  box-shadow: none;
+}
+
+.ph-tabs button.is-on {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+/* --- the grid: day label + 18 hour columns --- */
+
+.ph-grid {
+  display: grid;
+  grid-template-columns: 28px repeat(18, minmax(0, 1fr));
+  gap: 2px;
+  align-items: center;
+}
+
+.ph-hour,
+.ph-day {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--faint);
+}
+
+.ph-hour {
+  text-align: left;
+}
+
+.ph-cell {
+  position: relative;
+  aspect-ratio: 1;
+  min-height: 10px;
+  border-radius: 3px;
+  background: var(--surface-2);
+  animation: ph-cell-in 0.32s ease-out backwards;
+  animation-delay: var(--d, 0ms);
+}
+
+/* the glow: honey at the cell's intensity, as an opacity layer (cheap to composite) */
+.ph-cell.is-on::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--honey);
+  opacity: var(--i, 0);
+  box-shadow: 0 0 8px rgb(245 166 35 / 0.55);
+}
+
+.ph-cell.is-best::before {
+  background: var(--highlight);
+  opacity: 1;
+  box-shadow: 0 0 10px rgb(224 48 30 / 0.6);
+}
+
+/* the single best slot pulses: a ring that grows and fades */
+.ph-cell.is-best::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 4px;
+  border: 2px solid var(--highlight);
+  pointer-events: none;
+  animation: ph-pulse 1.4s ease-out infinite;
+}
+
+.ph-cell:hover {
+  outline: 2px solid var(--text);
+  outline-offset: 0;
+  z-index: 1;
+}
+
+@keyframes ph-cell-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+}
+
+@keyframes ph-pulse {
+  0% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.1);
+  }
+}
+
+.ph-readout {
+  min-height: 1.3em;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ph-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ph-schedule {
+  padding: 5px 14px;
+  font-size: 13px;
+}
+
+.ph-sources {
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.ph-sources a {
+  color: var(--highlight);
+}
+
+/* --- the bee flies from the button to the best slot: X eases, Y arcs over the top --- */
+
+.ph-bee {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  width: 30px;
+  height: 38px;
+  margin: -24px 0 0 -15px; /* centre the bee's body on the point */
+  pointer-events: none;
+  animation: ph-bee-x 1.1s cubic-bezier(0.45, 0, 0.3, 1) forwards;
+}
+
+.ph-bee-y {
+  width: 100%;
+  height: 100%;
+  animation: ph-bee-y 1.1s ease-in-out forwards;
+}
+
+.ph-bee svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 6px rgb(0 0 0 / 0.2));
+}
+
+@keyframes ph-bee-x {
+  from {
+    transform: translateX(var(--fx));
+  }
+  to {
+    transform: translateX(var(--tx));
+  }
+}
+
+@keyframes ph-bee-y {
+  0% {
+    transform: translateY(var(--fy)) rotate(-8deg);
+  }
+  45% {
+    transform: translateY(var(--peak)) rotate(10deg);
+  }
+  85% {
+    transform: translateY(var(--ty)) rotate(-4deg) scale(1);
+  }
+  100% {
+    transform: translateY(var(--ty)) rotate(0) scale(0.85);
+  }
+}
+
+/* --- the mini post card the bee "sticks" on the slot --- */
+
+.ph-card {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 9px 4px 6px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: var(--shadow-lift);
+  color: var(--text);
+  font-size: 12px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+  animation: ph-stick 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) backwards;
+}
+
+.ph-card--left {
+  left: -4px;
+  transform: none;
+}
+
+.ph-card--right {
+  left: auto;
+  right: -4px;
+  transform: none;
+}
+
+.ph-card--below {
+  top: calc(100% + 6px);
+  bottom: auto;
+}
+
+.ph-card-bee {
+  width: 16px;
+  height: 20px;
+}
+
+.ph-card-bee svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes ph-stick {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ph-cell,
+  .ph-cell.is-best::after,
+  .ph-bee,
+  .ph-bee-y,
+  .ph-card {
+    animation: none;
+  }
+
+  .ph-bee {
+    display: none;
+  }
+}

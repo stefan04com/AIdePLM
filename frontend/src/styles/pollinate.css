@@ -1,0 +1,116 @@
+/* Hashtag card: a small bee "pollinates" the suggestion chips (curved flight via the Web
+   Animations API), picked chips get a pollen sparkle / "+1", and an added tag slides into the
+   post's list. Only transform and opacity animate. */
+
+.pollinate-stage {
+  position: relative;
+  display: grid;
+  gap: 12px;
+}
+
+.pollen-bee {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 3;
+  width: 28px;
+  height: 28px;
+  pointer-events: none;
+  opacity: 0;
+  filter: drop-shadow(0 2px 3px rgb(120 30 20 / 0.25));
+  will-change: transform, opacity;
+}
+
+.pollen-bee svg {
+  display: block;
+  overflow: visible;
+}
+
+.pollen-bee-wings {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: pollen-wings 0.09s ease-in-out infinite alternate;
+}
+
+@keyframes pollen-wings {
+  to {
+    transform: scaleY(0.45);
+  }
+}
+
+.pollinate-stage .hashtag-suggestions li,
+.pollinate-stage .hashtag-chips .hashtag-chip {
+  position: relative;
+}
+
+.pollen-burst {
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.pollen-burst i {
+  position: absolute;
+  left: -3px;
+  top: -3px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--honey);
+  box-shadow: 0 0 6px var(--honey);
+  opacity: 0;
+  animation: pollen-dot 0.6s var(--pollen-delay, 0ms) cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.pollen-burst b {
+  position: absolute;
+  left: -6px;
+  top: -24px;
+  color: var(--honey);
+  font-size: 13px;
+  font-weight: 800;
+  text-shadow: 0 1px 0 var(--surface);
+  opacity: 0;
+  animation: pollen-plus 0.8s var(--pollen-delay, 0ms) ease-out both;
+}
+
+@keyframes pollen-dot {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) scale(0.4);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) scale(1);
+  }
+}
+
+@keyframes pollen-plus {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.7);
+  }
+  25% {
+    opacity: 1;
+    transform: translateY(0) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-14px) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pollen-bee,
+  .pollen-burst {
+    display: none;
+  }
+
+  .pollen-bee-wings {
+    animation: none;
+  }
+}

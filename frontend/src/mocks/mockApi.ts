@@ -18,6 +18,7 @@ import type {
   PersonaReaction,
   Platform,
   PostingTime,
+  PostingWindows,
   RefereeResult,
   RegenerateRequest,
   Run,
@@ -29,6 +30,7 @@ import type {
 import expertsJson from '../../../data/industry_experts.json'
 import hashtagsJson from '../../../data/hashtags.json'
 import liveTrendsJson from '../../../data/live_trends.json'
+import postingWindowsJson from '../../../data/posting_windows.json'
 import {
   COMMENT_HALF_LIFE_MS,
   type ExpertsFile,
@@ -279,6 +281,30 @@ export async function getPostingTime(platform: Platform): Promise<PostingTime> {
     time: MOCK_POSTING_TIME,
     reason: 'Mock answer: the real backend uses the rules in docs/what-makes-a-post-popular.md.',
   }
+}
+
+// Same mapping as backend/app/main.py: Reels and feed share the app's entry.
+const WINDOWS_KEY: Record<string, string> = {
+  instagram_reels: 'instagram',
+  instagram_feed: 'instagram',
+  facebook_reels: 'facebook',
+  facebook_feed: 'facebook',
+}
+
+export async function getPostingWindows(platform: string): Promise<PostingWindows> {
+  const wanted = platform.trim().toLowerCase()
+  const key = WINDOWS_KEY[wanted] ?? wanted
+  const found = postingWindowsJson.platforms.find((p) => p.platform === key)
+  if (!found) throw new ApiError(404, `No posting windows for '${platform}'`)
+  const { platform: name, best_days, windows, reason, confidence, sources } = found
+  return clone({
+    platform: name,
+    best_days,
+    windows,
+    reason,
+    confidence,
+    sources: sources.map(({ name: n, url }) => ({ name: n, url })),
+  } as PostingWindows)
 }
 
 function mockCall(

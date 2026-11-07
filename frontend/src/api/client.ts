@@ -16,6 +16,7 @@ import type {
   PersonaReaction,
   Platform,
   PostingTime,
+  PostingWindows,
   RefereeResult,
   RegenerateRequest,
   Run,
@@ -79,6 +80,9 @@ const backendApi = {
   getTrendScore: (body: TrendScoreRequest) => post<TrendScore>('/trend-score', body),
   getPostingTime: (platform: Platform) =>
     get<PostingTime>(`/posting-time?platform=${encodeURIComponent(platform)}`),
+  /** Week x hour windows for the heatmap; 404 when the platform has no data. */
+  getPostingWindows: (platform: string) =>
+    get<PostingWindows>(`/posting-windows?platform=${encodeURIComponent(platform)}`),
   /** Sourced hashtag suggestions for some keywords (saved cache, Boabe cap of 3). */
   getHashtags: (keywords: string[], platform = 'instagram') =>
     get<HashtagSuggestions>(

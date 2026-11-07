@@ -6,10 +6,10 @@ from contextlib import asynccontextmanager
 from typing import Literal
 
 from dotenv import load_dotenv
-from fastapi import BackgroundTasks, FastAPI, Request
+from fastapi import BackgroundTasks, FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 
-from . import adapters, hashtags, orchestrator, posting_time, store, trends
+from . import adapters, hashtags, orchestrator, posting_time, posting_times, store, trends
 from .llm import usage
 from .models import (
     ApplyRequest,
@@ -23,7 +23,10 @@ from .models import (
     Persona,
     PersonaReaction,
     Platform,
+    PostingSource,
     PostingTime,
+    PostingWindow,
+    PostingWindows,
     RefereeResult,
     RegenerateRequest,
     Run,
@@ -122,6 +125,32 @@ def post_trend_score(body: TrendScoreRequest) -> TrendScore:
 @app.get("/posting-time", response_model=PostingTime)
 def get_posting_time(platform: Platform) -> PostingTime:
     return posting_time.recommend(platform)
+
+
+# The data file has one entry per app; Reels and feed share it (as in posting_time.py).
+_WINDOWS_KEY = {
+    "instagram_reels": "instagram",
+    "instagram_feed": "instagram",
+    "facebook_reels": "facebook",
+    "facebook_feed": "facebook",
+}
+
+
+@app.get("/posting-windows", response_model=PostingWindows)
+def get_posting_windows(platform: str) -> PostingWindows:
+    """Week x hour windows from data/posting_windows.json for the heatmap. 404 if no data."""
+    wanted = platform.strip().lower()
+    data = posting_times.recommend(_WINDOWS_KEY.get(wanted, wanted))
+    if data is None:
+        raise HTTPException(status_code=404, detail=f"No posting windows for {platform!r}")
+    return PostingWindows(
+        platform=data.platform,
+        best_days=list(data.best_days),
+        windows=[PostingWindow(days=list(w.days), start=w.start, end=w.end) for w in data.windows],
+        reason=data.reason,
+        confidence=data.confidence,
+        sources=[PostingSource(name=s.name, url=s.url) for s in data.sources],
+    )
 
 
 @app.get("/hashtags", response_model=hashtags.HashtagSuggestions)

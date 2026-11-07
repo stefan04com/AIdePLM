@@ -1,7 +1,10 @@
+import { type CSSProperties, useState } from 'react'
 import type { ApplyRequest, Comment, RefereeResult, SlackDelivery } from '../../api/types'
+import { emergeDelay } from '../../lib/funnel'
 import { humanize } from '../../lib/format'
 import { Badge, Banner, SectionHead } from '../ui'
 import { ConflictCard } from './ConflictCard'
+import { FunnelHive } from './RefereeFunnel'
 import { EditList } from './EditList'
 import { ShipBar } from './ShipBar'
 import { TaskList } from './TaskList'
@@ -26,9 +29,16 @@ const SHIPPED_TEXT: Record<SlackDelivery, string> = {
 
 export function RefereePanel({ referee, comments, canShip, shipped, slack, onApply }: Props) {
   const needsHuman = referee.status === 'needs_human'
+  // On arrival, a hive at the top of the panel releases the conflict cards one by one, then fades.
+  const [hive, setHive] = useState(true)
 
   return (
-    <div className="referee-panel">
+    <div className="referee-panel referee-emerging">
+      {hive && (
+        <div className="referee-core" onAnimationEnd={(e) => e.target === e.currentTarget && setHive(false)}>
+          <FunnelHive resolved />
+        </div>
+      )}
       <SectionHead
         id="05"
         title="Referee"
@@ -41,12 +51,13 @@ export function RefereePanel({ referee, comments, canShip, shipped, slack, onApp
       )}
 
       {referee.conflicts.map((conflict, index) => (
-        <ConflictCard
+        <div
           key={conflict.id}
-          conflict={conflict}
-          shipped={shipped}
-          index={index}
-        />
+          className="referee-emerge"
+          style={{ '--emerge-delay': `${emergeDelay(index)}ms` } as CSSProperties}
+        >
+          <ConflictCard conflict={conflict} shipped={shipped} index={index} />
+        </div>
       ))}
 
       <EditList edits={referee.edits} comments={comments} />

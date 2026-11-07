@@ -6,6 +6,7 @@ import { computeFactors, type Factor } from '../../lib/factors'
 import { isFinished } from '../../lib/runStatus'
 import { toneClass } from '../../lib/tones'
 import { SectionHead } from '../ui'
+import { PostingHeatmap } from './PostingHeatmap'
 
 /** Every factor behind the decision to ship, from the run's real data (lib/factors.ts). */
 export function AnalysisPanel({ run, usage }: { run: Run | null; usage: Usage }) {
@@ -21,6 +22,7 @@ export function AnalysisPanel({ run, usage }: { run: Run | null; usage: Usage })
           <FactorRow key={factor.label} factor={factor} />
         ))}
       </div>
+      <PostingHeatmap />
     </section>
   )
 }

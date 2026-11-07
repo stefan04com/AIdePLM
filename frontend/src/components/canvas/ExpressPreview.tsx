@@ -4,6 +4,7 @@ import { BRAND_HANDLE, BRAND_NAME } from '../../lib/brand'
 import { Badge } from '../ui'
 import { AFTER_SHIP_S } from '../../lib/wow'
 import { MorphCaption } from '../wow/MorphCaption'
+import { FireflyDenoise } from './FireflyDenoise'
 
 interface Props {
   draft: Draft
@@ -43,18 +44,14 @@ export function ExpressPreview({ draft, firefly, canGenerate }: Props) {
         </div>
         <div className={`post-visual ${firefly.generating ? 'is-generating' : ''}`}>
           {image ? (
-            // a new key fades the generated image in over the old one
-            <img key={image} src={image} alt={draft.visual_prompt} className={firefly.image ? 'is-generated' : ''} />
+            // the denoise layer already resolved into this photo, so it swaps in without a second fade
+            <img key={image} src={image} alt={draft.visual_prompt} className={firefly.image ? 'is-generated is-denoised' : ''} />
           ) : (
             <div className="image-placeholder">{draft.visual_prompt}</div>
           )}
-          {firefly.generating && (
-            <div className="firefly-veil" role="status">
-              <span className="firefly-spark" aria-hidden>
-                ✦
-              </span>
-              {firefly.step}
-            </div>
+          {/* the generated photo resolves out of noise, like a diffusion model (simulated) */}
+          {firefly.generating && firefly.startedAt !== null && (
+            <FireflyDenoise startedAt={firefly.startedAt} label={firefly.step} />
           )}
           {firefly.image && !firefly.generating && (
             <span className="firefly-tag">

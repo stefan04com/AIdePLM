@@ -1,0 +1,105 @@
+/* Firefly "denoise reveal": the generated photo resolves out of colourful noise like a diffusion
+   model. JS drives opacity (noise canvas) and filter (photo) only; this file places the layers. */
+
+.firefly-denoise {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  background: #1b0f14;
+  animation: denoise-in 0.25s ease-out;
+}
+
+.firefly-denoise .denoise-photo,
+.firefly-denoise .denoise-noise {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+}
+
+.firefly-denoise .denoise-photo {
+  /* scaled up a little so the heavy blur never shows the dark edge */
+  transform: scale(1.08);
+  filter: blur(26px) saturate(2.4) brightness(1.35);
+  will-change: filter;
+}
+
+.firefly-denoise .denoise-noise {
+  image-rendering: pixelated;
+  mix-blend-mode: screen;
+  will-change: opacity;
+}
+
+.denoise-label {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  gap: 4px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  color: #fff;
+  font-size: 13px;
+  background: rgb(27 15 20 / 0.62);
+  backdrop-filter: blur(6px);
+}
+
+.denoise-step {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.denoise-sim {
+  font-weight: 400;
+  opacity: 0.75;
+}
+
+.denoise-text {
+  opacity: 0.9;
+}
+
+.denoise-bar {
+  height: 3px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgb(255 255 255 / 0.2);
+}
+
+.denoise-bar > span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #ff4d7a, #9b5cff);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* the photo is already clean when the call ends: no second fade-in */
+.post-visual img.is-generated.is-denoised {
+  animation: none;
+}
+
+@keyframes denoise-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .firefly-denoise {
+    animation: none;
+  }
+
+  .firefly-denoise .denoise-photo {
+    filter: none;
+    transform: none;
+  }
+
+  .firefly-denoise .denoise-noise {
+    display: none;
+  }
+}
