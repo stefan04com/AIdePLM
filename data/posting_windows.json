@@ -1,0 +1,127 @@
+{
+  "about": "Recommended posting windows per platform for the Moment posting-time planner. Each window is the overlap of 2025/2026 industry 'best time to post' reports, checked against the original pages on the collected_at date.",
+  "collected_at": "2026-11-07",
+  "timezone_note": "times are the audience's local time; every report used here normalizes to the local time of the audience, so convert to the followers' main timezone (Romania: Europe/Bucharest) before showing a clock time.",
+  "confidence_scale": {
+    "high": "two or more independent reports agree on the days and an overlapping window",
+    "medium": "one solid report, or reports that agree on the days but not the hours",
+    "low": "weak data or reports that conflict"
+  },
+  "notes": [
+    "These are industry averages from tool vendors (Sprout Social, Buffer, Hootsuite, Metricool, Later), mostly from US-heavy customer bases, and the vendors measure engagement in different ways.",
+    "Romania-specific data is scarce: no Romanian study with its own dataset was found on 2026-11-07, only generic guides and timezone calculators.",
+    "The account's own analytics (Instagram/Facebook Insights 'when your followers are online', TikTok and YouTube analytics) beat any average; use them when available and treat this file as a fallback.",
+    "Stay online for the first hour after posting to reply to comments: early engagement decides the next wave of distribution."
+  ],
+  "platforms": [
+    {
+      "platform": "instagram",
+      "best_days": ["wednesday", "tuesday", "thursday"],
+      "windows": [
+        {"days": ["tuesday", "wednesday"], "start": "12:00", "end": "19:00"},
+        {"days": ["thursday"], "start": "12:00", "end": "14:00"}
+      ],
+      "avoid": "Weekends (Saturday weakest) and the hours after midnight.",
+      "reason": "Sprout Social 2026 puts the peak on Tuesday and Wednesday from noon into the evening and Buffer 2026 names Wednesday the best day with 12:00 and 18:00 slots, but Later (2024 data) found 03:00-06:00 best, so the hours conflict.",
+      "confidence": "medium",
+      "sources": [
+        {"name": "Sprout Social, Best times to post on social media 2026", "url": "https://sproutsocial.com/insights/best-times-to-post-on-social-media/", "accessed": "2026-11-07"},
+        {"name": "Buffer, Best time to post on social media 2026", "url": "https://buffer.com/resources/best-time-to-post-social-media/", "accessed": "2026-11-07"},
+        {"name": "Hootsuite, Best time to post on social media", "url": "https://blog.hootsuite.com/best-time-to-post-on-social-media/", "accessed": "2026-11-07"},
+        {"name": "Metricool, Best time to post on social networks 2026", "url": "https://metricool.com/best-time-to-post-social-networks/", "accessed": "2026-11-07"},
+        {"name": "Later, Best time to post on Instagram in 2026", "url": "https://later.com/blog/best-time-to-post-on-instagram/", "accessed": "2026-11-07"}
+      ]
+    },
+    {
+      "platform": "tiktok",
+      "best_days": ["sunday", "monday"],
+      "windows": [
+        {"days": ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"], "start": "18:00", "end": "21:00"}
+      ],
+      "avoid": "Before 06:00 and after 23:00.",
+      "reason": "Buffer 2026 (7.1M posts) and Metricool 2026 (2M+ posts) both point to evenings and to Sunday and Monday, but Sprout Social 2026 says weekday afternoons and calls weekends the worst, and Hootsuite says Thursday 07:00-11:00, so the reports conflict.",
+      "confidence": "low",
+      "sources": [
+        {"name": "Buffer, Best time to post on social media 2026", "url": "https://buffer.com/resources/best-time-to-post-social-media/", "accessed": "2026-11-07"},
+        {"name": "Metricool, Best time to post on social networks 2026", "url": "https://metricool.com/best-time-to-post-social-networks/", "accessed": "2026-11-07"},
+        {"name": "Sprout Social, Best times to post on social media 2026", "url": "https://sproutsocial.com/insights/best-times-to-post-on-social-media/", "accessed": "2026-11-07"},
+        {"name": "Hootsuite, Best time to post on social media", "url": "https://blog.hootsuite.com/best-time-to-post-on-social-media/", "accessed": "2026-11-07"}
+      ]
+    },
+    {
+      "platform": "x",
+      "best_days": ["wednesday", "tuesday", "thursday"],
+      "windows": [
+        {"days": ["tuesday", "wednesday", "thursday"], "start": "09:00", "end": "11:00"}
+      ],
+      "avoid": "Weekends (Saturday and Sunday) and before 05:00.",
+      "reason": "Buffer 2026 (8M+ posts) and Hootsuite both find weekday mornings around 09:00-11:00 best, while Sprout Social 2026 says 12:00-18:00 and Metricool 21:00, so the days agree but the hours conflict.",
+      "confidence": "medium",
+      "sources": [
+        {"name": "Buffer, Best time to post on social media 2026", "url": "https://buffer.com/resources/best-time-to-post-social-media/", "accessed": "2026-11-07"},
+        {"name": "Hootsuite, Best time to post on social media", "url": "https://blog.hootsuite.com/best-time-to-post-on-social-media/", "accessed": "2026-11-07"},
+        {"name": "Sprout Social, Best times to post on social media 2026", "url": "https://sproutsocial.com/insights/best-times-to-post-on-social-media/", "accessed": "2026-11-07"},
+        {"name": "Metricool, Best time to post on social networks 2026", "url": "https://metricool.com/best-time-to-post-social-networks/", "accessed": "2026-11-07"}
+      ]
+    },
+    {
+      "platform": "linkedin",
+      "best_days": ["wednesday", "thursday", "tuesday"],
+      "windows": [
+        {"days": ["tuesday", "wednesday", "thursday"], "start": "11:00", "end": "17:00"}
+      ],
+      "avoid": "Weekends and after 19:00.",
+      "reason": "Sprout Social 2026, Metricool 2026 (673k posts) and Buffer 2026 (4.8M posts) all favor midweek working hours, with Buffer's peak later (15:00-18:00, Wednesday to Friday); Hootsuite's 04:00-06:00 is an outlier.",
+      "confidence": "high",
+      "sources": [
+        {"name": "Sprout Social, Best times to post on social media 2026", "url": "https://sproutsocial.com/insights/best-times-to-post-on-social-media/", "accessed": "2026-11-07"},
+        {"name": "Metricool, Best time to post on social networks 2026", "url": "https://metricool.com/best-time-to-post-social-networks/", "accessed": "2026-11-07"},
+        {"name": "Buffer, Best time to post on social media 2026", "url": "https://buffer.com/resources/best-time-to-post-social-media/", "accessed": "2026-11-07"},
+        {"name": "Hootsuite, Best time to post on social media", "url": "https://blog.hootsuite.com/best-time-to-post-on-social-media/", "accessed": "2026-11-07"}
+      ]
+    },
+    {
+      "platform": "facebook",
+      "best_days": ["wednesday", "tuesday", "thursday"],
+      "windows": [
+        {"days": ["tuesday", "wednesday", "thursday"], "start": "09:00", "end": "14:00"}
+      ],
+      "avoid": "Weekends (Saturday quietest) and 00:00-04:00.",
+      "reason": "All four reports favor Tuesday to Thursday, but Buffer 2026 and Hootsuite peak in the morning (08:00-12:00) while Sprout Social 2026 says 12:00-20:00 and Metricool 12:00-14:00, so this window is the late-morning to early-afternoon overlap.",
+      "confidence": "medium",
+      "sources": [
+        {"name": "Sprout Social, Best times to post on social media 2026", "url": "https://sproutsocial.com/insights/best-times-to-post-on-social-media/", "accessed": "2026-11-07"},
+        {"name": "Buffer, Best time to post on social media 2026", "url": "https://buffer.com/resources/best-time-to-post-social-media/", "accessed": "2026-11-07"},
+        {"name": "Hootsuite, Best time to post on social media", "url": "https://blog.hootsuite.com/best-time-to-post-on-social-media/", "accessed": "2026-11-07"},
+        {"name": "Metricool, Best time to post on social networks 2026", "url": "https://metricool.com/best-time-to-post-social-networks/", "accessed": "2026-11-07"}
+      ]
+    },
+    {
+      "platform": "youtube_shorts",
+      "best_days": ["friday", "saturday"],
+      "windows": [
+        {"days": ["friday", "saturday"], "start": "16:00", "end": "19:00"}
+      ],
+      "avoid": "Monday and Tuesday (weakest days in Buffer's data).",
+      "reason": "Only Buffer 2026 measures Shorts engagement by time (best Friday 16:00, window 16:00-19:00 Friday to Saturday); Metricool only reports when creators publish, and Sprout Social and Hootsuite do not cover YouTube.",
+      "confidence": "medium",
+      "sources": [
+        {"name": "Buffer, Best time to post on social media 2026", "url": "https://buffer.com/resources/best-time-to-post-social-media/", "accessed": "2026-11-07"}
+      ]
+    },
+    {
+      "platform": "threads",
+      "best_days": ["wednesday", "thursday", "tuesday"],
+      "windows": [
+        {"days": ["tuesday", "wednesday", "thursday"], "start": "08:00", "end": "12:00"}
+      ],
+      "avoid": "Weekends and Monday (Buffer's weakest days).",
+      "reason": "Buffer 2026 (2.5M posts) finds weekday mornings 07:00-12:00 best, led by Thursday 09:00, and Hootsuite names Tuesday 08:00 and Thursday 09:00, so both agree on midweek mornings.",
+      "confidence": "high",
+      "sources": [
+        {"name": "Buffer, Best time to post on social media 2026", "url": "https://buffer.com/resources/best-time-to-post-social-media/", "accessed": "2026-11-07"},
+        {"name": "Hootsuite, Best time to post on social media", "url": "https://blog.hootsuite.com/best-time-to-post-on-social-media/", "accessed": "2026-11-07"}
+      ]
+    }
+  ]
+}

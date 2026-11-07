@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import type { Usage } from '../../hooks/useUsage'
 import { PLATFORM_RULES, SCORING_FACTORS, WEIGHT_RULES, type Confidence, type Rule } from '../../lib/rules'
 import { CostPanel } from '../CostPanel'
+import { HashtagsSection } from './HashtagsSection'
 import { Card, Pill, SectionHead } from '../ui'
 
 const TONE: Record<Confidence, 'ok' | 'warn' | 'neutral'> = {
@@ -32,6 +33,8 @@ export function RulesPage({ usage, review }: { usage: Usage; review: ReactNode }
         </p>
       </div>
       <div className="column">
+        <SectionHead id="04" title="Trends and hashtags" aside={<Pill>saved data</Pill>} />
+        <HashtagsSection />
         <CostPanel usage={usage} />
       </div>
     </main>

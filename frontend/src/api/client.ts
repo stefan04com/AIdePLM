@@ -10,6 +10,8 @@ import type {
   Comment,
   CommentCreate,
   DemoModeResponse,
+  HashtagSuggestions,
+  LiveTrends,
   Persona,
   PersonaReaction,
   Platform,
@@ -74,6 +76,13 @@ const backendApi = {
   getTrendScore: (body: TrendScoreRequest) => post<TrendScore>('/trend-score', body),
   getPostingTime: (platform: Platform) =>
     get<PostingTime>(`/posting-time?platform=${encodeURIComponent(platform)}`),
+  /** Sourced hashtag suggestions for some keywords (saved cache, Boabe cap of 3). */
+  getHashtags: (keywords: string[], platform = 'instagram') =>
+    get<HashtagSuggestions>(
+      `/hashtags?keywords=${encodeURIComponent(keywords.join(','))}&platform=${encodeURIComponent(platform)}`,
+    ),
+  /** Current trends collected from the web (saved snapshot). */
+  getLiveTrends: () => get<LiveTrends>('/trends/live'),
   getUsage: (runId?: string) =>
     get<UsageSummary>(runId ? `/usage?run_id=${encodeURIComponent(runId)}` : '/usage'),
   getDemoMode: () => get<DemoModeResponse>('/admin/demo-mode'),

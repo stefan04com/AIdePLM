@@ -172,6 +172,39 @@ export interface PostingTime {
   platform: Platform
   time: string // e.g. "Weekdays 08:00-11:00"
   reason: string
+  /** From data/posting_windows.json; null when the backend used the guide's fallback rules. */
+  confidence?: 'high' | 'medium' | 'low' | null
+  sources?: string[] // report URLs behind the window
+}
+
+export type HashtagKind = 'broad' | 'niche' | 'local' | 'branded-generic'
+
+export interface HashtagSuggestion {
+  tag: string // "#pumpkinlatte"
+  kind: HashtagKind
+  topic: string
+  evidence: string
+  source_url: string
+  source: 'saved'
+}
+
+/** GET /hashtags: suggestions from the saved, sourced cache (data/hashtags.json). */
+export interface HashtagSuggestions {
+  platform: string
+  hashtags: HashtagSuggestion[]
+  cap: number
+  matched_topics: string[]
+  collected_at: string | null
+  source: 'saved'
+  platform_note: string
+  platform_source: string
+}
+
+/** GET /trends/live: current trends collected from the web; saved, not fetched live. */
+export interface LiveTrends {
+  source: 'saved' | 'live'
+  collected_at: string | null
+  trends: Trend[]
 }
 
 export interface DemoModeRequest {

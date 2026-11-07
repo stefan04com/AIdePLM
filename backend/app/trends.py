@@ -40,6 +40,19 @@ def get_trend(*, live: bool = False) -> Trend:
     return collected[0] if collected else _mock_live_trend()
 
 
+def live_trends_feed(path: Path | None = None) -> tuple[str | None, list[Trend]]:
+    """The collected trends and the date they were collected (None if the file is unusable)."""
+    trends = load_live_trends(path)
+    if not trends:
+        return None, []
+    try:
+        collected = json.loads((path or LIVE_TRENDS_PATH).read_text(encoding="utf-8"))
+        collected_at = collected.get("collected_at")
+    except (OSError, ValueError, AttributeError):
+        collected_at = None
+    return (collected_at if isinstance(collected_at, str) else None), trends
+
+
 def load_live_trends(path: Path | None = None) -> list[Trend]:
     """Read the collected real trends, in file order. Empty if the file is unusable."""
     target = path or LIVE_TRENDS_PATH

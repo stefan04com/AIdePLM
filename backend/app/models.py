@@ -174,6 +174,16 @@ class PostingTime(BaseModel):
     platform: Platform
     time: str  # e.g. "Weekdays 08:00-11:00"
     reason: str
+    confidence: Literal["high", "medium", "low"] | None = None  # None = guide fallback
+    sources: list[str] = []  # report URLs behind the window
+
+
+class LiveTrends(BaseModel):
+    """Current trends for the "Fetch current trends" button: saved from the web, not live."""
+
+    source: Literal["saved", "live"]
+    collected_at: str | None = None
+    trends: list[Trend]
 
 
 class DemoModeRequest(BaseModel):

@@ -196,7 +196,9 @@ Every call writes `{run_id, call, model, input_tokens, output_tokens, latency_ms
 | POST | `/runs/{id}/apply` | `ApplyRequest` `{conflict_ids?, accept_all_edits}` | `Run` (status `SHIPPED`) |
 | POST | `/runs/{id}/regenerate` | `RegenerateRequest` `{caption, instruction}` | `Run` (status back to `DRAFTED`, reactions and referee cleared, `draft.regenerations` +1). Optional LLM call #6 `regenerate`; fallback keeps the edited caption |
 | POST | `/trend-score` | `TrendScoreRequest` `{words, hashtags}` | `TrendScore` `{score, suggestions}`. Optional LLM call #7 `trend_score`; fallback scores the overlap with the saved trends in `data/` |
-| GET | `/posting-time?platform=` | | `PostingTime` `{platform, time, reason}`; rules from `docs/what-makes-a-post-popular.md`, no LLM |
+| GET | `/posting-time?platform=` | | `PostingTime` `{platform, time, reason, confidence?, sources?}`; windows from `data/posting_windows.json` (2025-26 reports), fallback: `docs/what-makes-a-post-popular.md`; no LLM |
+| GET | `/hashtags?keywords=a,b&platform=` | | `HashtagSuggestions` (`backend/app/hashtags.py`): sourced tags from `data/hashtags.json`, Boabe cap 3, platform cap; `source: "saved"` |
+| GET | `/trends/live` | | `LiveTrends` `{source: "saved", collected_at, trends}`: real trends collected into `data/live_trends.json`; not fetched live |
 | GET | `/usage?run_id=` | | `UsageSummary` (no `run_id` = totals across all runs) |
 | POST | `/admin/demo-mode` | `DemoModeRequest` `{on}` | `DemoModeResponse` `{on}` |
 
@@ -237,6 +239,7 @@ class Draft(BaseModel):
     image_url: str | None = None
     express_doc_id: str | None = None
     version: int = 1  # bumps on every apply
+    regenerations: int = 0  # times the caption was rewritten (POST /runs/{id}/regenerate)
 
 class Persona(BaseModel):
     id: str              # never equal to a Comment role
@@ -337,6 +340,30 @@ class UsageSummary(BaseModel):
 Storage: a Python dict keyed by run id, snapshotted to `data/runs.json` after each transition, so a backend restart mid-demo doesn't lose the run.
 
 ---
+
+### Extras: regenerate, trend score, posting time
+
+```python
+class RegenerateRequest(BaseModel):
+    caption: str          # the caption as the person edited it (1-2200 chars)
+    instruction: str      # e.g. "make it shorter and warmer" (1-500 chars)
+
+Platform = Literal["tiktok", "instagram_reels", "instagram_feed", "youtube_shorts",
+                   "facebook_reels", "facebook_feed", "x", "threads", "linkedin"]
+
+class TrendScoreRequest(BaseModel):
+    words: str
+    hashtags: list[str] = []   # max 30
+
+class TrendScore(BaseModel):
+    score: int            # 0-100
+    suggestions: list[str] = []
+
+class PostingTime(BaseModel):
+    platform: Platform
+    time: str             # e.g. "Weekdays 08:00-11:00"
+    reason: str
+```
 
 ## 7. Security and safety
 

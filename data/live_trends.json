@@ -1,5 +1,6 @@
 {
   "about": "Real trends from 2-7 November 2026, collected 2026-11-07 for the 'live' mock in backend/app/trends.py. Each url is the article the facts come from. Order = best fit for Boabe first; get_trend(live=True) returns the first one.",
+  "collected_at": "2026-11-07",
   "trends": [
     {
       "id": "live_small_luxuries",
