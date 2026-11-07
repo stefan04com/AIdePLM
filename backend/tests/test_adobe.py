@@ -118,9 +118,7 @@ def call_every_function() -> None:
 
 
 @pytest.mark.parametrize("value", ["abc", "-1", "0", "nan", "inf", "16"])
-def test_invalid_latency_is_ignored(
-    monkeypatch: pytest.MonkeyPatch, value: str
-) -> None:
+def test_invalid_latency_is_ignored(monkeypatch: pytest.MonkeyPatch, value: str) -> None:
     sleeps: list[float] = []
     monkeypatch.setattr(time, "sleep", sleeps.append)
     monkeypatch.setenv(adobe.LATENCY_ENV, value)

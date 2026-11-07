@@ -55,9 +55,7 @@ def build_blocks(
     if caption.strip():
         blocks.append(_section(_escape(caption)))
     if image_url and _is_web_url(image_url):
-        blocks.append(
-            {"type": "image", "image_url": image_url, "alt_text": "Final post image"}
-        )
+        blocks.append({"type": "image", "image_url": image_url, "alt_text": "Final post image"})
     if tasks:
         lines = ["*Tasks*", *(_task_line(task) for task in tasks)]
         blocks.append(_section("\n".join(lines)))

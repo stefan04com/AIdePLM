@@ -45,7 +45,7 @@ def test_valid_response_is_returned_logged_and_remembered(live):
 
 def test_live_yes_becomes_last_good_fit(live):
     replies, _ = live
-    replies.append(GOOD.replace('false', 'true'))
+    replies.append(GOOD.replace("false", "true"))
     assert check_fit(TREND, "brand", "run_1").fits is True
     assert demo_cache.fit().score == 12
 
