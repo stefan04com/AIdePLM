@@ -7,7 +7,7 @@ const DELIVERY_LABEL = {
 } as const
 
 /**
- * The Slack message Moment posts after "Apply all & ship" (demo script 2:30), as built by
+ * The Slack message AdoBee posts after "Apply all & ship" (demo script 2:30), as built by
  * slack.build_blocks(). The label says whether the backend really posted it.
  */
 export function SlackPreview({ preview }: { preview: Preview }) {
@@ -24,7 +24,7 @@ export function SlackPreview({ preview }: { preview: Preview }) {
         </span>
         <div className="slack-body">
           <div>
-            <strong>Moment</strong> <span className="slack-app">APP</span>
+            <strong>AdoBee</strong> <span className="slack-app">APP</span>
           </div>
           <p className="slack-header">{preview.header}</p>
           <p>{preview.caption}</p>

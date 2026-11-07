@@ -30,7 +30,7 @@ const shippedRun = {
 test('a shipped run builds the full preview', () => {
   assert.deepEqual(buildSlackPreview(shippedRun), {
     delivery: null, // run has no `slack` field: treated as not posted
-    header: 'Moment: post approved',
+    header: 'AdoBee: post approved',
     caption: 'Grey week, warm corner.',
     imageUrl: 'data:image/svg+xml;base64,AA', // the simulated preview shows the local image
     taskLines: ['Product: Send the sugar docs (due: this week)'],

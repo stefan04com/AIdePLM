@@ -6,7 +6,7 @@ export function Brand() {
         M
       </span>
       <div>
-        <h1>Moment</h1>
+        <h1>AdoBee</h1>
         <p className="brand-sub">Hackathon live build · Marketing Reimagined</p>
       </div>
     </div>

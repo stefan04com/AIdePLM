@@ -40,7 +40,7 @@ export function buildSlackPreview(run: Run): SlackPreview | null {
   if (!run.shipped_at || !run.draft) return null
   return {
     delivery: run.slack ?? null,
-    header: 'Moment: post approved',
+    header: 'AdoBee: post approved',
     caption: run.draft.caption,
     imageUrl: run.draft.image_url || null,
     taskLines: (run.referee?.tasks ?? []).map(taskLine),

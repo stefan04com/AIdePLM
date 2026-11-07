@@ -64,7 +64,7 @@ def send_final_post(
         logger.info("Slack: no webhook set, message simulated (%d blocks)", len(blocks))
         return SlackResult(delivery="simulated", blocks=blocks)
 
-    payload = {"text": f"Moment: post approved. {caption}"[:MAX_SECTION_CHARS], "blocks": blocks}
+    payload = {"text": f"AdoBee: post approved. {caption}"[:MAX_SECTION_CHARS], "blocks": blocks}
     error = _post_json(webhook_url, payload, timeout_s)
     if error == "Slack returned HTTP 400" and any(b["type"] == "image" for b in blocks):
         # Slack rejects the whole message when it can't download the image: post it without.
@@ -89,7 +89,7 @@ def build_blocks(
     blocks: list[dict[str, Any]] = [
         {
             "type": "header",
-            "text": {"type": "plain_text", "text": "Moment: post approved"},
+            "text": {"type": "plain_text", "text": "AdoBee: post approved"},
         }
     ]
     # Slack rejects a section with blank text, which would fail the whole message.

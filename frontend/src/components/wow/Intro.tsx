@@ -52,7 +52,7 @@ export function Intro() {
         </div>
       </div>
       <div className="intro-text">
-        <h1>Moment</h1>
+        <h1>AdoBee</h1>
         <p>From trend to approved post, before the trend is over.</p>
         <span>Adobe Hackathon · Marketing Reimagined</span>
       </div>
