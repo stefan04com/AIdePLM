@@ -131,3 +131,21 @@ def test_live_fallback_is_marked_on_the_run(live):
     replies.append(llm.LLMError("down"))
     check_fit(TREND, "brand", "run_x")
     assert store.get_run("run_x").fallback_calls == ["fit"]
+
+
+def test_live_in_demo_only_for_listed_calls(live, monkeypatch):
+    store.set_demo_mode(True)
+    replies, prompts = live
+    replies.append(GOOD)
+    # not listed: demo mode answers from the cache, the provider is never called
+    assert check_fit(TREND, "brand", "r").fits is True and prompts == []
+    monkeypatch.setenv("LIVE_IN_DEMO", "referee, fit")
+    assert check_fit(TREND, "brand", "r").score == 12 and len(prompts) == 1
+
+
+def test_live_in_demo_falls_back_when_llm_fails(live, monkeypatch):
+    store.set_demo_mode(True)
+    monkeypatch.setenv("LIVE_IN_DEMO", "fit")
+    replies, _ = live
+    replies.append(llm.LLMError("down"))
+    assert check_fit(TREND, "brand", "r").fits is True  # canned fit

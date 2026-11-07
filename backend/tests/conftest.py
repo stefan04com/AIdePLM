@@ -12,7 +12,7 @@ def isolated(tmp_path, monkeypatch):
     secrets = ("LLM_API_KEY", "AWS_BEARER_TOKEN_BEDROCK", "SLACK_WEBHOOK_URL")
     # main.py loads the developer's .env, so clear every setting a test could pick up from it.
     images = ("SLACK_IMAGE_URL", "PUBLIC_BASE_URL", "ADOBE_MOCK_IMAGE_URL", "ADOBE_MOCK_LATENCY_S")
-    for var in (*secrets, *images, "LLM_MODEL", "DEMO_MODE", "LIVE_TRENDS"):
+    for var in (*secrets, *images, "LLM_MODEL", "DEMO_MODE", "LIVE_TRENDS", "LIVE_IN_DEMO"):
         monkeypatch.delenv(var, raising=False)
     store.reset()
     store.configure(tmp_path / "runs.json")

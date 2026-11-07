@@ -16,7 +16,7 @@ Last updated: 2026-11-07 14:20 (Stefan)
 | Area | State |
 |---|---|
 | Flow (fit → draft → reactions → comments → referee → apply → Slack) | **Done.** Backend 128 tests, frontend 20 tests, build and lint pass |
-| Real LLM (Bedrock) | Live eval on `main`: 3/3 conflict, 0 fallbacks, **$0.0566 per post** (`qa/results/live_eval_20261107_122427.md`). Use `LLM_MODEL=eu.anthropic.claude-sonnet-4-6`; `anthropic.claude-sonnet-5-5` returns 403 on our account |
+| Real LLM (Bedrock) | Live eval on `main`: 3/3 conflict, 0 fallbacks, **$0.0602 per post** (`qa/results/live_eval_20261107_142630.md`). Use `LLM_MODEL=eu.anthropic.claude-sonnet-4-6`; `anthropic.claude-sonnet-5-5` returns 403 on our account |
 | Browser e2e, `VITE_USE_MOCKS=false` | **Done in Chromium** (`qa/e2e_browser.py`): 3/3 clean runs, no console or HTTP errors, risky trend rejected, `needs_human` banner shows and apply still ships. Run in demo mode |
 | Slack | **Real** webhook on ship (`Run.slack` = posted / simulated / failed). Image: `SLACK_IMAGE_URL` or `PUBLIC_BASE_URL` (never localhost); a message rejected because of its image is retried once without it |
 | Adobe / trends | Local simulations by team decision, no keys needed |
@@ -29,15 +29,14 @@ Last updated: 2026-11-07 14:20 (Stefan)
 - [ ] 3 clean rehearsals in a row on the **presentation laptop** with `docs/demo-script.md`, including the risky-trend beat. At least one with demo mode **off**, so the referee answers the comments typed live. Before each: `python qa/e2e_browser.py rehearsal` must exit 0.
 
 ### Stefan
-- [ ] Push the board update: `git push origin main develop`.
-- [ ] **Persona conflict never shows up live** (AI 25%): all 6 live runs gave only human-vs-human conflicts, but the README promises customers at the review table. Make one persona clearly push back on a human demand (e.g. Origin Seeker vs Product's "latte as the hero"), add "≥1 human-vs-persona conflict" to `qa/live_eval.py`. Done when: 3/3 live runs show a persona on a conflict card.
-- [ ] **Referee live on stage:** in demo mode the referee answer is canned, so comments the judges type don't change it. Run at least the referee step with demo mode off (~$0.06, ~22 s); keep demo mode only as the automatic fallback. Done when: one rehearsal passes live.
+- [x] Persona conflict now shows up live: the referee prompt compares every persona reaction with the human demands, and `qa/live_eval.py` checks it. Eval 14:26: **human-vs-persona conflict 3/3**, conflicts backed by the persona's own reaction, $0.0602 per post (`qa/results/live_eval_20261107_142630.md`).
+- [x] Referee live on stage: set `LIVE_IN_DEMO=referee` (already in Stefan's `.env`; add it to every laptop). Demo mode stays on for the rest and is the automatic fallback if the LLM fails. Typed comments now change the answer (~22 s, ~$0.06). **Still open:** one full rehearsal with it on.
 - [ ] After the rehearsals: commit or revert the modified `frontend/package-lock.json`, cut `release/1.0.0`, tag `v1.0.0-demo` on `main`, merge back into `develop`.
 - [ ] Pitch, with Anda: say what is real (LLM, Slack) and what is simulated (Adobe, trends; `adobe.py` is the integration seam). Show `qa/results/live_eval_*.md` as proof the AI is real and measured, since demo mode answers from the cache.
 
 ### Andu
 - [ ] **"Accept compromise" doesn't change what ships:** `apply()` checks the `conflict_ids` but never uses them; it always ships the referee's full `final_caption`. Quick fix: rename the button "Apply all & ship" and drop or relabel the per-conflict "Accept" buttons (with Stefan if the backend should use them). Done when: the UI doesn't promise a choice it doesn't make.
-- [ ] **Cost panel shows "n/a" in demo mode:** show the measured **$0.0566 per post** (from the live eval) when there are no live calls, labelled "measured in live eval".
+- [ ] **Cost panel shows "n/a" in demo mode:** show the measured **$0.0602 per post** (from the live eval) when there are no live calls, labelled "measured in live eval". **Number changed:** the latest eval (referee prompt now compares personas with humans) is $0.0602, so update the `0.0566` in `frontend/src/components/header/RunMeta.tsx` and `frontend/tests/factors.test.ts` too.
 - [ ] One human click-through on the presentation laptop with `VITE_USE_MOCKS=false` in `frontend/.env.local` (the automated run can't judge how it looks on the projector).
 - [ ] Consider showing only "37s vs 8 days" on the ship screen instead of "18,893× faster": on a run of a few seconds the multiplier looks inflated.
 
@@ -49,7 +48,7 @@ Last updated: 2026-11-07 14:20 (Stefan)
 
 ### Anda
 - [ ] Pitch: say "37 s vs 8 days" rather than the multiplier, and state plainly what is real (LLM, Slack) and what is simulated (Adobe, trends).
-- [ ] Cost slide: **$0.0566 per post** (4 LLM calls, ~22 s of model time) next to "a review takes 8 days and 3+ versions" (Filestage, vendor-reported). If you add hours saved × hourly cost, label it as an assumption.
+- [ ] Cost slide: **$0.0602 per post** (4 LLM calls, ~22 s of model time) next to "a review takes 8 days and 3+ versions" (Filestage, vendor-reported). If you add hours saved × hourly cost, label it as an assumption.
 
 ## Not now (put in "What's next" in the pitch)
 
