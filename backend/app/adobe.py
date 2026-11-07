@@ -24,6 +24,7 @@ import time
 from dataclasses import dataclass, replace
 
 IMAGE_URL_ENV = "ADOBE_MOCK_IMAGE_URL"
+REVISED_IMAGE_URL_ENV = "ADOBE_MOCK_REVISED_IMAGE_URL"  # the visual after review (apply)
 LATENCY_ENV = "ADOBE_MOCK_LATENCY_S"
 
 # Longer delays count as invalid: they would only hang the demo. The limit
@@ -65,6 +66,19 @@ def generate_visual(prompt: str) -> Visual:
     override = os.environ.get(IMAGE_URL_ENV, "").strip()
     image_url = override or _svg_data_url(prompt)
     return Visual(image_url=image_url, prompt=prompt)
+
+
+def revised_visual(prompt: str) -> Visual | None:
+    """The visual after the review, as if Firefly regenerated it from the reviewed prompt.
+
+    Returns the image in ``ADOBE_MOCK_REVISED_IMAGE_URL``, or None when it isn't set
+    (then the post keeps its first visual unless the visual prompt changed).
+    """
+    revised = os.environ.get(REVISED_IMAGE_URL_ENV, "").strip()
+    if not revised:
+        return None
+    _simulate_latency()
+    return Visual(image_url=revised, prompt=prompt)
 
 
 def create_post(caption: str, image_url: str) -> ExpressPost:

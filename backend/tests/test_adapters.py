@@ -23,3 +23,23 @@ def test_send_to_slack_reaches_slack_module():
     tasks = [Task(owner="Legal", task="Sign off the caption", due="today 15:00")]
     # conftest clears SLACK_WEBHOOK_URL, so the module simulates the post
     assert adapters.send_to_slack(draft, tasks, timedelta(minutes=12)) == "simulated"
+
+
+def test_apply_swaps_in_the_revised_visual(monkeypatch):
+    monkeypatch.setenv("ADOBE_MOCK_IMAGE_URL", "/visuals/before.jpg")
+    monkeypatch.setenv("ADOBE_MOCK_REVISED_IMAGE_URL", "/visuals/after.jpg")
+    first = adapters.create_visual_and_post(
+        Draft(brief="b", caption="First", visual_prompt="latte by a window")
+    )
+    assert first.image_url == "/visuals/before.jpg"
+    reviewed = first.model_copy(update={"caption": "Reviewed", "version": 2})
+    assert adapters.update_post(first, reviewed).image_url == "/visuals/after.jpg"
+
+
+def test_apply_keeps_the_visual_without_a_revised_image(monkeypatch):
+    monkeypatch.setenv("ADOBE_MOCK_IMAGE_URL", "/visuals/before.jpg")
+    first = adapters.create_visual_and_post(
+        Draft(brief="b", caption="First", visual_prompt="latte by a window")
+    )
+    reviewed = first.model_copy(update={"caption": "Reviewed", "version": 2})
+    assert adapters.update_post(first, reviewed).image_url == "/visuals/before.jpg"
