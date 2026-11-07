@@ -1,36 +1,41 @@
-/* Design tokens. Warm, dark "coffee house operations room": espresso surfaces, cream text,
-   caramel highlights. Flat panels and thin borders on purpose: no glows, no gradients. */
+/* Design tokens. Friendly, light and Adobe-inspired: warm white surfaces, Adobe red for actions,
+   Spectrum-like greens/oranges for meaning, and honey for Adobee's hive. */
 
 :root {
   /* surfaces */
-  --bg: #0f0e0d;
-  --surface: #181614;
-  --surface-2: #211e1b;
-  --surface-3: #2a2622;
-  --border: #2e2a26;
-  --border-strong: #3d3832;
+  --bg: #fdf8f5;
+  --surface: #ffffff;
+  --surface-2: #fff2ee;
+  --surface-3: #fbe3dd;
+  --border: #f3e1dc;
+  --border-strong: #e8c8c0;
 
   /* text */
-  --text: #f2ede6;
-  --muted: #a39b91;
-  --faint: #7a7269;
+  --text: #2b1d1c;
+  --muted: #6e5753;
+  --faint: #9c8681;
 
   /* actions and highlights */
-  --accent: #ece2d0; /* cream: primary buttons */
-  --accent-text: #17130f;
-  --highlight: #d4945a; /* caramel: logo, hashtags, links, section numbers */
+  --accent: #eb1000; /* Adobe red: primary buttons */
+  --accent-strong: #c40d00;
+  --accent-text: #ffffff;
+  --accent-soft: #ffe3df;
+  --highlight: #e0301e; /* links, section numbers, hashtags, spinner */
+  --honey: #f5a623; /* Adobee and the progress hive */
 
   /* meaning */
-  --ok: #8fbf86; /* sage */
-  --warn: #e3ab55; /* amber */
-  --bad: #e2725f; /* terracotta */
+  --ok: #12805c;
+  --warn: #e46f00;
+  --bad: #d7373f;
 
   /* shape and type */
-  --radius: 10px;
-  --radius-sm: 6px;
-  --gap: 16px;
-  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+  --radius: 16px;
+  --radius-sm: 10px;
+  --gap: 18px;
+  --shadow: 0 1px 2px rgb(120 30 20 / 0.06), 0 6px 18px rgb(235 16 0 / 0.06);
+  --shadow-lift: 0 2px 4px rgb(120 30 20 / 0.08), 0 12px 28px rgb(235 16 0 / 0.12);
+  --sans: 'Adobe Clean', 'Source Sans 3', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'Source Code Pro', 'JetBrains Mono', ui-monospace, Consolas, monospace;
 
-  color-scheme: dark;
+  color-scheme: light;
 }
