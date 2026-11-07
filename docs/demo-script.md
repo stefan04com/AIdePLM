@@ -18,10 +18,10 @@ The Product comment is pre-filled in the form. The driver sends it. Judges do no
 "This reads like an ad. The trend is about the cozy moment, not about us. Lead with the moment, keep the latte in the background and make the call to action softer."
 
 **Card L (Legal):**
-"Remove 'no added sugar' and 'healthiest latte in town'. We have no documentation for the sugar claim, and we can't use health claims or unprovable superlatives."
+"The caption can't say 'no added sugar', 'healthy' or 'the best latte in town'. We have no documentation for the sugar claim, and health claims and superlatives we can't prove are off-limits."
 
 **Product (pre-filled, driver sends):**
-"The Pumpkin & Cinnamon Latte launches this week and 'no added sugar' is its main selling point. Please keep it in the caption and make the drink the hero of the visual."
+"The Pumpkin & Cinnamon Latte launches this week. Add that it has no added sugar, it's our main selling point, and make the drink the hero of the visual."
 
 ## Timing table (total 3:00)
 
