@@ -36,7 +36,7 @@ Read first: `docs/trending-research.md` (data sources and limits) and `docs/what
 ### Andu (frontend)
 - [x] Two menus: **Post** and **Rules** (`?view=rules`, arrow keys, run kept in the URL); Adobee stays in the header on both.
 - [ ] **Post** page: the post with its description in the middle; scoring framed on the left (Adobee stays); department reviews on the right.
-- [ ] **Trend score** under the scoring: the post's keywords and how trending they are, plus suggestions that raise the "hype". Marked "saved" / "live".
+- [x] **Trend score** under the Analysis panel (Post page): "Check trend score" calls `POST /trend-score` with the caption and hashtags; level, bar, suggestions, and a note when the post changed since. Labelled "vs saved trends" (not live Google Trends).
 - [ ] **Hashtag suggestions** in Post with an "add to post" button.
 - [x] **Edit + regenerate** (Post page, under the post): editable caption, instruction box with 3 suggestions, "Regenerate" (`POST /runs/{id}/regenerate`), earlier versions to go back to. Restarts the review, comments are kept.
 - [x] **Rules** page: scoring factors, comment weight, platform rules with their confidence tag, and the AI cost (`lib/rules.ts`). Anda: edit the texts there when the scoring rules are written.

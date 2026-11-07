@@ -10,6 +10,7 @@ import { SoundToggle } from './components/wow/SoundToggle'
 import { TrendLife } from './components/wow/TrendLife'
 import { CanvasColumn } from './components/CanvasColumn'
 import { AnalysisPanel } from './components/spot/AnalysisPanel'
+import { TrendScoreCard } from './components/spot/TrendScoreCard'
 import { ViewTabs } from './components/nav/ViewTabs'
 import { RulesPage } from './components/rules/RulesPage'
 import { Brand } from './components/header/Brand'
@@ -164,6 +165,7 @@ export default function App() {
               onTryRisky={USE_MOCKS ? undefined : startRisky}
             />
             <AnalysisPanel run={run} usage={usage} />
+            <TrendScoreCard key={run?.id ?? 'none'} draft={run?.draft ?? null} />
           </div>
           <CanvasColumn
             run={run}
