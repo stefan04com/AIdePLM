@@ -58,62 +58,86 @@ def _recall(call: str) -> dict | None:
         return deepcopy(_last_good.get(call))
 
 
-# --- canned defaults (match the scripted demo: Legal vs Product, Brand vs a persona) ---------
+# --- canned defaults: the Boabe cozy-autumn demo (docs/demo-scenario.md), from a live run ---
+# Same story as data/demo_comments.json: Legal vs Product on "no added sugar", Brand vs Product.
 
 CANNED_FIT = FitResult(
     fits=True,
-    score=82,
-    reason="Playful, self-aware tone matches the brand voice; no competitor or claim risk.",
+    score=88,
+    reason="The cozy work-from-anywhere trend maps onto Boabe's core moment: the quiet corner, "
+    "the warm cup, the grey Bucharest day. Its honest, low-key tone matches the calm voice.",
 )
 
 CANNED_DRAFT = DraftContent(
-    brief="Own the 'running late' joke: a lighthearted post that promises our app gets you "
-    "there faster than the excuses.",
-    caption="Late again? Our app guarantees you'll arrive 10 minutes earlier than the train "
-    "announcement. Download now.",
-    visual_prompt="Flat illustration of a commuter sprinting past a stationary train, warm "
-    "sunrise colours, brand palette",
-    hashtags=["#MondayCommute", "#RunningLate"],
+    brief="Join the cozy-corner thread with a grey Bucharest Tuesday and the new Pumpkin & "
+    "Cinnamon Latte as part of the scene. It works because the trend rewards honest moments, "
+    "not ads.",
+    caption="Grey Tuesday, one corner, the Pumpkin & Cinnamon Latte still warm. Bucharest does "
+    "autumn slowly when you let it. Order ahead in the app.",
+    visual_prompt="A quiet café corner by a rain-streaked window on a grey autumn afternoon: "
+    "a ceramic cup of pumpkin and cinnamon latte with steam, an open laptop, a wool blanket, "
+    "warm window light, wood table, no people, no text",
+    hashtags=["#CozySetup", "#BucharestAutumn"],
 )
 
 CANNED_PERSONAS = [
     Persona(
-        id="gen_z_commuter",
-        name="Gen Z commuter",
-        segment="18-25, daily public transport, skeptical of ads",
-        cares_about=["authentic tone", "humour", "no hard sell"],
-        pet_peeves=["brands trying too hard", "fake urgency"],
-        sample_quotes=["Honestly the app is fine but every ad feels like it's trying too hard."],
+        id="remote_worker_regular",
+        name="Laptop Regular",
+        segment="Remote workers and students who use the café as a workspace for hours",
+        cares_about=["a calm seat", "wifi and sockets", "being welcome to stay"],
+        pet_peeves=["laptop bans", "noise", "being rushed out"],
+        sample_quotes=["Perfect for chill or work. The coffees and food are very good."],
     ),
     Persona(
-        id="busy_parent",
-        name="Busy parent",
-        segment="30-45, juggles school runs and work",
-        cares_about=["saving time", "reliability", "concrete benefits"],
-        pet_peeves=["vague promises", "complicated sign-ups"],
-        sample_quotes=["If it saves me ten minutes in the morning, I'm in."],
+        id="curious_coffee_enthusiast",
+        name="Origin Seeker",
+        segment="Coffee-curious locals and visitors who care about beans, brewing and roast",
+        cares_about=["single origin", "brewing method", "baristas who explain"],
+        pet_peeves=["gimmicky flavoured drinks", "old crop beans"],
+        sample_quotes=[
+            "The baristas are friendly and helpful, explaining the coffee origins, the best "
+            "vegetable milk combination for that particular origin, and so on."
+        ],
     ),
     Persona(
-        id="skeptical_veteran",
-        name="Skeptical veteran",
-        segment="45+, long-time customer, burned by marketing claims",
-        cares_about=["honesty", "proof", "service quality"],
-        pet_peeves=["guarantees", "exaggerated claims"],
-        sample_quotes=["I've heard 'guaranteed' before. Show me, don't tell me."],
+        id="on_the_go_commuter",
+        name="App-First Commuter",
+        segment="Busy commuters who order ahead to skip the queue",
+        cares_about=["speed", "ordering ahead", "orders that are right"],
+        pet_peeves=["app bugs", "unclear prices", "waiting in line"],
+        sample_quotes=[
+            "Their app is so easy to manage and is very convenient in tight situations."
+        ],
     ),
 ]
 
 _CANNED_REACTIONS = [
-    ("Funny and relatable, but 'download now' feels like an ad. Drop the hard sell.", 0.4, True),
-    ("I only care if it really saves me time. A guarantee would get my attention.", 0.6, True),
-    ("'Guarantees' sounds like marketing fluff. I've been burned by this before.", -0.5, False),
+    (
+        "That corner shot speaks to my soul. A grey Tuesday with a warm latte is my whole "
+        "personality from October to December.",
+        0.8,
+        True,
+    ),
+    (
+        "The atmosphere looks cosy, but 'Pumpkin & Cinnamon Latte' tells me nothing about the "
+        "origin or the roast behind it.",
+        -0.1,
+        False,
+    ),
+    (
+        "The 'order ahead in the app' nudge is exactly what I need. I'll set up my Tuesday "
+        "pick-up right now.",
+        0.8,
+        True,
+    ),
 ]
 
 _CANNED_TASKS = [
-    Task(owner="Legal", task="Sign off the revised caption wording", due="today 15:00"),
+    Task(owner="Legal", task="Sign off the revised caption", due="today 15:00"),
     Task(
         owner="Product",
-        task="Provide a substantiated time-saving stat for follow-up posts",
+        task="Send Legal the documentation for 'no added sugar' before using it in a later post",
         due="this week",
     ),
 ]
@@ -152,67 +176,56 @@ def referee(comments: list[Comment], draft_: Draft, personas_: list[Persona]) ->
     def human(role: str) -> ConflictParty:
         return ConflictParty(kind="human", id=role, label=labels[role])
 
-    def persona(i: int) -> ConflictParty:
-        p = personas_[min(i, len(personas_) - 1)]
-        return ConflictParty(kind="persona", id=p.id, label=p.name)
-
     conflicts: list[Conflict] = []
     if "legal" in latest and "product" in latest:
         conflicts.append(
             Conflict(
                 id="conf_1",
-                between=[human("legal"), human("product")],
-                summary="Legal wants the guarantee removed; Product wants the time-saving "
-                "promise to stay prominent.",
+                between=[human("product"), human("legal")],
+                summary="Product wants 'no added sugar' in the caption; Legal blocks it because "
+                "there is no documentation for the claim.",
                 positions={
-                    "legal": "No 'guarantee' or fixed-minutes claim.",
-                    "product": "Keep time-saving as the headline benefit.",
+                    "product": "'No added sugar' is the latte's main selling point.",
+                    "legal": "An undocumented nutrition claim can't be published.",
                 },
-                compromise="Keep the time-saving angle but phrase it as 'helps you arrive "
-                "earlier', with no guarantee and no number.",
+                compromise="Sell the latte on what we can state (real pumpkin, Ceylon "
+                "cinnamon) and use 'no added sugar' once Legal has the documentation.",
             )
         )
-    if "brand" in latest and personas_:
-        p = persona(1)
+    if "brand" in latest and "product" in latest:
         conflicts.append(
             Conflict(
                 id="conf_2",
-                between=[human("brand"), p],
-                summary=f"Brand wants a soft CTA; {p.label} responds to a concrete benefit.",
+                between=[human("brand"), human("product")],
+                summary="Brand wants the moment to lead; Product wants the drink as the hero.",
                 positions={
-                    "brand": "Soft, on-brand call to action.",
-                    p.id: "Wants a concrete, credible time-saving benefit.",
+                    "brand": "Lead with the cozy moment, latte in the background, soft CTA.",
+                    "product": "Make the Pumpkin & Cinnamon Latte the hero of copy and visual.",
                 },
-                compromise="End with a soft CTA ('See how it works') after one concrete "
-                "benefit line.",
+                compromise="Keep the moment first and name the latte once with its real "
+                "ingredients; soft call to action.",
             )
         )
 
-    final_caption = "Late again? Our app helps you beat the train announcement. See how it works."
+    final_caption = (
+        "Grey Tuesday. A Pumpkin & Cinnamon Latte, real pumpkin and Ceylon cinnamon, still warm "
+        "in the corner. Bucharest does autumn slowly when you let it. Order ahead in the app."
+    )
     edits: list[Edit] = []
-    if "legal" in latest:
+    if "legal" in latest or "product" in latest:
         edits.append(
             Edit(
                 target="caption",
                 before=draft_.caption,
                 after=final_caption,
-                source_comment_id=latest["legal"],
-            )
-        )
-    if "brand" in latest:
-        edits.append(
-            Edit(
-                target="hashtags",
-                before=" ".join(draft_.hashtags),
-                after="#MondayCommute #BeatTheDelay",
-                source_comment_id=latest["brand"],
+                source_comment_id=latest.get("product") or latest["legal"],
             )
         )
 
     why = {
-        "brand": ("applied", "CTA softened and hashtag updated."),
-        "legal": ("applied", "Guarantee and fixed-minutes claim removed."),
-        "product": ("in_conflict", "Conflicts with Legal; resolved via compromise wording."),
+        "brand": ("applied", "The moment leads and the call to action stays soft."),
+        "legal": ("applied", "No sugar, health or superlative claim in the caption."),
+        "product": ("in_conflict", "Latte named with its real ingredients; sugar claim on hold."),
     }
     statuses = [
         CommentStatus(comment_id=cid, status=why[role][0], why=why[role][1])  # type: ignore[arg-type]
