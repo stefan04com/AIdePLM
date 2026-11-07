@@ -11,8 +11,8 @@ export interface FireflyVariant {
 
 /** The two "generated" images. */
 export const FIREFLY_VARIANTS: readonly FireflyVariant[] = [
-  { id: 'a', url: '/visuals/boabe-pumpkin-latte.jpg', label: 'Variation A: pumpkin latte' },
-  { id: 'b', url: '/visuals/boabe-latte.jpg', label: 'Variation B: latte art' },
+  { id: 'a', url: '/visuals/boabe-pumpkin-latte.jpg', label: 'Variation A: pumpkin mug on wood' },
+  { id: 'b', url: '/visuals/boabe-pumpkin-latte-revised.jpg', label: 'Variation B: autumn table' },
 ]
 
 /** What the "call" says while it runs, with the time each step takes (ms). */
