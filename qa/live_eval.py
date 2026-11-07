@@ -95,6 +95,13 @@ def report(
             for c in r["referee"]["conflicts"]
         )
     ]
+    persona_conflict = [
+        r
+        for r in ok
+        if any(
+            p["kind"] == "persona" for c in r["referee"]["conflicts"] for p in c["between"]
+        )
+    ]
     total = usage.summary(None)
     lines = [
         f"# Live eval, {datetime.now():%Y-%m-%d %H:%M}",
@@ -105,6 +112,7 @@ def report(
         "|---|---|",
         f"| Runs with ≥1 conflict and no fallback | **{len(ok)}/{len(rows)}** |",
         f"| Runs with the Legal vs Product conflict | {len(legal_product)}/{len(rows)} |",
+        f"| Runs with a human vs persona conflict | **{len(persona_conflict)}/{len(rows)}** |",
         f"| Runs with any canned fallback | {sum(1 for r in rows if r['fallbacks'])}/{len(rows)} |",
         f"| Total cost (all runs, incl. personas once) | ${total.total_cost_usd:.4f} |",
         f"| Cost per run (avg) | ${total.total_cost_usd / max(len(rows), 1):.4f} |",

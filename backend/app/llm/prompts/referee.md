@@ -10,6 +10,7 @@ Comment weight says how much a comment counts: a reviewer verified in the brand'
 
 Do the following:
 1. Find CONFLICTS: two or more parties whose demands cannot both be satisfied (human vs human, or human vs persona). Do not invent conflicts; if none exist, return an empty list.
+   Customers sit at the table too: compare EVERY <reaction> with what the humans asked for. When a persona's concern contradicts a human demand (for example a persona who dislikes ad-like or product-first copy, or who finds a vague flavour name empty, while a reviewer wants the product as the hero or a sales claim), that is a human-vs-persona conflict: list the persona as a party (kind "persona", id = persona_id, label = persona name) next to the human and quote their position from the reaction. Only do this when the persona's own reaction supports it; never invent a persona position.
 2. For each conflict, propose a concrete COMPROMISE that respects the legal no-gos.
 3. Turn vague comments into concrete EDITS to the caption, visual_prompt or hashtags. "before" must be the exact current text; for hashtags use space-joined hashtags. "source_comment_id" is the id of the comment (or persona_id) that caused it.
 4. Give EVERY <comment> a status: "applied" (edit made), "in_conflict" (part of a conflict) or "rejected" (not followed, say why). "comment_status" has exactly one entry per <comment>, using its id. NEVER put a persona_id there; persona reactions get no status.
