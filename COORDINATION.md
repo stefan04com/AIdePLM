@@ -42,7 +42,7 @@ Read first: `docs/trending-research.md` (data sources and limits) and `docs/what
 - [x] **Rules** page: scoring factors, comment weight, platform rules with their confidence tag, and the AI cost (`lib/rules.ts`). Anda: edit the texts there when the scoring rules are written.
 - [ ] **Posting-time planner (UI):** choose the platform (Instagram, TikTok, X, LinkedIn); show the recommended time and why.
 - [x] "UI UX Pro Max" skill installed in `.claude/skills/` (local Python search, no network). Still open: design pass on the new Post page, screenshots at 1600 px and below 1100 px.
-- [x] **Firefly mock** (done on `feature/andu-firefly-mock`): "Generate with Firefly" shows the steps of a Firefly call, then two photos to pick from; the pick replaces the post visual. Simulated and labelled so. Real call goes in `hooks/useFirefly.ts`.
+- [x] **Firefly mock**: the "Generate with Firefly" button sits on the post's image; it shows the steps of a Firefly call, then the image fades into `boabe-pumpkin-latte-revised.jpg` ("Back to the original" undoes it). The risky trend shows `boabe-latte.jpg` greyed out behind the brand shield, stamped "Not posted" (Ada). Simulated and labelled so. Real call goes in `hooks/useFirefly.ts`.
 
 ### Stefan (backend / AI)
 - [x] `POST /runs/{id}/regenerate` (edited text + new instruction). It is a 6th LLM call: needs the team decision from `CLAUDE.md`.
@@ -96,7 +96,7 @@ Read first: `docs/trending-research.md` (data sources and limits) and `docs/what
 - [ ] Only if there's time and the team agrees (it's after the freeze): one real third integration, a live Reddit/news fetch in `trends.py` (fallback already there) or a Firefly call in `adobe.generate_visual()` if someone gets Adobe Developer credentials. Otherwise leave it in "What's next".
 - [x] Webhook URL: only needed on Stefan's laptop (the demo machine); it is in his `.env`, not in git.
 - [x] `SLACK_IMAGE_URL` set to the public GitHub raw copy of the post photo (default in `.env.example`, so every laptop gets it).
-- [x] **Visual after review:** on apply, post v2 switches to `boabe-pumpkin-latte-revised.jpg` (`ADOBE_MOCK_REVISED_IMAGE_URL`, `adobe.revised_visual`).
+- [x] **Visual after review:** ~~switches automatically on apply~~. Changed by Ada: the image changes only when someone presses **"Generate with Firefly"** on the post (`boabe-pumpkin-latte-revised.jpg`, `lib/firefly.ts`). **Everyone: empty `ADOBE_MOCK_REVISED_IMAGE_URL=` in your `.env`** (Stefan's laptop too), or apply still swaps it.
     - The Slack message shows the same image (`SLACK_IMAGE_URL`, public GitHub raw URL).
     - **That photo has a dreamstime.com watermark: replace it with a licensed image before the demo** (`CREDITS.md`).
 

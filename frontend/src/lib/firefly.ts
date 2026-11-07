@@ -1,24 +1,18 @@
-// Adobe Firefly mock: pressing "Generate with Firefly" looks like a Firefly call and offers two
-// variations. Nothing is sent to Adobe; the two photos are files we ship (see public/visuals/CREDITS.md).
-// A real integration would replace `generate()` in hooks/useFirefly.ts and keep the same shapes.
-// No value imports, so `npm test` can run it in Node.
+// Adobe Firefly mock: pressing "Generate with Firefly" on the post's image looks like a Firefly call,
+// then the post's visual changes to the "generated" photo. Nothing is sent to Adobe; the photos are
+// files we ship (see public/visuals/CREDITS.md). A real integration would replace `generate()` in
+// hooks/useFirefly.ts and keep the same shapes. No value imports, so `npm test` can run it in Node.
 
-export interface FireflyVariant {
-  id: string
-  url: string
-  label: string
-}
+/** The image Firefly "generates" for the Boabe post. */
+export const FIREFLY_IMAGE = { url: '/visuals/boabe-pumpkin-latte-revised.jpg', label: 'Generated with Adobe Firefly' }
 
-/** The two "generated" images. */
-export const FIREFLY_VARIANTS: readonly FireflyVariant[] = [
-  { id: 'a', url: '/visuals/boabe-pumpkin-latte.jpg', label: 'Variation A: pumpkin latte' },
-  { id: 'b', url: '/visuals/boabe-latte.jpg', label: 'Variation B: latte art' },
-]
+/** The post a rejected trend would have made: shown behind the brand-safety shield, never posted. */
+export const REJECTED_VISUAL = { url: '/visuals/boabe-latte.jpg', label: 'The post Boabe will not make' }
 
 /** What the "call" says while it runs, with the time each step takes (ms). */
 export const FIREFLY_STEPS: readonly { label: string; ms: number }[] = [
   { label: 'Sending the visual prompt to Adobe Firefly…', ms: 900 },
-  { label: 'Firefly is generating 2 variations…', ms: 1600 },
+  { label: 'Firefly is generating the image…', ms: 1600 },
   { label: 'Applying the Boabe look…', ms: 700 },
 ]
 
@@ -33,7 +27,3 @@ export function fireflyStepAt(elapsedMs: number): string | null {
   }
   return null
 }
-
-/** Variant by id, or null for an unknown id. */
-export const fireflyVariant = (id: string | null): FireflyVariant | null =>
-  FIREFLY_VARIANTS.find((variant) => variant.id === id) ?? null
