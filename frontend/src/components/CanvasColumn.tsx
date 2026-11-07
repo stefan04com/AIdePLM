@@ -1,12 +1,20 @@
 import type { Run } from '../api/types'
+import { useFirefly } from '../hooks/useFirefly'
 import { buildSlackPreview } from '../lib/slackPreview'
 import { ExpressPreview } from './canvas/ExpressPreview'
+import { FireflyPanel } from './canvas/FireflyPanel'
 import { BrandShield } from './wow/BrandShield'
 import { SlackPreview } from './canvas/SlackPreview'
 import { Muted, Pill, SectionHead } from './ui'
 
 export function CanvasColumn({ run }: { run: Run | null }) {
-  const slack = run ? buildSlackPreview(run) : null
+  const firefly = useFirefly(run?.id ?? null)
+  // The variation picked from the Firefly mock replaces the post's visual everywhere on screen.
+  const shown: Run | null =
+    run?.draft && firefly.picked
+      ? { ...run, draft: { ...run.draft, image_url: firefly.picked.url } }
+      : run
+  const slack = shown ? buildSlackPreview(shown) : null
 
   return (
     <section className="column">
@@ -14,7 +22,8 @@ export function CanvasColumn({ run }: { run: Run | null }) {
       {run?.step && <StepIndicator label={run.step} />}
       {!run && <Muted>Start a run to generate a draft.</Muted>}
       {run?.status === 'REJECTED' && <BrandShield reason={run.fit?.reason ?? null} />}
-      {run?.draft && <ExpressPreview draft={run.draft} />}
+      {shown?.draft && <ExpressPreview draft={shown.draft} />}
+      {run?.draft && <FireflyPanel firefly={firefly} disabled={run.status === 'SHIPPED'} />}
       {slack && (
         <>
           <SectionHead title="Slack message preview" aside={<Pill>simulated</Pill>} />
