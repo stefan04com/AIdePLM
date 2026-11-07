@@ -5,3 +5,4 @@ node_modules/
 dist/
 logs/*.jsonl
 data/runs.json
+data/last_good.json
