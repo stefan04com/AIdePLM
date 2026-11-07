@@ -239,6 +239,7 @@ class Draft(BaseModel):
     image_url: str | None = None
     express_doc_id: str | None = None
     version: int = 1  # bumps on every apply
+    regenerations: int = 0  # times the caption was rewritten (POST /runs/{id}/regenerate)
 
 class Persona(BaseModel):
     id: str              # never equal to a Comment role
@@ -339,6 +340,30 @@ class UsageSummary(BaseModel):
 Storage: a Python dict keyed by run id, snapshotted to `data/runs.json` after each transition, so a backend restart mid-demo doesn't lose the run.
 
 ---
+
+### Extras: regenerate, trend score, posting time
+
+```python
+class RegenerateRequest(BaseModel):
+    caption: str          # the caption as the person edited it (1-2200 chars)
+    instruction: str      # e.g. "make it shorter and warmer" (1-500 chars)
+
+Platform = Literal["tiktok", "instagram_reels", "instagram_feed", "youtube_shorts",
+                   "facebook_reels", "facebook_feed", "x", "threads", "linkedin"]
+
+class TrendScoreRequest(BaseModel):
+    words: str
+    hashtags: list[str] = []   # max 30
+
+class TrendScore(BaseModel):
+    score: int            # 0-100
+    suggestions: list[str] = []
+
+class PostingTime(BaseModel):
+    platform: Platform
+    time: str             # e.g. "Weekdays 08:00-11:00"
+    reason: str
+```
 
 ## 7. Security and safety
 

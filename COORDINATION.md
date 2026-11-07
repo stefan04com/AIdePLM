@@ -31,7 +31,7 @@ Read first: `docs/trending-research.md` (data sources and limits) and `docs/what
 **Decisions needed before we start**
 - [ ] Everyone: do we build this before the presentation or after? (`CLAUDE.md` says fixes only after hour 8.)
 - [ ] Militaru + Stefan: **Google Trends has no public API** (official alpha is invite-only). Pick: apply for alpha access, or start with saved data behind the same endpoint and swap the source later. Every score must say "saved" or "live".
-- [ ] Stefan + Andu: agree the contract first (new **optional** fields and endpoints only), in `ARCHITECTURE.md` §5/§6, before any code.
+- [x] Stefan + Andu: agree the contract first (new **optional** fields and endpoints only), in `ARCHITECTURE.md` §5/§6, before any code.
 
 ### Andu (frontend)
 - [x] Two menus: **Post** and **Rules** (`?view=rules`, arrow keys, run kept in the URL); Adobee stays in the header on both.
@@ -45,10 +45,10 @@ Read first: `docs/trending-research.md` (data sources and limits) and `docs/what
 - [x] **Firefly mock** (done on `feature/andu-firefly-mock`): "Generate with Firefly" shows the steps of a Firefly call, then two photos to pick from; the pick replaces the post visual. Simulated and labelled so. Real call goes in `hooks/useFirefly.ts`.
 
 ### Stefan (backend / AI)
-- [ ] `POST /runs/{id}/regenerate` (edited text + new instruction). It is a 6th LLM call: needs the team decision from `CLAUDE.md`.
-- [ ] Endpoint for the **Trend score** (words + hashtags in, score + suggestions out), with a saved-data fallback like the other calls.
-- [ ] Endpoint for the **recommended posting time** (platform in, time + reason out), from the rules in `docs/what-makes-a-post-popular.md`.
-- [ ] New fields in `models.py`: optional only, mirrored in `frontend/src/api/types.ts` and the mocks.
+- [x] `POST /runs/{id}/regenerate` (edited text + new instruction). It is a 6th LLM call: needs the team decision from `CLAUDE.md`.
+- [x] Endpoint for the **Trend score** (words + hashtags in, score + suggestions out), with a saved-data fallback like the other calls.
+- [x] Endpoint for the **recommended posting time** (platform in, time + reason out), from the rules in `docs/what-makes-a-post-popular.md`.
+- [x] New fields in `models.py`: optional only, mirrored in `frontend/src/api/types.ts` and the mocks.
 
 ### Militaru (data sources)
 - [x] Source for the Trend score: `docs/trend-score-sources.md` (access, cost, limits, risk; 16 sources).
