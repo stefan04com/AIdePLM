@@ -7,21 +7,11 @@ import type { Run, Task } from '../api/types'
 export interface SlackPreview {
   header: string
   caption: string
-  /** null when Slack would drop the image: it only accepts public http(s) URLs. */
+  /** The post's image. The preview shows the local placeholder too; with a real Firefly
+   *  integration it would be a public https URL, which Slack accepts. */
   imageUrl: string | null
   taskLines: string[]
   elapsed: string
-}
-
-/** Same rule as slack._is_web_url: data: URLs (the local placeholder SVG) are skipped. */
-export function isWebUrl(url: string | null | undefined): url is string {
-  if (!url || /\s/.test(url)) return false
-  try {
-    const parsed = new URL(url)
-    return (parsed.protocol === 'http:' || parsed.protocol === 'https:') && parsed.host !== ''
-  } catch {
-    return false
-  }
 }
 
 /** Same as slack.format_elapsed: "1h 50m" or "45m", rounded down to the minute. */
@@ -47,7 +37,7 @@ export function buildSlackPreview(run: Run): SlackPreview | null {
   return {
     header: 'Moment: post approved',
     caption: run.draft.caption,
-    imageUrl: isWebUrl(run.draft.image_url) ? run.draft.image_url : null,
+    imageUrl: run.draft.image_url || null,
     taskLines: (run.referee?.tasks ?? []).map(taskLine),
     elapsed: formatMinutes(Date.parse(run.shipped_at) - Date.parse(run.started_at)),
   }
