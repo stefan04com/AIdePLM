@@ -87,6 +87,8 @@ stateDiagram-v2
     REJECTED --> [*]
 ```
 
+**`needs_human`.** When the Referee returns `status: "needs_human"` the run is still `REFEREED`; there is no extra state. The UI shows a warning banner, and `POST /runs/{id}/apply` is **allowed**: the click is the human decision. A blank `final_caption` never reaches Express; the current caption is kept.
+
 ### End-to-end sequence
 
 ```mermaid
@@ -158,6 +160,8 @@ Five prompts, each with a Pydantic output schema. The model is asked for JSON; t
 
 Every call writes `{run_id, call, model, input_tokens, output_tokens, latency_ms}` to `logs/usage.jsonl` (`run_id` is null for call #3). `GET /usage` aggregates it and adds `cost_usd`, computed from a per-model price table. That file is the input for the cost slide.
 
+> **Note (by team decision):** the trend, Adobe and Slack integrations below are mocks. They make no network calls and need no keys; the sections describe the intended real design.
+
 ### 4.4 Trend source (owner: Militaru)
 - `trends.get_trend()` returns the saved `data/demo_trend.json` by default, normalised to the `Trend` model.
 - "Live" is a local mock: it returns a built-in sample trend with `source="reddit"` and makes no network call. A real Reddit/news fetch would plug in here.
@@ -182,7 +186,7 @@ Every call writes `{run_id, call, model, input_tokens, output_tokens, latency_ms
 
 | Method | Path | Body | Returns |
 |---|---|---|---|
-| GET | `/trend` | | `Trend` |
+| GET | `/trend?which=default\|rejected` | | `Trend` (`rejected` = second saved trend that the fit check refuses, `docs/rejected-trend.md`) |
 | GET | `/personas` | | `Persona[]` (cached at startup) |
 | POST | `/runs` | `CreateRunRequest` `{trend_id}` | `Run` **immediately**, status `SPOTTED`. Fit + draft run in a background task |
 | GET | `/runs/{id}` | | `Run` (UI polls every 1s until `DRAFTED` or `REJECTED`; `step` shows progress) |
@@ -233,7 +237,7 @@ class Draft(BaseModel):
 
 class Persona(BaseModel):
     id: str              # never equal to a Comment role
-    name: str            # e.g. "Gen Z commuter"
+    name: str            # e.g. "Student night owl"
     segment: str
     cares_about: list[str]
     pet_peeves: list[str]
@@ -259,7 +263,7 @@ class Comment(BaseModel):
 class ConflictParty(BaseModel):
     kind: Literal["human", "persona"]
     id: str              # comment role ("legal") or persona_id
-    label: str           # display text, e.g. "Legal", "Gen Z commuter"
+    label: str           # display text, e.g. "Legal", "Student night owl"
 
 class Conflict(BaseModel):
     id: str

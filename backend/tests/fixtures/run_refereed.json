@@ -1,44 +1,44 @@
 {
   "id": "run_demo01",
   "trend": {
-    "id": "trend_demo01",
-    "title": "Commuters are roasting delayed-train apology emails",
+    "id": "trend_cozy_autumn_setup",
+    "title": "People are sharing their cozy autumn work-from-anywhere setups",
     "source": "saved",
     "url": null,
-    "summary": "A viral thread: people share the most tone-deaf delay apologies and reward brands that own the delay with humour.",
-    "detected_at": "2026-11-07T09:00:00Z"
+    "summary": "A fast-growing thread: people post photos of their autumn corner (blanket, candle, laptop, something warm in a mug) with one line about why it makes the grey week bearable. Top posts are wholesome and low-key; replies reward honesty and mock anything that looks like an ad.",
+    "detected_at": "2026-11-07T08:40:00Z"
   },
   "fit": {
     "fits": true,
-    "score": 82,
-    "reason": "Playful, self-aware tone matches the brand voice; no competitor or claim risk in the topic itself."
+    "score": 91,
+    "reason": "Boabe's core moment is the slow cup in a warm corner; the trend is wholesome, local-friendly and touches no sensitive topic."
   },
   "draft": {
-    "brief": "Own the 'running late' joke: a lighthearted post that promises our app gets you there faster than the excuses.",
-    "caption": "Late again? Our app guarantees you'll arrive 10 minutes earlier than the train announcement. Download now.",
-    "visual_prompt": "Flat illustration of a commuter sprinting past a stationary train, warm sunrise colours, brand palette",
-    "hashtags": ["#MondayCommute", "#RunningLate"],
-    "image_url": "https://example.com/demo/image_v1.png",
+    "brief": "Join the cozy autumn setup trend with the new Pumpkin & Cinnamon Latte as the warm thing in the mug.",
+    "caption": "Meet our new Pumpkin & Cinnamon Latte: no added sugar and the healthiest latte in town. Order now in the Boabe app.",
+    "visual_prompt": "Close-up of a Pumpkin & Cinnamon Latte in a ceramic cup, centred on a wooden desk, latte art, autumn leaves, warm window light",
+    "hashtags": ["#CozyAutumn", "#PumpkinCinnamonLatte", "#Boabe"],
+    "image_url": "https://example.com/demo/boabe_latte_v1.png",
     "express_doc_id": "express_demo01",
     "version": 1
   },
   "reactions": [
     {
-      "persona_id": "gen_z_commuter",
-      "reaction": "Funny and relatable, but 'download now' feels like an ad. Drop the hard sell.",
-      "sentiment": 0.4,
-      "would_engage": true
+      "persona_id": "student_night_owl",
+      "reaction": "The cozy corner is exactly my vibe, but 'healthiest latte in town' turns it into an ad. Show the setup, not the sales pitch.",
+      "sentiment": 0.2,
+      "would_engage": false
     },
     {
       "persona_id": "busy_parent",
-      "reaction": "I only care if it really saves me time. A guarantee would get my attention.",
+      "reaction": "Nice to know I can order it ahead in the app. A seasonal drink for the school-run morning sounds good.",
       "sentiment": 0.6,
       "would_engage": true
     },
     {
-      "persona_id": "skeptical_veteran",
-      "reaction": "'Guarantees' sounds like marketing fluff. I've been burned by this before.",
-      "sentiment": -0.5,
+      "persona_id": "coffee_purist",
+      "reaction": "'Healthiest' tells me nothing. Real pumpkin and Ceylon cinnamon with your house espresso would.",
+      "sentiment": -0.3,
       "would_engage": false
     }
   ],
@@ -46,20 +46,32 @@
     {
       "id": "c_brand",
       "role": "brand",
-      "text": "Love the tone, but keep the CTA softer and on-brand.",
-      "created_at": "2026-11-07T09:20:00Z"
+      "text": "This reads like an ad. The trend is about the cozy moment, not about us. Lead with the moment, keep the latte in the background and make the call to action softer.",
+      "created_at": "2026-11-07T09:20:00Z",
+      "author": null,
+      "author_title": null,
+      "industry_verified": false,
+      "weight": 1.0
     },
     {
       "id": "c_legal",
       "role": "legal",
-      "text": "We cannot promise a guaranteed time saving. Remove the guarantee claim.",
-      "created_at": "2026-11-07T09:22:00Z"
+      "text": "The caption can't say 'no added sugar', 'healthy' or 'the best latte in town'. We have no documentation for the sugar claim, and health claims and superlatives we can't prove are off-limits.",
+      "created_at": "2026-11-07T09:22:00Z",
+      "author": null,
+      "author_title": null,
+      "industry_verified": false,
+      "weight": 1.0
     },
     {
       "id": "c_product",
       "role": "product",
-      "text": "The time-saving angle is our strongest feature, please keep it prominent.",
-      "created_at": "2026-11-07T09:24:00Z"
+      "text": "The Pumpkin & Cinnamon Latte launches this week. Add that it has no added sugar, it's our main selling point, and make the drink the hero of the visual.",
+      "created_at": "2026-11-07T09:24:00Z",
+      "author": null,
+      "author_title": null,
+      "industry_verified": false,
+      "weight": 1.0
     }
   ],
   "referee": {
@@ -70,51 +82,59 @@
           {"kind": "human", "id": "legal", "label": "Legal"},
           {"kind": "human", "id": "product", "label": "Product"}
         ],
-        "summary": "Legal wants the guarantee removed; Product wants the time-saving promise to stay prominent.",
+        "summary": "Product wants 'no added sugar' as the main selling point; Legal has no documentation for it and blocks it.",
         "positions": {
-          "legal": "No 'guarantee' or fixed-minutes claim.",
-          "product": "Keep time-saving as the headline benefit."
+          "legal": "No 'no added sugar' and no 'healthiest' until the claim is documented.",
+          "product": "'No added sugar' is the launch's main selling point and must stay."
         },
-        "compromise": "Keep the time-saving angle but phrase it as 'helps you arrive earlier', with no guarantee and no number."
+        "compromise": "Drop the sugar and health claims now; name the real ingredients instead (pumpkin purée, Ceylon cinnamon). Product sends the sugar documentation to Legal for a later post."
       },
       {
         "id": "conf_2",
         "between": [
           {"kind": "human", "id": "brand", "label": "Brand"},
-          {"kind": "persona", "id": "busy_parent", "label": "Busy parent"}
+          {"kind": "persona", "id": "student_night_owl", "label": "Student night owl"},
+          {"kind": "human", "id": "product", "label": "Product"}
         ],
-        "summary": "Brand wants a soft CTA; the busy parent responds to a concrete benefit.",
+        "summary": "Brand and the student persona want the cozy moment first; Product wants the latte as the hero.",
         "positions": {
-          "brand": "Soft, on-brand call to action.",
-          "busy_parent": "Wants a concrete, credible time-saving benefit."
+          "brand": "Lead with the moment, latte in the background, soft CTA.",
+          "student_night_owl": "Show the setup; a sales pitch kills it.",
+          "product": "The new latte must be the hero of the visual."
         },
-        "compromise": "End with a soft CTA ('See how it works') after one concrete benefit line."
+        "compromise": "The cozy corner leads, and the latte is the one warm thing in it: named once in the caption and in focus on the desk, but not a product shot."
       }
     ],
     "edits": [
       {
         "target": "caption",
-        "before": "Late again? Our app guarantees you'll arrive 10 minutes earlier than the train announcement. Download now.",
-        "after": "Late again? Our app helps you beat the train announcement. See how it works.",
+        "before": "Meet our new Pumpkin & Cinnamon Latte: no added sugar and the healthiest latte in town. Order now in the Boabe app.",
+        "after": "Grey week, warm corner. Our Pumpkin & Cinnamon Latte, with real pumpkin and Ceylon cinnamon, keeps us company. Pull up a chair.",
         "source_comment_id": "c_legal"
       },
       {
+        "target": "visual_prompt",
+        "before": "Close-up of a Pumpkin & Cinnamon Latte in a ceramic cup, centred on a wooden desk, latte art, autumn leaves, warm window light",
+        "after": "Cozy desk by a rainy window, wool blanket, candle and open laptop, a Pumpkin & Cinnamon Latte steaming in a ceramic cup, warm light",
+        "source_comment_id": "c_brand"
+      },
+      {
         "target": "hashtags",
-        "before": "#MondayCommute #RunningLate",
-        "after": "#MondayCommute #BeatTheDelay",
+        "before": "#CozyAutumn #PumpkinCinnamonLatte #Boabe",
+        "after": "#CozyAutumn #AutumnCorner #Boabe",
         "source_comment_id": "c_brand"
       }
     ],
     "tasks": [
-      {"owner": "Legal", "task": "Sign off the revised caption wording", "due": "today 15:00"},
-      {"owner": "Product", "task": "Provide a substantiated time-saving stat for follow-up posts", "due": "this week"}
+      {"owner": "Product", "task": "Send the 'no added sugar' documentation to Legal before using the claim", "due": "this week"},
+      {"owner": "Legal", "task": "Sign off the final caption", "due": "today 15:00"}
     ],
     "comment_status": [
-      {"comment_id": "c_brand", "status": "applied", "why": "CTA softened and hashtag updated."},
-      {"comment_id": "c_legal", "status": "applied", "why": "Guarantee and fixed-minutes claim removed."},
-      {"comment_id": "c_product", "status": "in_conflict", "why": "Conflicts with Legal; resolved via compromise wording."}
+      {"comment_id": "c_brand", "status": "applied", "why": "Moment leads, latte stays in the scene, soft CTA."},
+      {"comment_id": "c_legal", "status": "applied", "why": "Sugar and health claims removed."},
+      {"comment_id": "c_product", "status": "in_conflict", "why": "Sugar claim waits for documentation; the latte is still named and in focus."}
     ],
-    "final_caption": "Late again? Our app helps you beat the train announcement. See how it works.",
+    "final_caption": "Grey week, warm corner. Our Pumpkin & Cinnamon Latte, with real pumpkin and Ceylon cinnamon, keeps us company. Pull up a chair.",
     "status": "ready_to_ship"
   },
   "status": "REFEREED",

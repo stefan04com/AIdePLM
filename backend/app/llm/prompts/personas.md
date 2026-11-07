@@ -8,4 +8,4 @@ Make the 3 personas clearly different segments. "sample_quotes" must be 1 or 2 s
 "id" is a short snake_case slug and must NOT be "brand", "legal" or "product".
 
 Respond with ONE JSON object and nothing else:
-{"personas": [{"id": "...", "name": "<e.g. Gen Z commuter>", "segment": "...", "cares_about": ["..."], "pet_peeves": ["..."], "sample_quotes": ["..."]}, ... 3 items]}
+{"personas": [{"id": "...", "name": "<e.g. Student night owl>", "segment": "...", "cares_about": ["..."], "pet_peeves": ["..."], "sample_quotes": ["..."]}, ... 3 items]}

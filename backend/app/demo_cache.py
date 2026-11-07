@@ -21,6 +21,7 @@ from .models import (
     PersonaReaction,
     RefereeResult,
     Task,
+    Trend,
 )
 from .store import ROOT
 
@@ -143,7 +144,18 @@ _CANNED_TASKS = [
 ]
 
 
-def fit() -> FitResult:
+REJECTED_TREND_ID = "trend_espresso_challenge"
+CANNED_REJECTION = FitResult(
+    fits=False,
+    score=9,
+    reason="Health-risk dare and a pile-on tone clash with Boabe's calm voice and "
+    "no-health-claims rule.",
+)
+
+
+def fit(trend: Trend | None = None) -> FitResult:
+    if trend is not None and trend.id == REJECTED_TREND_ID:
+        return CANNED_REJECTION.model_copy()
     data = _recall("fit")
     return FitResult.model_validate(data) if data else CANNED_FIT.model_copy()
 
