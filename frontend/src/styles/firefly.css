@@ -1,0 +1,51 @@
+/* Firefly mock: generate button, step label and the two variations. */
+
+.firefly-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.firefly-variants {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 12px 0 8px;
+}
+
+.firefly-variant {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  text-align: left;
+  font-size: 13px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  animation: firefly-in 0.4s ease-out;
+}
+
+.firefly-variant img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.firefly-variant.picked {
+  border-color: var(--ok);
+}
+
+@keyframes firefly-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .firefly-variant {
+    animation: none;
+  }
+}

@@ -1,0 +1,44 @@
+/* Keeps the header on one row at 1600 px and wider (logo, honeycomb + Adobee, status).
+   Loaded last so it only tightens spacing; colours and the bee stay in the other files. */
+
+.topbar {
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.brand {
+  margin-right: 0;
+}
+
+.hive {
+  flex: 1 1 auto;
+}
+
+.hive-caption {
+  max-width: 200px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.topbar-status {
+  margin-left: auto; /* if the header wraps, the status line stays right-aligned */
+  gap: 8px;
+}
+
+.trend-life-bar {
+  width: 48px;
+}
+
+@media (max-width: 1799px) {
+  .brand-sub {
+    display: none;
+  }
+}
+
+@media (max-width: 1699px) {
+  .trend-life-label {
+    display: none; /* the bar and "7h 56m left" stay; the tooltip still says what it is */
+  }
+}

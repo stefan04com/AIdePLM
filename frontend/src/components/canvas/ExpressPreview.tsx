@@ -11,7 +11,7 @@ export function ExpressPreview({ draft }: { draft: Draft }) {
   const updated = draft.version > 1
 
   return (
-    <article className="express">
+    <article className={`express ${updated ? 'is-updated' : ''}`}>
       <header className="express-bar">
         <strong>Post preview</strong>
         <span className="muted">Simulated · Adobe Express-ready</span>

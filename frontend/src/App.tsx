@@ -9,8 +9,9 @@ import { ShipCelebration } from './components/wow/ShipCelebration'
 import { SoundToggle } from './components/wow/SoundToggle'
 import { TrendLife } from './components/wow/TrendLife'
 import { CanvasColumn } from './components/CanvasColumn'
-import { CostPanel } from './components/CostPanel'
 import { AnalysisPanel } from './components/spot/AnalysisPanel'
+import { ViewTabs } from './components/nav/ViewTabs'
+import { RulesPage } from './components/rules/RulesPage'
 import { Brand } from './components/header/Brand'
 import { DemoModeToggle } from './components/header/DemoModeToggle'
 import { RunClock } from './components/header/RunClock'
@@ -24,6 +25,7 @@ import { useSpotlight } from './hooks/useSpotlight'
 import { useUsage } from './hooks/useUsage'
 import { isFinished, isRunBusy } from './lib/runStatus'
 import { readRunIdFromUrl, writeRunIdToUrl } from './lib/runUrl'
+import { readViewFromUrl, type View, writeViewToUrl } from './lib/view'
 import { nextStep } from './lib/wow'
 import { scriptedComments } from './mocks/scriptedComments'
 
@@ -31,6 +33,7 @@ export default function App() {
   const [trend, setTrend] = useState<Trend | null>(null)
   const [personas, setPersonas] = useState<Persona[]>([])
   const [runId, setRunId] = useState<string | null>(readRunIdFromUrl) // refresh reopens the run
+  const [view, setView] = useState<View>(readViewFromUrl)
   const [busy, setBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const { run, error: pollError, refresh, setRun } = useRun(runId)
@@ -103,6 +106,13 @@ export default function App() {
     <div className="app">
       <header className="topbar">
         <Brand />
+        <ViewTabs
+          view={view}
+          onChange={(next) => {
+            setView(next)
+            writeViewToUrl(next)
+          }}
+        />
         <Adobee run={run} busy={uiBusy} />
         <div className="topbar-status">
           <TrendLife trend={run?.trend ?? trend} run={run} />
@@ -117,32 +127,35 @@ export default function App() {
 
       {error && <Banner tone="bad">{error}</Banner>}
 
-      <main className="columns">
-        <div className="column">
-          <TrendColumn
-            trend={run?.trend ?? trend}
-            fit={run?.fit ?? null}
-            canStart={canStart}
-            onStart={startRun}
-            onTryRisky={USE_MOCKS ? undefined : startRisky}
+      {view === 'rules' ? (
+        <RulesPage usage={usage} />
+      ) : (
+        <main className="columns" id="panel-post" role="tabpanel" aria-labelledby="tab-post">
+          <div className="column">
+            <TrendColumn
+              trend={run?.trend ?? trend}
+              fit={run?.fit ?? null}
+              canStart={canStart}
+              onStart={startRun}
+              onTryRisky={USE_MOCKS ? undefined : startRisky}
+            />
+            <AnalysisPanel run={run} usage={usage} />
+          </div>
+          <CanvasColumn run={run} />
+          <ReviewColumn
+            run={run}
+            personas={personas}
+            busy={uiBusy}
+            onComment={(role: CommentRole, text: string, author: string | null) =>
+              onRun((id) => api.addComment(id, { role, text, author }))()
+            }
+            onRequestReactions={onRun(api.requestReactions)}
+            onFillScripted={onRun(fillScripted)}
+            onReferee={onRun(api.referee)}
+            onApply={(body: ApplyRequest) => onRun((id) => api.apply(id, body))()}
           />
-          <AnalysisPanel run={run} usage={usage} />
-          <CostPanel usage={usage} />
-        </div>
-        <CanvasColumn run={run} />
-        <ReviewColumn
-          run={run}
-          personas={personas}
-          busy={uiBusy}
-          onComment={(role: CommentRole, text: string, author: string | null) =>
-            onRun((id) => api.addComment(id, { role, text, author }))()
-          }
-          onRequestReactions={onRun(api.requestReactions)}
-          onFillScripted={onRun(fillScripted)}
-          onReferee={onRun(api.referee)}
-          onApply={(body: ApplyRequest) => onRun((id) => api.apply(id, body))()}
-        />
-      </main>
+        </main>
+      )}
 
       <ShipCelebration run={run} />
       <Intro />

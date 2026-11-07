@@ -74,6 +74,16 @@ def test_blank_env_image_url_is_ignored(monkeypatch: pytest.MonkeyPatch) -> None
 # --- create_post / update_post ---
 
 
+def test_revised_visual_is_none_without_env() -> None:
+    assert adobe.revised_visual("pumpkin latte") is None
+
+
+def test_revised_visual_uses_env_image(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("ADOBE_MOCK_REVISED_IMAGE_URL", " /visuals/after.jpg ")
+    visual = adobe.revised_visual("pumpkin latte")
+    assert visual is not None and visual.image_url == "/visuals/after.jpg"
+
+
 def test_create_post_starts_at_version_1() -> None:
     post = adobe.create_post("Caption", IMAGE)
     assert (post.caption, post.image_url, post.version) == ("Caption", IMAGE, 1)

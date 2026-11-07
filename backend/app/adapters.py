@@ -154,7 +154,10 @@ def update_post(old: Draft, new: Draft) -> Draft:
 
     def run() -> str:
         image_url = old.image_url or ""
-        if new.visual_prompt != old.visual_prompt:
+        revised = mod.revised_visual(new.visual_prompt) if hasattr(mod, "revised_visual") else None
+        if revised is not None:  # the mock's "regenerated after review" visual
+            image_url = revised.image_url
+        elif new.visual_prompt != old.visual_prompt:
             image_url = mod.generate_visual(new.visual_prompt).image_url
         post = mod.ExpressPost(
             doc_id=old.express_doc_id,
