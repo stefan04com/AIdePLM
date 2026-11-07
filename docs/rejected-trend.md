@@ -18,7 +18,10 @@ No real person, brand, tragedy or politics is involved, so it is safe on stage.
 - `POST /runs` needs a `trend_id` that `store.find_trend` already knows. Only trends returned by `current_trend` (or restored from `runs.json`) are remembered, so the new file cannot be started today.
 - Demo mode never gives `fits=false`: the fit call falls back to `demo_cache.fit()`, i.e. `CANNED_FIT` (fits=true) or the last good live result. REJECTED is only covered by a test that monkeypatches `CANNED_FIT`.
 
-## Proposed change (Stefan / Militaru, additive, contract-safe)
+## Backend: done (steps 1 and 2); step 3 (UI) is Andu's
+Implemented as proposed: `GET /trend?which=rejected`, and a canned fit that refuses `trend_espresso_challenge` in demo mode. A live "no" is never stored as the last-good fit.
+
+## Original proposal
 1. `GET /trend?which=rejected` (optional param, default unchanged): load `data/demo_trend_rejected.json` and call `store.remember_trend`, so `POST /runs` accepts its id.
 2. Make the canned fit trend-aware: if `trend.id == "trend_espresso_challenge"` return `FitResult(fits=False, score=9, reason="Health-risk dare and a pile-on tone clash with Boabe's calm voice and no-health-claims rule.")`. This needs `calls.check_fit` to pass the trend to the fallback.
 3. UI (Andu): a small "Try another trend" button that calls `/trend?which=rejected` then `POST /runs`, and shows `run.fit.reason` on REJECTED.

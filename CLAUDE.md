@@ -39,7 +39,7 @@ npm run build && npm run lint     # must pass before every PR
 curl -X POST localhost:8000/admin/demo-mode -d '{"on": true}' -H 'Content-Type: application/json'
 ```
 
-Copy `.env.example` to `.env` and fill in keys. Required: `LLM_API_KEY`, `LLM_MODEL`, `SLACK_WEBHOOK_URL`, `ADOBE_CLIENT_ID`, `ADOBE_CLIENT_SECRET`. Optional: `REDDIT_*` or `NEWS_API_KEY`.
+Copy `.env.example` to `.env` and fill in keys. Required: `LLM_MODEL` plus either `LLM_API_KEY` (Anthropic) or `LLM_PROVIDER=bedrock` with `AWS_BEARER_TOKEN_BEDROCK` exported in your shell. Slack, Adobe and Reddit/news are mocks and need no keys (see the handoff note below). Without an LLM key, demo mode still runs everything.
 
 ---
 

@@ -1,6 +1,9 @@
 """Run state machine. Endpoints call these functions; this module owns every transition.
 
 SPOTTED -> REJECTED | DRAFTED -> IN_REVIEW -> REFEREED -> (IN_REVIEW again) | SHIPPED
+
+A referee result with status "needs_human" is still REFEREED: the UI warns, a human decides, and
+apply is allowed (the click is the human decision). See ARCHITECTURE.md §3.
 """
 
 import logging
@@ -139,7 +142,10 @@ def _fit_and_draft(run_id: str) -> None:
 def _finish_with_cached_draft(run_id: str) -> None:
     with store.mutate(run_id) as r:
         if r is not None and r.status == "SPOTTED":
-            r.fit = r.fit or demo_cache.fit()
+            r.fit = r.fit or demo_cache.fit(r.trend)
+            if not r.fit.fits:
+                r.status, r.step = "REJECTED", None
+                return
             r.draft = Draft(**demo_cache.draft().model_dump())
             r.status, r.step = "DRAFTED", None
 
@@ -220,8 +226,12 @@ def run_referee(run_id: str) -> RefereeResult:
 
 
 def _applied_draft(draft: Draft, referee: RefereeResult, accept_all_edits: bool) -> Draft:
-    """The final caption is the referee's compromise; other edits only with accept_all_edits."""
-    new = draft.model_copy(update={"caption": referee.final_caption, "version": draft.version + 1})
+    """The final caption is the referee's compromise; other edits only with accept_all_edits.
+
+    A blank final caption (bad LLM output) keeps the current one: Express would blank the post.
+    """
+    caption = referee.final_caption.strip() or draft.caption
+    new = draft.model_copy(update={"caption": caption, "version": draft.version + 1})
     if accept_all_edits:
         for edit in referee.edits:  # later edits win
             if edit.target == "hashtags":

@@ -3,6 +3,7 @@
 import logging
 import os
 from contextlib import asynccontextmanager
+from typing import Literal
 
 from dotenv import load_dotenv
 from fastapi import BackgroundTasks, FastAPI, Request
@@ -52,7 +53,9 @@ async def _conflict(_: Request, exc: orchestrator.InvalidTransitionError) -> JSO
 
 
 @app.get("/trend", response_model=Trend)
-def get_trend() -> Trend:
+def get_trend(which: Literal["default", "rejected"] = "default") -> Trend:
+    if which == "rejected":
+        return adapters.rejected_trend()
     live = os.environ.get("LIVE_TRENDS", "").strip().lower() in {"1", "true", "yes", "on"}
     return adapters.current_trend(live=live)
 
