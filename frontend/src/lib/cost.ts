@@ -4,6 +4,9 @@
 
 import type { CallUsage } from '../api/types'
 
+/** Measured in the live eval (qa/results/live_eval_20261107_142630.md): shown when no live call is logged. */
+export const MEASURED_IN_LIVE_EVAL = { perPostUsd: 0.0602, calls: 4, modelSeconds: 22 } as const
+
 export const DEMO_CACHE_MODEL = 'demo-cache'
 
 export const isLiveCall = (call: CallUsage) => call.model !== DEMO_CACHE_MODEL
@@ -19,13 +22,18 @@ export interface PostCostEstimate {
 
 const average = (values: number[]) => values.reduce((sum, v) => sum + v, 0) / values.length
 
-/** Estimate for one post from every logged call; null when no live call was logged yet. */
+/** The calls that make one post. With `LIVE_IN_DEMO=referee` only some are live: not a full post. */
+export const POST_CALLS = ['fit', 'draft', 'reactions', 'referee'] as const
+
+/** Estimate for one post from every logged call; null until every call type has a live call. */
 export function estimatePostCost(calls: CallUsage[]): PostCostEstimate | null {
   const live = calls.filter(isLiveCall)
   if (live.length === 0) return null
 
   const byType = new Map<string, CallUsage[]>()
   for (const call of live) byType.set(call.call, [...(byType.get(call.call) ?? []), call])
+
+  if (!POST_CALLS.every((name) => byType.has(name))) return null
 
   const types = [...byType.values()]
   return {

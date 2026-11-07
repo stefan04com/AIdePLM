@@ -35,10 +35,10 @@ Last updated: 2026-11-07 14:20 (Stefan)
 - [ ] Pitch, with Anda: say what is real (LLM, Slack) and what is simulated (Adobe, trends; `adobe.py` is the integration seam). Show `qa/results/live_eval_*.md` as proof the AI is real and measured, since demo mode answers from the cache.
 
 ### Andu
-- [ ] **"Accept compromise" doesn't change what ships:** `apply()` checks the `conflict_ids` but never uses them; it always ships the referee's full `final_caption`. Quick fix: rename the button "Apply all & ship" and drop or relabel the per-conflict "Accept" buttons (with Stefan if the backend should use them). Done when: the UI doesn't promise a choice it doesn't make.
-- [ ] **Cost panel shows "n/a" in demo mode:** show the measured **$0.0602 per post** (from the live eval) when there are no live calls, labelled "measured in live eval". **Number changed:** the latest eval (referee prompt now compares personas with humans) is $0.0602, so update the `0.0566` in `frontend/src/components/header/RunMeta.tsx` and `frontend/tests/factors.test.ts` too.
+- [x] "Accept compromise" removed: the per-conflict buttons did nothing (the backend ships the Referee's full `final_caption`), so cards now say "Applied when you ship" and the button reads **"Apply all & ship"** (`qa/e2e_browser.py` and `docs/demo-script.md` updated).
+- [x] Cost panel in demo mode shows the measured **$0.0602 per post** labelled "Measured in live eval". The estimate from live calls is used only when all 4 call types were live (with `LIVE_IN_DEMO=referee` one live call would show a wrong $0.03).
 - [ ] One human click-through on the presentation laptop with `VITE_USE_MOCKS=false` in `frontend/.env.local` (the automated run can't judge how it looks on the projector).
-- [ ] Consider showing only "37s vs 8 days" on the ship screen instead of "18,893× faster": on a run of a few seconds the multiplier looks inflated.
+- [x] Ship screen shows "37s vs 8 days for a typical review" instead of the multiplier.
 
 ### Militaru
 - [ ] **Replace the laptop photo** (`frontend/public/visuals/boabe-laptop-mug.jpg`): every post shows the same laptop + keyboard while the visual prompt describes a pumpkin latte by a foggy window, so a judge sees they don't match. Use a CC0 image that fits the Boabe story (latte on a café table, window, autumn light), update `CREDITS.md` and `ADOBE_MOCK_IMAGE_URL`, and point `SLACK_IMAGE_URL` at a public copy of the same image. Done when: post and Slack show the new image.

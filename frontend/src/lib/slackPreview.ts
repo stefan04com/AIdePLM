@@ -1,4 +1,4 @@
-// What the Slack message looks like after "Apply compromise". Mirrors build_blocks() in
+// What the Slack message looks like after "Apply all & ship". Mirrors build_blocks() in
 // backend/app/slack.py, which posts it to a real webhook when SLACK_WEBHOOK_URL is set.
 // No value imports, so `npm test` can run it in Node.
 

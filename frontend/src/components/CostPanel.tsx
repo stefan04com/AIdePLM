@@ -1,6 +1,6 @@
 import type { CallUsage } from '../api/types'
 import type { Usage } from '../hooks/useUsage'
-import { estimatePostCost, formatUsd, isLiveCall } from '../lib/cost'
+import { estimatePostCost, formatUsd, isLiveCall, MEASURED_IN_LIVE_EVAL } from '../lib/cost'
 import { formatDuration } from '../lib/format'
 import { Card, Muted, Pill, SectionHead } from './ui'
 
@@ -13,7 +13,11 @@ export function CostPanel({ usage }: { usage: Usage }) {
     <section className="column">
       <SectionHead
         title="Compute cost"
-        aside={<Pill tone={estimate ? 'ok' : 'neutral'}>{estimate ? formatUsd(estimate.perPostUsd) : 'n/a'}</Pill>}
+        aside={
+          <Pill tone="ok">
+            {formatUsd(estimate ? estimate.perPostUsd : MEASURED_IN_LIVE_EVAL.perPostUsd)}
+          </Pill>
+        }
       />
       <Card title="Per post (measured)">
         {estimate ? (
@@ -25,10 +29,14 @@ export function CostPanel({ usage }: { usage: Usage }) {
             </Muted>
           </>
         ) : (
-          <Muted>
-            No live calls logged yet. Demo mode answers from the cache ($0), so run once
-            with demo mode off to measure.
-          </Muted>
+          <>
+            <p className="cost-big">{formatUsd(MEASURED_IN_LIVE_EVAL.perPostUsd)}</p>
+            <Muted>
+              Measured in live eval ({MEASURED_IN_LIVE_EVAL.calls} calls, about{' '}
+              {MEASURED_IN_LIVE_EVAL.modelSeconds}s of model time per post). Demo mode answers
+              from the cache ($0).
+            </Muted>
+          </>
         )}
       </Card>
 

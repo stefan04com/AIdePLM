@@ -3,16 +3,15 @@ import { Card } from '../ui'
 
 interface Props {
   conflict: Conflict
-  accepted: boolean
-  disabled: boolean
-  onToggle: () => void
+  /** True once the run is shipped: the compromise is in the post. */
+  shipped: boolean
 }
 
-export function ConflictCard({ conflict, accepted, disabled, onToggle }: Props) {
+export function ConflictCard({ conflict, shipped }: Props) {
   const title = conflict.between.map((party) => party.label).join(' vs ')
 
   return (
-    <Card title={title} accent={accepted ? 'ok' : 'warn'} className="conflict">
+    <Card title={title} accent={shipped ? 'ok' : 'warn'} className="conflict">
       <p>{conflict.summary}</p>
       <ul>
         {conflict.between.map((party) => (
@@ -25,14 +24,9 @@ export function ConflictCard({ conflict, accepted, disabled, onToggle }: Props) 
       <p className="compromise">
         <strong>Compromise:</strong> {conflict.compromise}
       </p>
-      <button
-        className={accepted ? 'accepted' : ''}
-        aria-pressed={accepted}
-        disabled={disabled}
-        onClick={onToggle}
-      >
-        {accepted ? 'Compromise accepted' : 'Accept compromise'}
-      </button>
+      <p className="muted">
+        {shipped ? 'Applied in the shipped post.' : 'Applied when you ship (the Referee’s compromise).'}
+      </p>
     </Card>
   )
 }

@@ -23,13 +23,19 @@ test('per post = sum of the average live cost of each call type', () => {
   const estimate = estimatePostCost([
     call('fit', 'claude', 0.002, 1000),
     call('fit', 'claude', 0.004, 3000), // fit average: 0.003, 2000 ms
+    call('draft', 'claude', 0.01, 2000),
+    call('reactions', 'claude', 0.005, 1000),
     call('referee', 'claude', 0.02, 5000),
     call('referee', 'demo-cache', 0, 0), // ignored
   ])
   assert.ok(estimate)
-  assert.equal(estimate.liveCalls, 3)
-  assert.ok(Math.abs(estimate.perPostUsd - 0.023) < 1e-9)
-  assert.equal(estimate.perPostLatencyMs, 7000)
+  assert.equal(estimate.liveCalls, 5)
+  assert.ok(Math.abs(estimate.perPostUsd - 0.038) < 1e-9)
+  assert.equal(estimate.perPostLatencyMs, 10000)
+})
+
+test('only some call types live (LIVE_IN_DEMO=referee) is not a full post: no estimate', () => {
+  assert.equal(estimatePostCost([call('referee', 'claude', 0.03)]), null)
 })
 
 test('small amounts keep 4 decimals', () => {

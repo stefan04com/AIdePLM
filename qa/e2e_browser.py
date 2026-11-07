@@ -86,7 +86,7 @@ with sync_playwright() as p:
 
     run_id = page.evaluate("() => new URL(location.href).searchParams.get('run')")
     page.get_by_role("button", name="Run referee").click()
-    page.wait_for_selector("text=Apply compromise", timeout=30000)
+    page.wait_for_selector("text=Apply all", timeout=30000)
     if video_dir:
         page.get_by_text("Product vs Legal").first.scroll_into_view_if_needed()
         page.mouse.wheel(0, 250)
@@ -98,7 +98,7 @@ with sync_playwright() as p:
     check("referee shows conflict cards", conflicts > 0 or page.locator("text=conflicts").count() > 0)
     page.screenshot(path=f"{OUT}/{label}_refereed.png", full_page=True)
 
-    page.get_by_role("button", name="Apply compromise & ship").click()
+    page.get_by_role("button", name="Apply all & ship").click()
     page.wait_for_selector("text=Shipped", timeout=30000)
     page.wait_for_timeout(6000)
     pause(2)
