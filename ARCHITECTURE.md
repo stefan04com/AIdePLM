@@ -173,7 +173,7 @@ Every call writes `{run_id, call, model, input_tokens, output_tokens, latency_ms
 - **Integration-ready:** `adobe.py` is the seam where Adobe Firefly (image generation) and Adobe Express (the post) would plug in, behind the same functions (see ADR-003).
 
 ### 4.6 Slack (owner: Militaru)
-- Real integration: `slack.send_final_post` builds a Block Kit message (final caption, image if it has a public https URL, task list, "Trend → approved" time) and POSTs it to the incoming webhook in `SLACK_WEBHOOK_URL`, with a 15s timeout. It never raises: `Run.slack` records `posted`, `simulated` (no webhook set; the UI shows the preview) or `failed` (Slack unreachable; preview only). Error messages never contain the webhook URL.
+- Real integration: `slack.send_final_post` builds a Block Kit message (final caption, image if it has a public https URL (a relative path like `/visuals/x.jpg` is made absolute with `PUBLIC_BASE_URL`; without it the image is left out), task list, "Trend → approved" time) and POSTs it to the incoming webhook in `SLACK_WEBHOOK_URL`, with a 15s timeout. It never raises: `Run.slack` records `posted`, `simulated` (no webhook set; the UI shows the preview) or `failed` (Slack unreachable; preview only). Error messages never contain the webhook URL. `Run.fallback_calls` lists the LLM calls that used canned content in live mode (the UI shows "CANNED: …" in the run line).
 
 ### 4.7 Data (owner: Anda)
 - `data/brand.md`: voice, do/don't, legal no-gos (competitor names, claims, etc.).

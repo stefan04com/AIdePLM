@@ -26,6 +26,7 @@ from app.models import Task
 logger = logging.getLogger(__name__)
 
 WEBHOOK_ENV = "SLACK_WEBHOOK_URL"
+BASE_URL_ENV = "PUBLIC_BASE_URL"  # makes a relative image path (/visuals/x.jpg) reachable by Slack
 TIMEOUT_S = 15.0
 MAX_SECTION_CHARS = 3000  # Slack's limit for a section's text
 ELLIPSIS = "…"
@@ -86,6 +87,7 @@ def build_blocks(
     # Slack rejects a section with blank text, which would fail the whole message.
     if caption.strip():
         blocks.append(_section(_escape(caption)))
+    image_url = _absolute(image_url)
     if image_url and _is_web_url(image_url):
         blocks.append({"type": "image", "image_url": image_url, "alt_text": "Final post image"})
     if tasks:
@@ -124,6 +126,14 @@ def _truncate(escaped: str) -> str:
     if amp != -1 and ";" not in cut[amp:]:
         cut = cut[:amp]
     return cut + ELLIPSIS
+
+
+def _absolute(image_url: str | None) -> str | None:
+    """Turn "/visuals/x.jpg" into an absolute URL when PUBLIC_BASE_URL is set; else unchanged."""
+    base = os.environ.get(BASE_URL_ENV, "").strip().rstrip("/")
+    if image_url and image_url.startswith("/") and not image_url.startswith("//") and base:
+        return base + image_url
+    return image_url
 
 
 def _is_web_url(url: str) -> bool:

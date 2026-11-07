@@ -105,6 +105,13 @@ def mutate(run_id: str) -> Iterator[Run | None]:
             save_run(run)
 
 
+def mark_fallback(run_id: str, call: str) -> None:
+    """Remember that `call` used canned content instead of a real answer for this run."""
+    with mutate(run_id) as run:
+        if run is not None and call not in run.fallback_calls:
+            run.fallback_calls.append(call)
+
+
 def _snapshot() -> None:
     try:
         _snapshot_path.parent.mkdir(parents=True, exist_ok=True)

@@ -9,15 +9,15 @@ Rules and architecture live in `CLAUDE.md` and `ARCHITECTURE.md`; this file only
 - After the feature freeze (hour 8) only fixes go here; ideas go to "What's next" in the pitch.
 - `main` is open: push or merge there as you like (team decision, 2026-11-07). Before you push, `git pull` first, and run the tests (`pytest -q`, `npm run build && npm run lint`) so `main` still runs the demo. Never force-push `main`.
 
-Last updated: 2026-11-07 12:30 (Stefan)
+Last updated: 2026-11-07 (Stefan)
 
 ## Status
 
 | Area | State |
 |---|---|
-| Backend flow (fit → draft → reactions → referee → apply) | Done in demo mode; 106 tests pass |
+| Backend flow (fit → draft → reactions → referee → apply) | Done in demo mode; 123 tests pass; API flow (draft, reactions, comments, referee, apply, rejected trend) checked through the Vite proxy |
 | Real LLM (Bedrock) | Live eval on final `main`: 3/3 conflict, 0 fallbacks, **$0.0566/run** (`qa/results/live_eval_20261107_122427.md`). Use `LLM_MODEL=eu.anthropic.claude-sonnet-4-6`; `anthropic.claude-sonnet-5-5` returns 403 on our Bedrock account |
-| Rejected trend (fit says no) | Backend done (`GET /trend?which=rejected`); UI button pending |
+| Rejected trend (fit says no) | Done: backend and "Try a risky trend" button |
 | Slack | **Real**: incoming webhook (`SLACK_WEBHOOK_URL` in `.env`), posts on ship; `Run.slack` = posted / simulated / failed |
 | Adobe / trends | Local simulations by team decision, no keys needed |
 | Frontend | Builds and lints; not yet tested end to end in a real browser |
@@ -27,6 +27,25 @@ Last updated: 2026-11-07 12:30 (Stefan)
 - [x] Run `qa/live_eval.py` against the final `main`: 3/3 runs with a conflict, no canned fallback (2026-11-07 12:24).
 - [x] Measured cost: **$0.0566 per post** (4 calls: fit, draft, reactions, referee; personas once, $0.17 total for 3 runs incl. personas). Prices $3 / $15 per Mtok set in `.env` (`LLM_PRICE_*`).
 - [ ] After a clean rehearsal, cut `release/1.0.0` and tag `v1.0.0-demo` on `main`.
+
+### Stefan: review against the judging criteria (2026-11-07, hackathon only)
+Can break the demo (do first, in this order):
+- [x] 1. Race in `add_comment` (`orchestrator.py:185`): a comment added while the referee runs is lost (status ends `REFEREED`, comment never refereed). Return 409 when `run.step` is set. Done when: a test covers it.
+- [x] 2. Show when a fallback was used: add an optional `used_fallback` field (adding an optional field is allowed by the contract) so the UI can tell canned content from a real LLM answer in live mode. Done: `Run.fallback_calls`, "CANNED: …" in the run line.
+- [ ] 3. (API flow checked via the Vite proxy; still needs a human click-through) Browser e2e with `VITE_USE_MOCKS=false` (draft, comments, referee, apply). Same item as Andu's above; Stefan checks it too.
+- [ ] 4. 3 clean rehearsals on the presentation laptop, including the rejected-trend beat, plus the backup video (with Anda).
+- [ ] 5. Before the tag: commit or revert the modified `frontend/package-lock.json`, then cut `release/1.0.0` and tag `v1.0.0-demo`.
+
+Can cost points:
+- [ ] 6. Third-party (15%) is the weakest criterion: only Slack is real. In the pitch, say what is real and what is simulated; present Adobe as "integration-ready" (`adobe.py` is the seam). A real Firefly/Reddit call goes to "What's next" (feature freeze).
+- [ ] 7. Demo mode is canned content (0 tokens). In the pitch, show `qa/results/live_eval_*.md` and `logs/usage.jsonl` as proof that the AI is real and measured.
+- [ ] 8. Cost bonus (+10): put $0.0566 per post next to "about 2 hours vs 8 days" on the slide (with Anda).
+- [x] 9. The image never reaches the real Slack message: `ADOBE_MOCK_IMAGE_URL` is a relative path and `slack._is_web_url` rejects it (the UI preview shows it). Fixed: set `PUBLIC_BASE_URL` (an https URL where the frontend is reachable) in `.env`; without it the image is left out.
+
+Cleanup:
+- [x] 10. Docs out of sync: the test count here (106, now 119) and `docs/qa-report.md` still lists the rejected-trend button as "Left".
+
+Not now, put in "What's next" in the pitch: CI, `MAX_TOKENS` (2048) cutting the referee JSON, file write under the lock in `store.mutate`, `_guarded` not stopping timed-out threads, the retry time budget (up to ~30s), auth on `/admin/demo-mode`, a real Adobe call.
 
 ## Andu: frontend
 - [x] "Try another trend" button: `GET /trend?which=rejected`, then `POST /runs`; show `run.fit.reason` on `REJECTED`. Done by Ada on `feature/ada-friendly-adobe-theme` ("Try a risky trend", key B, brand-safety shield).
