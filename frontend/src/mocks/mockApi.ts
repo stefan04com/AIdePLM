@@ -1,6 +1,7 @@
-// In-browser fake backend built from backend/tests/fixtures/run_refereed.json.
-// It mimics the real lifecycle (SPOTTED → DRAFTED → IN_REVIEW → REFEREED → SHIPPED),
-// including Run.step labels and 404/409 errors, so the UI can be built before hour 4.
+// In-browser fake backend with the coffee demo scenario (see ./fixtures.ts).
+// It mirrors backend/app/orchestrator.py: the same lifecycle
+// (SPOTTED → DRAFTED → IN_REVIEW → REFEREED → SHIPPED), Run.step while a call runs,
+// 409 when the run is busy or in the wrong status, 404 for unknown runs/conflicts.
 
 import { ApiError } from '../api/errors'
 import type {
@@ -8,6 +9,7 @@ import type {
   CallUsage,
   Comment,
   CommentCreate,
+  Draft,
   DemoModeResponse,
   Persona,
   PersonaReaction,
@@ -25,7 +27,7 @@ const DRAFT_STEPS: [number, string][] = [
   [3000, 'Generating visual…'],
 ]
 const DRAFT_DONE_MS = 4500
-const SYNC_CALL_MS = 1200 // fake latency for /reactions and /referee
+const SYNC_CALL_MS = 1200 // fake latency for /reactions, /referee and /apply
 
 const runs = new Map<string, Run>()
 let demoMode = false
@@ -93,13 +95,26 @@ export async function getRun(id: string): Promise<Run> {
   return clone(findRun(id))
 }
 
+/** Marks the run busy with a step label while a synchronous call runs, like the backend. */
+async function withStep<T>(run: Run, label: string, work: () => T): Promise<T> {
+  if (run.step) throw new ApiError(409, `run is busy: ${run.step}`)
+  run.step = label
+  try {
+    await sleep(SYNC_CALL_MS)
+    return work()
+  } finally {
+    run.step = null
+  }
+}
+
 export async function requestReactions(id: string): Promise<PersonaReaction[]> {
   const run = findRun(id)
   requireStatus(run, ['DRAFTED', 'IN_REVIEW'], 'request reactions for')
-  await sleep(SYNC_CALL_MS)
-  run.reactions = clone(fixture.reactions)
-  run.status = 'IN_REVIEW'
-  return clone(run.reactions)
+  return withStep(run, 'Customer personas are reacting…', () => {
+    run.reactions = clone(fixture.reactions)
+    run.status = 'IN_REVIEW'
+    return clone(run.reactions)
+  })
 }
 
 export async function addComment(id: string, body: CommentCreate): Promise<Comment> {
@@ -116,36 +131,61 @@ export async function addComment(id: string, body: CommentCreate): Promise<Comme
   return clone(comment)
 }
 
+/** Maps a fixture comment id (c_legal) to this run's comment with the same role. */
+function runCommentId(run: Run, fixtureCommentId: string): string | undefined {
+  const role = fixture.comments.find((c) => c.id === fixtureCommentId)?.role
+  return run.comments.find((c) => c.role === role)?.id
+}
+
+function refereeForRun(run: Run): RefereeResult {
+  const result = clone(fixture.referee!)
+  result.comment_status = result.comment_status.flatMap((status) => {
+    const commentId = runCommentId(run, status.comment_id)
+    return commentId ? [{ ...status, comment_id: commentId }] : []
+  })
+  result.edits = result.edits.map((edit) => ({
+    ...edit,
+    source_comment_id: runCommentId(run, edit.source_comment_id) ?? edit.source_comment_id,
+  }))
+  return result
+}
+
 export async function referee(id: string): Promise<RefereeResult> {
   const run = findRun(id)
-  requireStatus(run, ['IN_REVIEW', 'REFEREED'], 'referee')
-  await sleep(SYNC_CALL_MS)
-  const result = clone(fixture.referee as RefereeResult)
-  // Point comment_status at the ids this run actually has, matching by role.
-  result.comment_status = result.comment_status.flatMap((status) => {
-    const role = fixture.comments.find((c) => c.id === status.comment_id)?.role
-    const match = run.comments.find((c) => c.role === role)
-    return match ? [{ ...status, comment_id: match.id }] : []
+  requireStatus(run, ['IN_REVIEW'], 'referee')
+  return withStep(run, 'Referee is resolving the feedback…', () => {
+    run.referee = refereeForRun(run)
+    run.status = 'REFEREED'
+    return clone(run.referee)
   })
-  run.referee = result
-  run.status = 'REFEREED'
-  return clone(result)
+}
+
+/** Same rule as orchestrator._applied_draft: caption always, other edits only if accepted. */
+function appliedDraft(draft: Draft, result: RefereeResult, acceptAllEdits: boolean): Draft {
+  const next = { ...clone(draft), caption: result.final_caption, version: draft.version + 1 }
+  if (!acceptAllEdits) return next
+  for (const edit of result.edits) {
+    if (edit.target === 'hashtags') next.hashtags = edit.after.split(/\s+/).filter(Boolean)
+    if (edit.target === 'visual_prompt') next.visual_prompt = edit.after
+  }
+  return next
 }
 
 export async function apply(id: string, body: ApplyRequest): Promise<Run> {
   const run = findRun(id)
   requireStatus(run, ['REFEREED'], 'apply')
-  if (run.draft && run.referee) {
-    run.draft.caption = run.referee.final_caption
-    if (body.accept_all_edits) {
-      const tags = run.referee.edits.find((e) => e.target === 'hashtags')
-      if (tags) run.draft.hashtags = tags.after.split(' ').filter(Boolean)
+  const known = new Set(run.referee?.conflicts.map((c) => c.id))
+  const unknown = (body.conflict_ids ?? []).filter((conflictId) => !known.has(conflictId))
+  if (unknown.length > 0) throw new ApiError(404, `unknown conflict ids: ${unknown.join(', ')}`)
+
+  await withStep(run, 'Applying changes…', () => {
+    if (run.draft && run.referee) {
+      run.draft = appliedDraft(run.draft, run.referee, body.accept_all_edits)
     }
-    run.draft.version += 1
-  }
-  run.status = 'SHIPPED'
-  run.shipped_at = nowIso()
-  return clone(run)
+    run.status = 'SHIPPED'
+    run.shipped_at = nowIso()
+  })
+  return clone(run) // after withStep, so the returned run is no longer busy
 }
 
 function mockCall(

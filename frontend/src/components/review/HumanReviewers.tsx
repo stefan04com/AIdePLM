@@ -1,14 +1,9 @@
 import { type FormEvent, useState } from 'react'
 import type { Comment, CommentRole, CommentStatus } from '../../api/types'
 import { humanize } from '../../lib/format'
+import { ROLE_LABEL, ROLES } from '../../lib/labels'
 import { COMMENT_STATUS_TONE } from '../../lib/tones'
 import { Badge, Card } from '../ui'
-
-const ROLES: { role: CommentRole; label: string }[] = [
-  { role: 'brand', label: 'Brand' },
-  { role: 'legal', label: 'Legal' },
-  { role: 'product', label: 'Product' },
-]
 
 interface Props {
   comments: Comment[]
@@ -22,8 +17,8 @@ export function HumanReviewers({ comments, commentStatus, disabled, onComment }:
 
   return (
     <div className="grid">
-      {ROLES.map(({ role, label }) => (
-        <Card key={role} title={label}>
+      {ROLES.map((role) => (
+        <Card key={role} title={ROLE_LABEL[role]}>
           {comments
             .filter((c) => c.role === role)
             .map((c) => (

@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react'
 import { api, USE_MOCKS } from './api/client'
 import { errorMessage } from './api/errors'
-import type { CommentRole, Persona, Trend } from './api/types'
+import type { ApplyRequest, CommentRole, Persona, Trend } from './api/types'
 import { CanvasColumn } from './components/CanvasColumn'
 import { ReviewColumn } from './components/ReviewColumn'
 import { TrendColumn } from './components/TrendColumn'
-import { Badge } from './components/ui'
+import { Badge, Banner } from './components/ui'
 import { useRun } from './hooks/useRun'
-import { isFinished } from './lib/runStatus'
+import { isFinished, isRunBusy } from './lib/runStatus'
 import { scriptedComments } from './mocks/scriptedComments'
 
 export default function App() {
@@ -57,6 +57,7 @@ export default function App() {
   }
 
   const error = actionError ?? pollError
+  const uiBusy = busy || isRunBusy(run)
 
   return (
     <div className="app">
@@ -66,31 +67,27 @@ export default function App() {
         {USE_MOCKS && <Badge tone="warn">mock API</Badge>}
       </header>
 
-      {error && (
-        <div className="error" role="alert">
-          {error}
-        </div>
-      )}
+      {error && <Banner tone="bad">{error}</Banner>}
 
       <main className="columns">
         <TrendColumn
           trend={trend}
           fit={run?.fit ?? null}
-          canStart={!busy && (run === null || isFinished(run))}
+          canStart={!uiBusy && (run === null || isFinished(run))}
           onStart={startRun}
         />
         <CanvasColumn run={run} />
         <ReviewColumn
           run={run}
           personas={personas}
-          busy={busy}
+          busy={uiBusy}
           onComment={(role: CommentRole, text: string) =>
             onRun((id) => api.addComment(id, { role, text }))()
           }
           onRequestReactions={onRun(api.requestReactions)}
           onFillScripted={onRun(fillScripted)}
           onReferee={onRun(api.referee)}
-          onApply={onRun((id) => api.apply(id, { accept_all_edits: true }))}
+          onApply={(body: ApplyRequest) => onRun((id) => api.apply(id, body))()}
         />
       </main>
     </div>

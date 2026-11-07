@@ -9,12 +9,8 @@ export function CanvasColumn({ run }: { run: Run | null }) {
       {run?.step && <StepIndicator label={run.step} />}
       {!run && <Muted>Start a run to generate a draft.</Muted>}
       {run?.status === 'REJECTED' && <Muted>Trend rejected, so no draft was made.</Muted>}
+      {run?.shipped_at && <ShippedCard run={run} shippedAt={run.shipped_at} />}
       {run?.draft && <DraftCard draft={run.draft} />}
-      {run?.shipped_at && (
-        <p className="shipped">
-          Shipped · trend → approved in {formatElapsed(run.started_at, run.shipped_at)}
-        </p>
-      )}
     </section>
   )
 }
@@ -24,6 +20,21 @@ function StepIndicator({ label }: { label: string }) {
     <p className="step" role="status">
       <span className="spinner" aria-hidden /> {label}
     </p>
+  )
+}
+
+function ShippedCard({ run, shippedAt }: { run: Run; shippedAt: string }) {
+  const taskCount = run.referee?.tasks.length ?? 0
+
+  return (
+    <Card accent="ok" className="shipped">
+      <p className="muted">Trend → approved post in</p>
+      <p className="shipped-time">{formatElapsed(run.started_at, shippedAt)}</p>
+      <p>
+        Updated in Express and posted to Slack with {taskCount} follow-up task
+        {taskCount === 1 ? '' : 's'}.
+      </p>
+    </Card>
   )
 }
 

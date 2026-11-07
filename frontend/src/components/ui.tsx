@@ -35,6 +35,15 @@ export function Badge({ tone = 'neutral', title, children }: BadgeProps) {
   )
 }
 
+/** Full-width tinted message: errors (bad), warnings (warn), confirmations (ok). */
+export function Banner({ tone, children }: { tone: Tone; children: ReactNode }) {
+  return (
+    <div className={`banner ${toneClass(tone)}`} role={tone === 'bad' ? 'alert' : 'status'}>
+      {children}
+    </div>
+  )
+}
+
 /** Gray helper text, used for empty and placeholder states. */
 export function Muted({ children }: { children: ReactNode }) {
   return <p className="muted">{children}</p>

@@ -185,12 +185,15 @@ input {
   border-left: 4px solid var(--tone);
 }
 
-.error {
-  margin: 12px 20px 0;
+.banner {
   padding: 10px 14px;
   border-radius: 8px;
-  background: color-mix(in srgb, var(--bad) 15%, transparent);
-  border: 1px solid var(--bad);
+  background: color-mix(in srgb, var(--tone) 15%, transparent);
+  border: 1px solid var(--tone);
+}
+
+.app > .banner {
+  margin: 12px 20px 0;
 }
 
 .fit {
@@ -258,8 +261,9 @@ input {
   color: var(--accent);
 }
 
-.shipped {
-  font-weight: 600;
+.shipped-time {
+  font-size: 32px;
+  font-weight: 700;
   color: var(--ok);
 }
 
@@ -288,4 +292,59 @@ blockquote {
   padding: 8px 10px;
   border-radius: 6px;
   background: color-mix(in srgb, var(--ok) 12%, transparent);
+}
+
+/* --- Referee panel ------------------------------------------------------- */
+
+button.accepted {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+
+.edit-row + .edit-row {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.diff {
+  margin-top: 6px;
+}
+
+del {
+  color: var(--bad);
+  background: color-mix(in srgb, var(--bad) 12%, transparent);
+}
+
+ins {
+  text-decoration: none;
+  color: var(--ok);
+  background: color-mix(in srgb, var(--ok) 15%, transparent);
+}
+
+.task-list li + li {
+  margin-top: 4px;
+}
+
+.ship-bar {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.ship-bar button {
+  margin-left: auto;
+}
+
+.ship-bar input {
+  width: auto;
+  margin-right: 6px;
 }
