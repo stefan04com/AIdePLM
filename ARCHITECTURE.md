@@ -12,7 +12,7 @@ Status: **Proposed** (freeze in hour 1). Date: 2026-11-07.
 | | |
 |---|---|
 | **Build time** | 12 hours, 4 people working in parallel |
-| **Must show live** | trend → fit check → draft in Express → human + persona review → conflict card → apply → Slack |
+| **Must show live** | trend → fit check → draft (visual + post simulated locally) → human + persona review → conflict card → apply → Slack message (mock) |
 | **Scale** | one demo brand, one user, one run at a time. No multi-tenancy, no auth |
 | **Reliability** | the demo must work 3/3 times. Every external call needs a fallback |
 | **Cost** | ~5 LLM calls per run, logged per call for the cost-vs-value slide |
@@ -27,7 +27,7 @@ Status: **Proposed** (freeze in hour 1). Date: 2026-11-07.
 ```mermaid
 flowchart LR
     subgraph Sources
-        R[Reddit / News API]
+        R["Reddit / News<br/>mock live sample"]
         S[(Saved demo trend)]
     end
 
@@ -45,9 +45,8 @@ flowchart LR
 
     subgraph External
         MODEL[LLM provider]
-        FF[Adobe Firefly]
-        EX[Adobe Express]
-        SL[Slack webhook]
+        AD["Adobe module<br/>local simulation, Firefly/Express-ready"]
+        SL["Slack module<br/>local mock, Block Kit"]
     end
 
     CSV[(reviews.csv<br/>50–100 reviews)]
@@ -61,8 +60,7 @@ flowchart LR
     LLM --> MODEL
     LLM --> LOG
     ORCH --> STORE
-    ORCH --> FF
-    ORCH --> EX
+    ORCH --> AD
     ORCH --> SL
     CSV --> LLM
     BRAND --> LLM
@@ -84,7 +82,7 @@ stateDiagram-v2
     DRAFTED --> IN_REVIEW: personas react, humans comment
     IN_REVIEW --> REFEREED: referee call
     REFEREED --> IN_REVIEW: new comments → re-run referee
-    REFEREED --> SHIPPED: apply compromise → Express + Slack
+    REFEREED --> SHIPPED: apply compromise → post version + Slack message (mocks)
     SHIPPED --> [*]
     REJECTED --> [*]
 ```
@@ -99,8 +97,8 @@ sequenceDiagram
     participant UI
     participant API as Backend
     participant LLM as LLM provider
-    participant AD as Firefly / Express
-    participant SL as Slack
+    participant AD as Adobe module (local sim)
+    participant SL as Slack module (mock)
 
     UI->>API: GET /trend
     API-->>UI: trend (live or saved)
@@ -111,8 +109,8 @@ sequenceDiagram
     LLM-->>API: {fits, score, reason}
     API->>LLM: #2 Draft (trend + brand.md)
     LLM-->>API: {brief, caption, visual_prompt}
-    API->>AD: generate visual, create/update post
-    API-->>UI: poll shows DRAFTED (caption, image, express link)
+    API->>AD: placeholder visual, mock post (v1)
+    API-->>UI: poll shows DRAFTED (caption, image, post id)
 
     par Synthetic audience
         API->>LLM: #4 Persona reactions (draft + 3 cached personas)
@@ -127,8 +125,8 @@ sequenceDiagram
     API-->>UI: conflict cards + edits
 
     UI->>API: POST /runs/{id}/apply
-    API->>AD: update caption / visual
-    API->>SL: final post + task list
+    API->>AD: update caption / visual (version + 1)
+    API->>SL: build Block Kit message (reported as sent)
     API-->>UI: SHIPPED, elapsed time
 ```
 
@@ -140,7 +138,7 @@ Call **#3 (build personas)** runs once at startup from `reviews.csv` and is cach
 
 ### 4.1 Frontend (owner: Andu)
 - React + TypeScript (Vite). Adobe Spectrum components optional; a nice nod to the judges' stack.
-- One page, three columns: **Trend** (card + fit reason) · **Canvas** (caption + visual, or Express embed) · **Review table** (3 human reviewer cards with a display-only timer, 3 persona cards in the same style, conflict cards underneath).
+- One page, three columns: **Trend** (card + fit reason) · **Canvas** (caption + visual, our own post preview) · **Review table** (3 human reviewer cards with a display-only timer, 3 persona cards in the same style, conflict cards underneath).
 - Polls `GET /runs/{id}` every second (simpler than websockets; see ADR-004).
 - Built against mock JSON from hour 1; switches to the real API at the hour-4 checkpoint.
 
@@ -165,16 +163,17 @@ Every call writes `{run_id, call, model, input_tokens, output_tokens, latency_ms
 > **Note (by team decision):** the trend, Adobe and Slack integrations below are mocks. They make no network calls and need no keys; the sections describe the intended real design.
 
 ### 4.4 Trend source (owner: Militaru)
-- One source: Reddit (subreddit `top`/`hot` JSON) or a news API. It's normalised to the `Trend` model.
-- `data/demo_trend.json` is always available; the demo uses it by default and live fetch is a nice-to-have.
+- `trends.get_trend()` returns the saved `data/demo_trend.json` by default, normalised to the `Trend` model.
+- "Live" is a local mock: it returns a built-in sample trend with `source="reddit"` and makes no network call. A real Reddit/news fetch would plug in here.
 
-### 4.5 Adobe integration (owner: Militaru)
-- **Visual:** Firefly image generation from `visual_prompt`.
-- **Post:** the draft placed in Adobe Express (Embed SDK or add-on, depending on what access works by hour 2); "apply" updates the caption/visual there.
-- **Fallback:** pre-generated image + our own canvas preview + "Open in Express" link. Decision point: **hour 2** (see ADR-003).
+### 4.5 Adobe module: local simulation (owner: Militaru)
+- **Visual:** `adobe.generate_visual(visual_prompt)` returns a placeholder SVG (same prompt, same image, labelled as a mock), or `ADOBE_MOCK_IMAGE_URL` if set.
+- **Post:** `adobe.create_post` returns a mock post at version 1; "apply" calls `adobe.update_post`, which returns it with the new caption/visual and `version + 1`. Nothing is created in Express.
+- No network calls, no Adobe keys. `ADOBE_MOCK_LATENCY_S` adds a simulated delay to show loading states. `adapters.py` wraps every call with a 15s timeout and a fallback.
+- **Integration-ready:** `adobe.py` is the seam where Adobe Firefly (image generation) and Adobe Express (the post) would plug in, behind the same functions (see ADR-003).
 
 ### 4.6 Slack (owner: Militaru)
-- Incoming webhook to a demo channel. A Block Kit message with the final caption, the image, the task list and "Trend → approved: 1h 50m".
+- Local mock: `slack.send_final_post` builds a Block Kit message with the final caption, the image, the task list and "Trend → approved: 1h 50m", and reports it as sent. No webhook; the blocks follow Slack's rules, so a real webhook could post them unchanged.
 
 ### 4.7 Data (owner: Anda)
 - `data/brand.md`: voice, do/don't, legal no-gos (competitor names, claims, etc.).
@@ -342,8 +341,8 @@ Small, but worth a line on the architecture slide; it's part of "technical excel
 
 - **Prompt injection from trends.** Reddit and news text is untrusted input. It is passed to the model inside clearly delimited `<trend>` tags with an instruction to treat it as data only, and the fit/draft outputs are schema-validated, so injected text can't change the output shape or trigger actions.
 - **Reviewer comments are also untrusted.** Same delimiting in the Referee prompt; the Referee can only *propose* edits, and a human clicks "apply".
-- **Human in the loop.** Nothing reaches Express or Slack without the "apply" click.
-- **Secrets.** LLM, Adobe and Slack keys in `.env`, never committed (`.gitignore` from minute one); the frontend never sees a key.
+- **Human in the loop.** Nothing is applied to the post or the Slack message without the "apply" click.
+- **Secrets.** LLM keys (Anthropic API key or Bedrock token) in `.env` or the shell, never committed (`.gitignore` from minute one); the frontend never sees a key. The Adobe and Slack mocks need no keys.
 - **Brand safety.** brand.md "legal no-gos" are part of every draft and referee prompt, so Legal-type conflicts are caught even without a human Legal comment.
 - **Review data.** Only review text and rating are used; strip usernames before they go into the CSV.
 
@@ -378,15 +377,15 @@ Small, but worth a line on the architecture slide; it's part of "technical excel
 **Decision:** A. A single call that sees everything is what makes the "humans and personas at the same table" idea real, and it's 1 of ~5 calls per run, which helps the cost slide. **Risk:** the conflict might not appear with the demo inputs → tune the prompt against `demo_comments.json` until it appears 3/3 times.
 
 ### ADR-003: Adobe Express live update vs fallback preview
-**Status:** Proposed; decide at hour 2 · **Deciders:** Militaru, Stefan
+**Status:** Accepted · **Deciders:** Militaru, Stefan
 
 | Option | Integrations score | Risk |
 |---|---|---|
-| **A. Firefly image + live Express update on apply** | Highest | Access/credentials or SDK friction |
+| A. Firefly image + live Express update on apply | Highest | Access/credentials or SDK friction |
 | B. Firefly image + own preview + "Open in Express" | Medium | Low |
-| C. Pre-made image, own preview | Low | None |
+| **C. Pre-made image, own preview** | Low | None |
 
-**Decision:** aim for A; if Express access isn't working by hour 2, ship B and keep A as a stretch goal. C is the demo-mode fallback only.
+**Decision:** local simulation (option C as the shipped path), integration-ready. `adobe.py` returns a generated placeholder image and a versioned mock post, with no network calls and no Adobe keys, so the demo can't fail on access or credentials. **Consequences:** a real integration would replace the bodies of `generate_visual`, `create_post` and `update_post` with Firefly image generation and Express post creation/update, keeping the same signatures, so the orchestrator and UI don't change. The pitch presents A as the next step, not as a live feature.
 
 ### ADR-004: Polling instead of websockets
 **Status:** Accepted
@@ -412,9 +411,9 @@ moment/
 │   │   ├── llm/
 │   │   │   ├── client.py      # provider call, retry, logging (Stefan)
 │   │   │   └── prompts/       # fit, draft, personas, reactions, referee
-│   │   ├── trends.py          # Reddit/news + saved trend     (Militaru)
-│   │   ├── adobe.py           # Firefly + Express             (Militaru)
-│   │   ├── slack.py           # webhook + Block Kit           (Militaru)
+│   │   ├── trends.py          # saved trend + mock "live"     (Militaru)
+│   │   ├── adobe.py           # local sim, Firefly/Express-ready (Militaru)
+│   │   ├── slack.py           # Block Kit, mock send          (Militaru)
 │   │   └── demo_cache.py      # last-good responses
 │   └── tests/test_flow.py     # end-to-end with demo data
 ├── frontend/                  # React + TS                    (Andu)
@@ -432,7 +431,7 @@ moment/
 Per run: calls #1, #2, #4, #5 (+ #3 once). Fill in from `logs/usage.jsonl` after rehearsals:
 
 ```
-cost_per_run = Σ (input_tokens × input_price + output_tokens × output_price)  + Firefly generation
+cost_per_run = Σ (input_tokens × input_price + output_tokens × output_price)
 value_per_run = reviewer hours saved × hourly rate  + value of hitting the trend window
 ```
 
@@ -447,15 +446,14 @@ Show it as one line: "≈ $X per post vs. Y hours of review time", with X measur
 | LLM returns invalid JSON | Medium | Schema retry once → cached response |
 | LLM slow on venue Wi-Fi | Medium | Timeout 15s → cached response; phone hotspot |
 | Conflict doesn't appear live | Medium | Prompt tuned on scripted comments; demo mode |
-| Express access blocked | Medium | ADR-003 option B |
-| Firefly quota/credentials | Low–Med | Pre-generated image |
+| Adobe module call fails or hangs | Low | 15s timeout in `adapters.py` → draft without image / previous visual |
 | Reddit rate limit / nothing relevant trending | High | Saved demo trend (default) |
 | Laptop / everything fails | Low | Recorded backup video |
 
 ## 12. Action items
 
 1. [ ] Hour 1: commit `models.py` + frontend mocks (Stefan, Andu)
-2. [ ] Hour 2: Adobe access decision, ADR-003 (Militaru)
+2. [x] Hour 2: Adobe access decision, ADR-003: local simulation, integration-ready (Militaru)
 3. [ ] Hour 2: `brand.md`, `reviews.csv`, `demo_trend.json` ready (Anda)
 4. [ ] Hour 4: end-to-end run through the real backend (all)
 5. [ ] Hour 6: conflict appears 3/3 with scripted comments (Stefan)

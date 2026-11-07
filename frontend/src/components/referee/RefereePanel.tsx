@@ -47,7 +47,7 @@ export function RefereePanel({ referee, comments, canShip, shipped, onApply }: P
       <TaskList tasks={referee.tasks} />
 
       {shipped ? (
-        <Banner tone="ok">Shipped: the compromise is in Express and the post went to Slack.</Banner>
+        <Banner tone="ok">Shipped: the post preview is updated and the Slack message is ready (simulated).</Banner>
       ) : (
         <ShipBar
           acceptedCount={acceptedIds.length}

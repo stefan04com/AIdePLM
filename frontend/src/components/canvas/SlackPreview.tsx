@@ -1,8 +1,8 @@
 import type { SlackPreview as Preview } from '../../lib/slackPreview'
 
 /**
- * The message the Slack channel receives after "Apply compromise" (demo script 2:30).
- * Slack is mocked by the backend, so this shows exactly what slack.build_blocks() would post.
+ * The Slack message Moment would post after "Apply compromise" (demo script 2:30).
+ * Slack is simulated by the backend: nothing is posted; this shows what slack.build_blocks() builds.
  */
 export function SlackPreview({ preview }: { preview: Preview }) {
   return (
@@ -10,7 +10,7 @@ export function SlackPreview({ preview }: { preview: Preview }) {
       <header className="slack-bar">
         <span className="slack-hash">#</span>
         <strong>boabe-social</strong>
-        <span className="muted">Slack</span>
+        <span className="muted">Simulated · not posted</span>
       </header>
       <div className="slack-message">
         <span className="slack-avatar" aria-hidden>

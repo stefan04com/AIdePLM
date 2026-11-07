@@ -130,7 +130,7 @@ def rejected_trend() -> Trend:
 
 
 def create_visual_and_post(draft: Draft) -> Draft:
-    """Generate the visual (Firefly) and create the post (Express). Fills image/doc ids."""
+    """Create the visual and the post (local simulation in adobe.py). Fills image/doc ids."""
     mod = _module("adobe")
     if mod is None:
         return draft
@@ -147,7 +147,7 @@ def create_visual_and_post(draft: Draft) -> Draft:
 
 
 def update_post(old: Draft, new: Draft) -> Draft:
-    """Push the applied caption / visual to Express. Returns `new` with image/doc id updated."""
+    """Apply the caption / visual to the simulated post. Returns `new` with image updated."""
     mod = _module("adobe")
     if mod is None or not old.express_doc_id:
         return new
