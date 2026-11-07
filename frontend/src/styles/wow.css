@@ -1,0 +1,411 @@
+/* The "wow" layer: living background, entrances, cursor light, the intro and the ship moment.
+   Every animation here is off under prefers-reduced-motion. Loaded after friendly.css. */
+
+/* --- living background: two slow aurora blobs behind everything --- */
+
+body::before,
+body::after {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  width: 60vmax;
+  height: 60vmax;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+body::before {
+  top: -30vmax;
+  right: -20vmax;
+  background: radial-gradient(circle, #ff5a3c, transparent 65%);
+  animation: aurora-a 22s ease-in-out infinite alternate;
+}
+
+body::after {
+  bottom: -35vmax;
+  left: -25vmax;
+  background: radial-gradient(circle, #ffc14a, transparent 65%);
+  animation: aurora-b 26s ease-in-out infinite alternate;
+}
+
+@keyframes aurora-a {
+  to { transform: translate(-12vmax, 10vmax) scale(1.15); }
+}
+@keyframes aurora-b {
+  to { transform: translate(14vmax, -8vmax) scale(1.1); }
+}
+
+/* a thin shimmering line under the header: red → honey → red */
+.topbar {
+  border-bottom: 0;
+}
+.topbar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #eb1000, #f5a623, #eb1000, transparent);
+  background-size: 200% 100%;
+  animation: shimmer 6s linear infinite;
+  opacity: 0.7;
+}
+@keyframes shimmer {
+  to { background-position: -200% 0; }
+}
+
+/* --- entrances: cards rise in, one after another --- */
+
+.card,
+.express,
+.slack {
+  animation: rise 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+.column > *:nth-child(2) { animation-delay: 0.05s; }
+.column > *:nth-child(3) { animation-delay: 0.1s; }
+.column > *:nth-child(4) { animation-delay: 0.15s; }
+.column > *:nth-child(5) { animation-delay: 0.2s; }
+.grid > *:nth-child(2) { animation-delay: 0.08s; }
+.grid > *:nth-child(3) { animation-delay: 0.16s; }
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px) scale(0.985); }
+}
+
+/* --- cursor light on cards --- */
+
+.card,
+.express,
+.slack {
+  position: relative;
+  isolation: isolate;
+}
+.card::after,
+.express::after,
+.slack::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 0%), rgb(235 16 0 / 0.08), transparent 65%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+.card:hover::after,
+.express:hover::after,
+.slack:hover::after {
+  opacity: 1;
+}
+
+/* --- fit gauge draws itself; the score pops --- */
+
+.gauge-value {
+  animation: gauge-draw 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes gauge-draw {
+  from { stroke-dasharray: 0 100; }
+}
+.gauge-score {
+  animation: pop 0.6s 0.7s cubic-bezier(0.3, 1.6, 0.5, 1) backwards;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* --- conflicts arrive like a face-off --- */
+
+.conflict {
+  animation: face-off 0.7s cubic-bezier(0.2, 0.9, 0.25, 1.1) backwards;
+}
+.conflict:nth-of-type(2) { animation-delay: 0.15s; }
+.conflict:nth-of-type(3) { animation-delay: 0.3s; }
+@keyframes face-off {
+  0% { opacity: 0; transform: translateX(24px) rotate(1.5deg); }
+  60% { opacity: 1; transform: translateX(-4px) rotate(-0.5deg); }
+  100% { transform: none; }
+}
+.compromise {
+  animation: glow-once 1.6s 0.6s ease-out backwards;
+}
+@keyframes glow-once {
+  0% { box-shadow: 0 0 0 0 rgb(18 128 92 / 0.45); }
+  100% { box-shadow: 0 0 0 14px rgb(18 128 92 / 0); }
+}
+
+@keyframes pop {
+  from { opacity: 0; transform: scale(0.6); }
+}
+
+/* --- Adobee v3 details --- */
+
+.bee-vein {
+  fill: none;
+  stroke: rgb(255 255 255 / 0.55);
+  stroke-width: 0.7;
+}
+.bee-wing path:not(.bee-vein) {
+  stroke: rgb(255 255 255 / 0.7);
+  stroke-width: 0.6;
+}
+.bee-bulb-glow {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bulb 1.8s ease-in-out infinite alternate;
+}
+@keyframes bulb {
+  from { transform: scale(0.7); opacity: 0.15; }
+  to { transform: scale(1.15); opacity: 0.45; }
+}
+.bee-led {
+  animation: led 2.4s steps(1) infinite;
+}
+@keyframes led {
+  50% { fill: #ffb000; }
+}
+.bee-arm-right {
+  transform-box: fill-box;
+  transform-origin: 0% 0%;
+}
+.adobee-bee:hover .bee-arm-right,
+.intro-bee .bee-arm-right {
+  animation: wave 0.5s ease-in-out infinite alternate;
+}
+@keyframes wave {
+  from { transform: rotate(0); }
+  to { transform: rotate(-55deg); }
+}
+.bee-legs {
+  transform-box: fill-box;
+  transform-origin: top center;
+  animation: dangle 1.3s ease-in-out infinite alternate;
+}
+@keyframes dangle {
+  from { transform: rotate(-4deg); }
+  to { transform: rotate(4deg); }
+}
+.bee-tear {
+  animation: tear 1.6s ease-in infinite;
+}
+@keyframes tear {
+  from { transform: translateY(0); opacity: 1; }
+  to { transform: translateY(10px); opacity: 0; }
+}
+.bee-face .bee-eyes rect {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: bee-blink 4.8s infinite;
+}
+
+/* --- intro --- */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background:
+    radial-gradient(circle at 50% 45%, #ffffff 0%, #fff3ee 45%, #ffd9cf 100%);
+  cursor: pointer;
+  animation: intro-out 0.6s 2.85s ease-in forwards;
+}
+.intro-stage {
+  position: relative;
+  width: 300px;
+  height: 290px;
+}
+.intro-comb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.85;
+}
+.intro-comb path {
+  fill: none;
+  stroke: #eb1000;
+  stroke-width: 2;
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: draw 0.8s ease-out forwards;
+}
+.intro-comb path:nth-child(odd) {
+  fill: rgb(245 166 35 / 0);
+  animation: draw 0.8s ease-out forwards, fill-honey 0.6s 1.2s ease-out forwards;
+}
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes fill-honey {
+  to { fill: rgb(245 166 35 / 0.35); }
+}
+.intro-bee {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 150px;
+  height: 188px;
+  margin: -100px 0 0 -75px;
+  animation: intro-fly 1.5s cubic-bezier(0.3, 0.7, 0.3, 1) both, bee-hover 2.4s 1.5s ease-in-out infinite;
+}
+@keyframes intro-fly {
+  0% { transform: translate(-60vw, 30vh) rotate(-25deg) scale(0.5); }
+  60% { transform: translate(6vw, -6vh) rotate(10deg) scale(1.05); }
+  100% { transform: none; }
+}
+.intro-text {
+  position: relative;
+  text-align: center;
+  animation: intro-text 0.7s 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
+}
+.intro-text h1 {
+  margin: 0;
+  font-size: clamp(48px, 8vw, 96px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  background: linear-gradient(120deg, #ff6a3d, #eb1000 50%, #b30000);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.intro-text p {
+  margin: 4px 0 10px;
+  font-size: clamp(16px, 2vw, 22px);
+  color: var(--text);
+}
+.intro-text span {
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.intro-skip {
+  position: absolute;
+  bottom: 24px;
+  font-size: 12px;
+  color: var(--faint);
+}
+@keyframes intro-text {
+  from { opacity: 0; transform: translateY(16px); }
+}
+@keyframes intro-out {
+  to { opacity: 0; visibility: hidden; transform: scale(1.04); }
+}
+
+/* --- the ship moment --- */
+
+.celebrate {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  background: rgb(255 245 240 / 0.55);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+  animation: fade-in 0.3s ease-out, fade-out 0.5s 3.7s ease-in forwards;
+}
+.celebrate-rain span {
+  position: absolute;
+  top: -20px;
+  background: #f5a623;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  animation: rain linear forwards;
+}
+.celebrate-rain span:nth-child(3n) {
+  background: #eb1000;
+}
+@keyframes rain {
+  to { transform: translateY(110vh) rotate(540deg); }
+}
+.celebrate-card {
+  position: relative;
+  padding: 28px 40px 24px;
+  border-radius: 28px;
+  background: #ffffff;
+  box-shadow: 0 30px 80px rgb(235 16 0 / 0.25), 0 4px 12px rgb(0 0 0 / 0.08);
+  text-align: center;
+  animation: card-in 0.6s cubic-bezier(0.25, 1.6, 0.45, 1) both;
+}
+.celebrate-check {
+  display: inline-grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  margin-top: -56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #2ccf8f, #12805c);
+  color: #fff;
+  font-size: 30px;
+  font-weight: 800;
+  box-shadow: 0 8px 20px rgb(18 128 92 / 0.4);
+  animation: pop 0.5s 0.25s cubic-bezier(0.3, 1.8, 0.5, 1) backwards;
+}
+.celebrate-kicker {
+  margin: 10px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ok);
+}
+.celebrate-time {
+  margin: 0;
+  font-size: 64px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  background: linear-gradient(120deg, #ff6a3d, #eb1000);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.celebrate-sub {
+  margin: -4px 0 14px;
+  color: var(--muted);
+}
+.celebrate-stats {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.celebrate-stats span {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 13px;
+}
+@keyframes card-in {
+  from { opacity: 0; transform: scale(0.7) translateY(30px); }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+}
+@keyframes fade-out {
+  to { opacity: 0; visibility: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after,
+  .topbar::after,
+  .card,
+  .express,
+  .slack,
+  .conflict,
+  .compromise,
+  .gauge-value,
+  .gauge-score,
+  .celebrate-rain,
+  .intro {
+    animation: none !important;
+  }
+}

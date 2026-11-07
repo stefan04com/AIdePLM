@@ -3,6 +3,8 @@ import { api, USE_MOCKS } from './api/client'
 import { errorMessage } from './api/errors'
 import type { ApplyRequest, CommentRole, Persona, Trend } from './api/types'
 import { Adobee } from './components/Adobee'
+import { Intro } from './components/wow/Intro'
+import { ShipCelebration } from './components/wow/ShipCelebration'
 import { CanvasColumn } from './components/CanvasColumn'
 import { CostPanel } from './components/CostPanel'
 import { AnalysisPanel } from './components/spot/AnalysisPanel'
@@ -14,6 +16,7 @@ import { ReviewColumn } from './components/ReviewColumn'
 import { TrendColumn } from './components/TrendColumn'
 import { Badge, Banner } from './components/ui'
 import { useRun } from './hooks/useRun'
+import { useSpotlight } from './hooks/useSpotlight'
 import { useUsage } from './hooks/useUsage'
 import { isFinished, isRunBusy } from './lib/runStatus'
 import { readRunIdFromUrl, writeRunIdToUrl } from './lib/runUrl'
@@ -26,6 +29,7 @@ export default function App() {
   const [busy, setBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const { run, error: pollError, refresh, setRun } = useRun(runId)
+  useSpotlight()
   const usage = useUsage(run)
 
   const showError = useCallback((err: unknown) => setActionError(errorMessage(err)), [])
@@ -110,6 +114,9 @@ export default function App() {
           onApply={(body: ApplyRequest) => onRun((id) => api.apply(id, body))()}
         />
       </main>
+
+      <ShipCelebration run={run} />
+      <Intro />
     </div>
   )
 }
