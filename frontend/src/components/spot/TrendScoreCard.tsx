@@ -34,7 +34,7 @@ export function TrendScoreCard({ draft }: { draft: Draft | null }) {
   const level = checked ? levelOf(checked.score.score) : null
 
   return (
-    <section className="column">
+    <section className="column trend-score-card">
       <SectionHead title="Trend score" aside={<Pill>vs saved trends</Pill>} />
       <Card>
         {!draft && <Muted>Appears once the draft is ready.</Muted>}

@@ -1,8 +1,7 @@
 import { useEffect, useState, type CSSProperties } from 'react'
 import { diffWords } from '../../lib/diff'
+import { AFTER_SHIP_S } from '../../lib/wow'
 
-/** After a ship: wait until the celebration fades and the page has scrolled to the caption. */
-export const AFTER_SHIP_S = 4.6
 const MELT_S = 0.9 // cut words melt, then their gap closes
 const WORD_S = 0.09 // honey reaches the next new word this much later
 const POUR_S = 0.7 // one word filling with honey

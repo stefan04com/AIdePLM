@@ -5,6 +5,7 @@ import { ExpressPreview } from './canvas/ExpressPreview'
 import { EditPanel } from './canvas/EditPanel'
 import { HashtagCard } from './canvas/HashtagCard'
 import { BrandShield } from './wow/BrandShield'
+import { PhoneNotification } from './wow/PhoneNotification'
 import { SlackPreview } from './canvas/SlackPreview'
 import { Muted, Pill, SectionHead } from './ui'
 
@@ -55,6 +56,7 @@ export function CanvasColumn({ run, busy, onRegenerate, onHashtags }: Props) {
           <SlackPreview preview={slack} />
         </>
       )}
+      <PhoneNotification run={run} preview={slack} />
     </section>
   )
 }

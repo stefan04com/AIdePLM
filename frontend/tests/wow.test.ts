@@ -3,7 +3,7 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import type { Run } from '../src/api/types.ts'
-import { formatLife, nextStep, speedup, trendLifeLeft } from '../src/lib/wow.ts'
+import { countUp, formatLife, nextStep, shareOfReview, speedup, trendLifeLeft } from '../src/lib/wow.ts'
 
 const run = (fields: Partial<Run>): Run =>
   ({ status: 'DRAFTED', step: null, reactions: [], comments: [], ...fields }) as Run
@@ -28,4 +28,17 @@ test('the presenter key walks the demo in order', () => {
   assert.equal(nextStep(run({ status: 'REFEREED' })), 'apply')
   assert.equal(nextStep(run({ status: 'SHIPPED' })), 'start')
   assert.equal(nextStep(run({ step: 'Writing the draft' })), null)
+})
+
+test('count-up starts at 0, lands exactly on the target and slows down near the end', () => {
+  assert.equal(countUp(65, 0), 0)
+  assert.equal(countUp(65, 1), 65)
+  assert.equal(countUp(65, 2), 65)
+  assert.ok(countUp(100, 0.5) > 50) // eased out: more than half at half time
+})
+
+test("AdoBee's share of an 8-day review is tiny and matches the speed-up", () => {
+  const share = shareOfReview('2026-11-07T10:00:00Z', '2026-11-07T10:00:37Z')
+  assert.ok(share > 0 && share < 0.01)
+  assert.equal(share, 100 / speedup('2026-11-07T10:00:00Z', '2026-11-07T10:00:37Z'))
 })

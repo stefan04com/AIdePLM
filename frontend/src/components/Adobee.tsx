@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Run } from '../api/types'
 import type { View } from '../lib/view'
+import { CELEBRATE_MS } from '../lib/wow'
 import { ADOBEE_TIPS, adobeeSpot, adobeeState, hiveCells, type AdobeeSpot } from '../lib/adobee'
 import { sound } from '../lib/sound'
 import { BeeSvg } from './adobee/BeeSvg'
@@ -184,7 +185,7 @@ export function Adobee({ run, busy, view }: { run: Run | null; busy: boolean; vi
           const box = caption.getBoundingClientRect()
           const top = box.top + window.scrollY - window.innerHeight / 2 + box.height / 2
           window.scrollTo({ top, behavior: reducedMotion() ? 'auto' : 'smooth' })
-        }, 4100),
+        }, CELEBRATE_MS - 100),
       )
     }
 

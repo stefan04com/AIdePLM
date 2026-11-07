@@ -2,7 +2,8 @@ import type { Draft } from '../../api/types'
 import type { Firefly } from '../../hooks/useFirefly'
 import { BRAND_HANDLE, BRAND_NAME } from '../../lib/brand'
 import { Badge } from '../ui'
-import { AFTER_SHIP_S, MorphCaption } from '../wow/MorphCaption'
+import { AFTER_SHIP_S } from '../../lib/wow'
+import { MorphCaption } from '../wow/MorphCaption'
 
 interface Props {
   draft: Draft

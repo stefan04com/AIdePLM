@@ -1,4 +1,4 @@
-# Moment frontend (war room)
+# AdoBee frontend (war room)
 
 React 19 + TypeScript (strict) + Vite. Owner: Andu.
 

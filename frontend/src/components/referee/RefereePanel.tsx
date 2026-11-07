@@ -40,11 +40,12 @@ export function RefereePanel({ referee, comments, canShip, shipped, slack, onApp
         </Banner>
       )}
 
-      {referee.conflicts.map((conflict) => (
+      {referee.conflicts.map((conflict, index) => (
         <ConflictCard
           key={conflict.id}
           conflict={conflict}
           shipped={shipped}
+          index={index}
         />
       ))}
 

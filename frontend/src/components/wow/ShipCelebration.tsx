@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react'
+import { type CSSProperties, useEffect, useState } from 'react'
 import type { Run } from '../../api/types'
 import { formatElapsed } from '../../lib/format'
 import { sound } from '../../lib/sound'
-import { formatLife, REVIEW_DAYS, trendLifeLeft } from '../../lib/wow'
+import { CELEBRATE_MS, formatLife, REVIEW_DAYS, shareOfReview, trendLifeLeft } from '../../lib/wow'
 
-const SHOW_MS = 4200
+const RACE_START_MS = 500 // once the card has popped in
+const DAY_MS = 330 // the typical review's calendar turns one page this often
 const DROPS = 36
 
 /** The demo's big moment: when a run ships in front of us, show how fast it went, over a honey rain. */
@@ -22,7 +23,7 @@ export function ShipCelebration({ run }: { run: Run | null }) {
   useEffect(() => {
     if (!shipped) return
     sound.chord()
-    const timer = setTimeout(() => setShipped(null), SHOW_MS)
+    const timer = setTimeout(() => setShipped(null), CELEBRATE_MS)
     return () => clearTimeout(timer)
   }, [shipped])
 
@@ -53,6 +54,7 @@ export function ShipCelebration({ run }: { run: Run | null }) {
         <p className="celebrate-kicker">Post approved</p>
         <p className="celebrate-time">{elapsed}</p>
         <p className="celebrate-sub">from trend to approved post</p>
+        <ReviewRace elapsed={elapsed} share={shareOfReview(shipped.started_at, shipped.shipped_at)} />
         <p className="celebrate-faster">
           <strong>{elapsed}</strong> vs {REVIEW_DAYS} days for a typical review
           <span>, with {lifeLeft} of trend life left</span>
@@ -69,6 +71,48 @@ export function ShipCelebration({ run }: { run: Run | null }) {
           </span>
         </div>
       </div>
+    </div>
+  )
+}
+
+/**
+ * Two bars race: AdoBee is done before the typical review's calendar has turned its first page,
+ * then the review crawls through its eight days.
+ */
+function ReviewRace({ elapsed, share }: { elapsed: string; share: number }) {
+  const [day, setDay] = useState(0)
+
+  useEffect(() => {
+    let timer = 0
+    const turn = (next: number) => {
+      setDay(next)
+      if (next < REVIEW_DAYS) timer = window.setTimeout(() => turn(next + 1), DAY_MS)
+    }
+    timer = window.setTimeout(() => turn(1), RACE_START_MS)
+    return () => clearTimeout(timer)
+  }, [])
+
+  return (
+    <div className="race" style={{ '--race-ms': `${REVIEW_DAYS * DAY_MS}ms` } as CSSProperties}>
+      <div className="race-row race-adobee">
+        <span className="race-label">AdoBee</span>
+        <span className="race-track">
+          <span className="race-bar" />
+        </span>
+        <span className="race-value">{elapsed} ✓</span>
+      </div>
+      <div className="race-row race-classic">
+        <span className="race-label">Typical review</span>
+        <span className="race-track">
+          <span className="race-bar" />
+        </span>
+        <span className="race-value">
+          <span key={day} className="race-day">
+            Day {Math.max(day, 1)}
+          </span>
+        </span>
+      </div>
+      <p className="race-note">To scale, AdoBee&apos;s bar would be {share < 0.01 ? share.toFixed(4) : share.toFixed(2)}% of the review&apos;s.</p>
     </div>
   )
 }

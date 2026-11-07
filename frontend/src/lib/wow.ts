@@ -46,3 +46,26 @@ export function nextStep(run: Run | null): NextStep {
       return 'apply'
   }
 }
+
+/** How long "Post approved" stays on screen after a ship; everything after it waits for it. */
+export const CELEBRATE_MS = 5000
+
+/** After a ship: the caption starts rewriting itself once the celebration has gone. */
+export const AFTER_SHIP_S = CELEBRATE_MS / 1000 + 0.4
+
+/** The phone with the Slack notification slides in once the caption is rewriting. */
+export const PHONE_AT_MS = CELEBRATE_MS + 1500
+
+/** Real public reviews the three personas are built from (data/reviews.csv). */
+export const REAL_REVIEWS = 65
+
+/** AdoBee's time as a share of an 8-day review, in percent ("to scale" note under the race). */
+export function shareOfReview(startIso: string, endIso: string): number {
+  return 100 / speedup(startIso, endIso)
+}
+
+/** Count-up value at `progress` (0..1), eased out so it slows down as it lands on `target`. */
+export function countUp(target: number, progress: number): number {
+  const p = Math.min(Math.max(progress, 0), 1)
+  return target * (1 - (1 - p) ** 3)
+}
