@@ -43,16 +43,29 @@ def wrap(tag: str, text: str, **attrs: str) -> str:
     return f"<{tag}{attr_str}>\n{safe}\n</{tag}>"
 
 
+def _make_client():  # noqa: ANN202 - anthropic is imported lazily
+    """Amazon Bedrock if AWS_BEARER_TOKEN_BEDROCK is set, otherwise the Claude API."""
+    import anthropic
+
+    bedrock_key = os.environ.get("AWS_BEARER_TOKEN_BEDROCK", "").strip()
+    if bedrock_key:
+        region = os.environ.get("AWS_REGION", "").strip() or None
+        return anthropic.AnthropicBedrock(
+            api_key=bedrock_key, aws_region=region, timeout=TIMEOUT_S, max_retries=0
+        )
+    api_key = os.environ.get("LLM_API_KEY", "").strip()
+    if not api_key:
+        raise LLMError("LLM_API_KEY or AWS_BEARER_TOKEN_BEDROCK not set")
+    return anthropic.Anthropic(api_key=api_key, timeout=TIMEOUT_S, max_retries=0)
+
+
 def _provider_complete(system: str, user: str) -> tuple[str, int, int]:
     """One provider request -> (text, input_tokens, output_tokens). Swap provider here only."""
-    api_key = os.environ.get("LLM_API_KEY", "").strip()
     model = os.environ.get("LLM_MODEL", "").strip()
-    if not api_key or not model:
-        raise LLMError("LLM_API_KEY / LLM_MODEL not set")
+    if not model:
+        raise LLMError("LLM_MODEL not set")
     try:
-        import anthropic
-
-        client = anthropic.Anthropic(api_key=api_key, timeout=TIMEOUT_S, max_retries=0)
+        client = _make_client()
         msg = client.messages.create(
             model=model,
             max_tokens=MAX_TOKENS,

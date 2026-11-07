@@ -9,7 +9,7 @@ from app.main import app
 @pytest.fixture(autouse=True)
 def isolated(tmp_path, monkeypatch):
     """Fresh store, demo mode on, all files in tmp_path, no real LLM key."""
-    for var in ("LLM_API_KEY", "LLM_MODEL", "DEMO_MODE", "LIVE_TRENDS"):
+    for var in ("LLM_API_KEY", "LLM_MODEL", "AWS_BEARER_TOKEN_BEDROCK", "DEMO_MODE", "LIVE_TRENDS"):
         monkeypatch.delenv(var, raising=False)
     store.reset()
     store.configure(tmp_path / "runs.json")
