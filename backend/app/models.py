@@ -119,6 +119,8 @@ class Run(BaseModel):
     shipped_at: datetime | None = None
     # Set on ship: the Slack message was posted, simulated (no webhook) or failed.
     slack: Literal["posted", "simulated", "failed"] | None = None
+    # LLM calls (fit, draft, reactions, referee) that fell back to canned content in live mode.
+    fallback_calls: list[str] = []
 
 
 # --- Request bodies -------------------------------------------------------

@@ -11,6 +11,7 @@ export function RunMeta({ run, usage }: { run: Run; usage: Usage }) {
     <span className="run-meta">
       RUN #{shortId} · {run.status}
       {estimate && ` · ${formatUsd(estimate.perPostUsd)}/post`}
+      {run.fallback_calls && run.fallback_calls.length > 0 && ` · CANNED: ${run.fallback_calls.join(', ')}`}
     </span>
   )
 }

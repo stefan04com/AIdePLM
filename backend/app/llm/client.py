@@ -157,4 +157,6 @@ def call_structured(
         if on_success:
             on_success(result)
         return result
+    if run_id:
+        store.mark_fallback(run_id, call)
     return fallback()
