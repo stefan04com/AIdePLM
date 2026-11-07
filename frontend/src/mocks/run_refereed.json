@@ -2,43 +2,43 @@
   "id": "run_demo01",
   "trend": {
     "id": "trend_demo01",
-    "title": "Commuters are roasting delayed-train apology emails",
+    "title": "#FirstSipFace: people film their face before and after the first sip of morning coffee",
     "source": "saved",
     "url": null,
-    "summary": "A viral thread: people share the most tone-deaf delay apologies and reward brands that own the delay with humour.",
+    "summary": "A viral format: a half-asleep 'before' shot, one sip, then an over-the-top 'after'. Brands that join in with self-aware humour get shared.",
     "detected_at": "2026-11-07T09:00:00Z"
   },
   "fit": {
     "fits": true,
-    "score": 82,
-    "reason": "Playful, self-aware tone matches the brand voice; no competitor or claim risk in the topic itself."
+    "score": 88,
+    "reason": "Morning coffee ritual is our core moment; the playful tone matches the brand voice and the topic carries no competitor or safety risk."
   },
   "draft": {
-    "brief": "Own the 'running late' joke: a lighthearted post that promises our app gets you there faster than the excuses.",
-    "caption": "Late again? Our app guarantees you'll arrive 10 minutes earlier than the train announcement. Download now.",
-    "visual_prompt": "Flat illustration of a commuter sprinting past a stationary train, warm sunrise colours, brand palette",
-    "hashtags": ["#MondayCommute", "#RunningLate"],
-    "image_url": "https://example.com/demo/image_v1.png",
+    "brief": "Join #FirstSipFace with our double-shot blend as the 'after': the sip that turns zombie mode into main-character mode.",
+    "caption": "Zombie to genius in one sip. Our Double Shot blend is scientifically proven to wake you up 2x faster. Order now.",
+    "visual_prompt": "Split-screen photo: sleepy person in a hoodie on the left, same person beaming with a steaming cup on the right, warm morning light",
+    "hashtags": ["#FirstSipFace", "#CoffeeFirst"],
+    "image_url": "https://example.com/demo/coffee_v1.png",
     "express_doc_id": "express_demo01",
     "version": 1
   },
   "reactions": [
     {
-      "persona_id": "gen_z_commuter",
-      "reaction": "Funny and relatable, but 'download now' feels like an ad. Drop the hard sell.",
+      "persona_id": "student_night_owl",
+      "reaction": "The before/after is so me at 8am. But 'order now' kills the vibe, it's just an ad.",
       "sentiment": 0.4,
       "would_engage": true
     },
     {
       "persona_id": "busy_parent",
-      "reaction": "I only care if it really saves me time. A guarantee would get my attention.",
-      "sentiment": 0.6,
+      "reaction": "I just need something that actually gets me going before the school run. Tell me what's in it.",
+      "sentiment": 0.5,
       "would_engage": true
     },
     {
-      "persona_id": "skeptical_veteran",
-      "reaction": "'Guarantees' sounds like marketing fluff. I've been burned by this before.",
-      "sentiment": -0.5,
+      "persona_id": "coffee_purist",
+      "reaction": "'Scientifically proven 2x faster' is nonsense. Talk about the beans and the roast, not gimmicks.",
+      "sentiment": -0.6,
       "would_engage": false
     }
   ],
@@ -46,19 +46,19 @@
     {
       "id": "c_brand",
       "role": "brand",
-      "text": "Love the tone, but keep the CTA softer and on-brand.",
+      "text": "Love the meme format. Keep it playful, but the CTA should feel like an invite, not a sale.",
       "created_at": "2026-11-07T09:20:00Z"
     },
     {
       "id": "c_legal",
       "role": "legal",
-      "text": "We cannot promise a guaranteed time saving. Remove the guarantee claim.",
+      "text": "We have no study behind 'scientifically proven' or '2x faster'. Both claims must go.",
       "created_at": "2026-11-07T09:22:00Z"
     },
     {
       "id": "c_product",
       "role": "product",
-      "text": "The time-saving angle is our strongest feature, please keep it prominent.",
+      "text": "The extra-strong kick is the whole point of Double Shot, it has to stay the hero of the post.",
       "created_at": "2026-11-07T09:24:00Z"
     }
   ],
@@ -70,51 +70,51 @@
           {"kind": "human", "id": "legal", "label": "Legal"},
           {"kind": "human", "id": "product", "label": "Product"}
         ],
-        "summary": "Legal wants the guarantee removed; Product wants the time-saving promise to stay prominent.",
+        "summary": "Legal wants the 'scientifically proven 2x faster' claim removed; Product wants the strong kick to stay the hero.",
         "positions": {
-          "legal": "No 'guarantee' or fixed-minutes claim.",
-          "product": "Keep time-saving as the headline benefit."
+          "legal": "No scientific or '2x faster' claims without a study.",
+          "product": "The extra-strong kick must be the main message."
         },
-        "compromise": "Keep the time-saving angle but phrase it as 'helps you arrive earlier', with no guarantee and no number."
+        "compromise": "Keep the strength as the hero with a factual line ('two shots of espresso in every cup'), and drop the science and speed claims."
       },
       {
         "id": "conf_2",
         "between": [
           {"kind": "human", "id": "brand", "label": "Brand"},
-          {"kind": "persona", "id": "busy_parent", "label": "Busy parent"}
+          {"kind": "persona", "id": "coffee_purist", "label": "Coffee purist"}
         ],
-        "summary": "Brand wants a soft CTA; the busy parent responds to a concrete benefit.",
+        "summary": "Brand wants a playful meme; the coffee purist wants substance about the beans, not gimmicks.",
         "positions": {
-          "brand": "Soft, on-brand call to action.",
-          "busy_parent": "Wants a concrete, credible time-saving benefit."
+          "brand": "Playful meme tone with a soft, inviting CTA.",
+          "coffee_purist": "Mention the beans and roast, skip the hype."
         },
-        "compromise": "End with a soft CTA ('See how it works') after one concrete benefit line."
+        "compromise": "Keep the meme, add one craft detail (single-origin, dark roast) and end with a soft CTA ('Show us your first sip')."
       }
     ],
     "edits": [
       {
         "target": "caption",
-        "before": "Late again? Our app guarantees you'll arrive 10 minutes earlier than the train announcement. Download now.",
-        "after": "Late again? Our app helps you beat the train announcement. See how it works.",
+        "before": "Zombie to genius in one sip. Our Double Shot blend is scientifically proven to wake you up 2x faster. Order now.",
+        "after": "Zombie to genius in one sip. Double Shot: two shots of single-origin dark roast in every cup. Show us your first sip.",
         "source_comment_id": "c_legal"
       },
       {
         "target": "hashtags",
-        "before": "#MondayCommute #RunningLate",
-        "after": "#MondayCommute #BeatTheDelay",
+        "before": "#FirstSipFace #CoffeeFirst",
+        "after": "#FirstSipFace #DoubleShotMorning",
         "source_comment_id": "c_brand"
       }
     ],
     "tasks": [
       {"owner": "Legal", "task": "Sign off the revised caption wording", "due": "today 15:00"},
-      {"owner": "Product", "task": "Provide a substantiated time-saving stat for follow-up posts", "due": "this week"}
+      {"owner": "Product", "task": "Confirm caffeine content per cup for the product page", "due": "this week"}
     ],
     "comment_status": [
-      {"comment_id": "c_brand", "status": "applied", "why": "CTA softened and hashtag updated."},
-      {"comment_id": "c_legal", "status": "applied", "why": "Guarantee and fixed-minutes claim removed."},
-      {"comment_id": "c_product", "status": "in_conflict", "why": "Conflicts with Legal; resolved via compromise wording."}
+      {"comment_id": "c_brand", "status": "applied", "why": "CTA softened into an invite and hashtag updated."},
+      {"comment_id": "c_legal", "status": "applied", "why": "Scientific and '2x faster' claims removed."},
+      {"comment_id": "c_product", "status": "in_conflict", "why": "Conflicts with Legal; resolved by stating the two shots as a fact."}
     ],
-    "final_caption": "Late again? Our app helps you beat the train announcement. See how it works.",
+    "final_caption": "Zombie to genius in one sip. Double Shot: two shots of single-origin dark roast in every cup. Show us your first sip.",
     "status": "ready_to_ship"
   },
   "status": "REFEREED",

@@ -1,26 +1,35 @@
 [
   {
-    "id": "gen_z_commuter",
-    "name": "Gen Z commuter",
-    "segment": "18–25, daily train commuter, heavy social user",
-    "cares_about": ["humour", "authenticity", "not being sold to"],
+    "id": "student_night_owl",
+    "name": "Student night owl",
+    "segment": "18–24, studies late, buys coffee on the way to class",
+    "cares_about": ["humour", "price", "not being sold to"],
     "pet_peeves": ["hard-sell CTAs", "brands trying too hard"],
-    "sample_quotes": ["Love the app but the push notifications feel like ads.", "Finally a transit app that doesn't take itself too seriously."]
+    "sample_quotes": [
+      "Can't function before the first cup, this coffee gets it.",
+      "Good price for how strong it is, the app deals are nice."
+    ]
   },
   {
     "id": "busy_parent",
     "name": "Busy parent",
-    "segment": "30–45, school run + office commute",
-    "cares_about": ["saving time", "reliability", "concrete benefits"],
-    "pet_peeves": ["vague promises", "extra taps"],
-    "sample_quotes": ["Saves me 10 minutes every morning, that's all I need.", "When it's wrong about delays I'm late for drop-off."]
+    "segment": "30–45, school run + office, drinks coffee on the go",
+    "cares_about": ["real energy", "speed", "clear product info"],
+    "pet_peeves": ["vague promises", "long queues"],
+    "sample_quotes": [
+      "Strong enough to survive the morning school run.",
+      "Wish the cups said how much caffeine is in them."
+    ]
   },
   {
-    "id": "skeptical_veteran",
-    "name": "Skeptical veteran",
-    "segment": "45+, long-time commuter, low trust in ads",
-    "cares_about": ["honesty", "accuracy", "no fluff"],
-    "pet_peeves": ["guarantees", "marketing speak"],
-    "sample_quotes": ["Every app says it's faster. Prove it.", "Accurate delay info is the only feature I care about."]
+    "id": "coffee_purist",
+    "name": "Coffee purist",
+    "segment": "25–50, home espresso machine, specialty-coffee fan",
+    "cares_about": ["bean origin", "roast quality", "honesty"],
+    "pet_peeves": ["marketing gimmicks", "burnt taste"],
+    "sample_quotes": [
+      "Finally a dark roast that isn't burnt.",
+      "Less hype, more info about where the beans come from."
+    ]
   }
 ]

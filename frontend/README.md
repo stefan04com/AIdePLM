@@ -10,8 +10,8 @@ npm run build && npm run lint   # must pass before every PR
 
 ## Mock vs real backend
 
-By default the app runs against an **in-browser mock API** (`src/mocks/mockApi.ts`), built from
-`backend/tests/fixtures/run_refereed.json`. It walks through the whole lifecycle
+By default the app runs against an **in-browser mock API** (`src/mocks/mockApi.ts`), with the coffee
+demo scenario (`#FirstSipFace`) in the same shape as `backend/tests/fixtures/run_refereed.json`. It walks through the whole lifecycle
 (SPOTTED → DRAFTED → IN_REVIEW → REFEREED → SHIPPED) with `step` labels and 404/409 errors.
 
 To use the real backend (`uvicorn` on :8000), create `.env.local`:

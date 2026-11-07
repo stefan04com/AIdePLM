@@ -1,6 +1,7 @@
 // Typed access to the JSON mocks. TS infers JSON imports too narrowly for a direct
 // cast (e.g. Conflict.positions), so the cast happens once here.
-// run_refereed.json is a copy of backend/tests/fixtures/run_refereed.json: keep in sync.
+// run_refereed.json has the same shape as backend/tests/fixtures/run_refereed.json, with the
+// coffee demo scenario (#FirstSipFace) as content. personas.json matches its persona ids.
 
 import type { Persona, Run } from '../api/types'
 import personasJson from './personas.json'
