@@ -142,7 +142,10 @@ def _fit_and_draft(run_id: str) -> None:
 def _finish_with_cached_draft(run_id: str) -> None:
     with store.mutate(run_id) as r:
         if r is not None and r.status == "SPOTTED":
-            r.fit = r.fit or demo_cache.fit()
+            r.fit = r.fit or demo_cache.fit(r.trend)
+            if not r.fit.fits:
+                r.status, r.step = "REJECTED", None
+                return
             r.draft = Draft(**demo_cache.draft().model_dump())
             r.status, r.step = "DRAFTED", None
 

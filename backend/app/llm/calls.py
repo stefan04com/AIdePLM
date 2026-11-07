@@ -25,9 +25,11 @@ def check_fit(trend: Trend, brand: str, run_id: str) -> FitResult:  # call #1
         call="fit",
         user=f"{_trend_block(trend)}\n\n{wrap('brand', brand)}",
         model_cls=FitResult,
-        fallback=demo_cache.fit,
+        fallback=lambda: demo_cache.fit(trend),
         run_id=run_id,
-        on_success=lambda r: demo_cache.remember("fit", r),
+        on_success=lambda r: (
+            demo_cache.remember("fit", r) if r.fits else None
+        ),  # last-good = a "yes"
     )
 
 

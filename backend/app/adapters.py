@@ -119,6 +119,13 @@ def current_trend(live: bool = False) -> Trend:
     return trend
 
 
+def rejected_trend() -> Trend:
+    """Second saved trend that the fit check should refuse (docs/rejected-trend.md)."""
+    trend = Trend.model_validate(json.loads((DATA / "demo_trend_rejected.json").read_text()))
+    store.remember_trend(trend)
+    return trend
+
+
 # --- Adobe ------------------------------------------------------------------
 
 

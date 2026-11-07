@@ -40,7 +40,14 @@ def test_valid_response_is_returned_logged_and_remembered(live):
     s = usage.summary("run_1")
     assert s.calls[0].call == "fit" and s.calls[0].model == "test-model"
     assert s.total_input_tokens == 100 and s.total_cost_usd > 0
-    assert demo_cache.fit().score == 12  # now the last-good response
+    assert demo_cache.fit().fits is True  # a live "no" never becomes the last-good fit
+
+
+def test_live_yes_becomes_last_good_fit(live):
+    replies, _ = live
+    replies.append(GOOD.replace('false', 'true'))
+    assert check_fit(TREND, "brand", "run_1").fits is True
+    assert demo_cache.fit().score == 12
 
 
 def test_invalid_then_valid_retries_once(live):

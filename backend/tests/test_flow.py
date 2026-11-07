@@ -102,6 +102,18 @@ def test_blank_final_caption_keeps_the_draft_caption(client, monkeypatch):
     assert shipped["draft"]["version"] == 2
 
 
+def test_second_saved_trend_is_rejected_in_demo_mode(client):
+    trend = client.get("/trend", params={"which": "rejected"}).json()
+    assert trend["id"] == "trend_espresso_challenge"
+    assert client.get("/trend").json()["id"] != trend["id"]  # default unchanged
+    first = client.post("/runs", json={"trend_id": trend["id"]}).json()
+    run = client.get(f"/runs/{first['id']}").json()
+    assert run["status"] == "REJECTED"
+    assert run["fit"]["fits"] is False and run["fit"]["reason"]
+    assert run["draft"] is None
+    assert client.get("/trend", params={"which": "nope"}).status_code == 422
+
+
 def test_rejected_trend_stops_the_flow(client, monkeypatch):
     monkeypatch.setattr(
         demo_cache, "CANNED_FIT", demo_cache.CANNED_FIT.model_copy(update={"fits": False})

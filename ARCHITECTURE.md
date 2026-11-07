@@ -185,7 +185,7 @@ Every call writes `{run_id, call, model, input_tokens, output_tokens, latency_ms
 
 | Method | Path | Body | Returns |
 |---|---|---|---|
-| GET | `/trend` | | `Trend` |
+| GET | `/trend?which=default\|rejected` | | `Trend` (`rejected` = second saved trend that the fit check refuses, `docs/rejected-trend.md`) |
 | GET | `/personas` | | `Persona[]` (cached at startup) |
 | POST | `/runs` | `CreateRunRequest` `{trend_id}` | `Run` **immediately**, status `SPOTTED`. Fit + draft run in a background task |
 | GET | `/runs/{id}` | | `Run` (UI polls every 1s until `DRAFTED` or `REJECTED`; `step` shows progress) |

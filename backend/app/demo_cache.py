@@ -21,6 +21,7 @@ from .models import (
     PersonaReaction,
     RefereeResult,
     Task,
+    Trend,
 )
 from .store import ROOT
 
@@ -155,7 +156,18 @@ FINAL_VISUAL_PROMPT = (
 FINAL_HASHTAGS = "#CozyAutumn #AutumnCorner #Boabe"
 
 
-def fit() -> FitResult:
+REJECTED_TREND_ID = "trend_espresso_challenge"
+CANNED_REJECTION = FitResult(
+    fits=False,
+    score=9,
+    reason="Health-risk dare and a pile-on tone clash with Boabe's calm voice and "
+    "no-health-claims rule.",
+)
+
+
+def fit(trend: Trend | None = None) -> FitResult:
+    if trend is not None and trend.id == REJECTED_TREND_ID:
+        return CANNED_REJECTION.model_copy()
     data = _recall("fit")
     return FitResult.model_validate(data) if data else CANNED_FIT.model_copy()
 
@@ -208,8 +220,7 @@ def referee(comments: list[Comment], draft_: Draft, personas_: list[Persona]) ->
                 positions={
                     "legal": "No 'no added sugar' and no 'healthiest' until the claim is "
                     "documented.",
-                    "product": "'No added sugar' is the launch's main selling point and must "
-                    "stay.",
+                    "product": "'No added sugar' is the launch's main selling point and must stay.",
                 },
                 compromise="Drop the sugar and health claims now; name the real ingredients "
                 "instead (pumpkin purée, Ceylon cinnamon). Product sends the sugar "
