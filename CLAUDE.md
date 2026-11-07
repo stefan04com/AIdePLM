@@ -1,6 +1,6 @@
 # CLAUDE.md — Moment
 
-Guidance for Claude Code (and humans) working in this repo. Read this first, then `ARCHITECTURE.md`.
+Guidance for Claude Code (and humans) working in this repo. Read this first, then `ARCHITECTURE.md`. Open tasks per person are in [`COORDINATION.md`](COORDINATION.md): check it before starting and tick items when you finish.
 
 ## Project in one paragraph
 
@@ -181,6 +181,7 @@ Environment (both optional, read by `adobe.py`):
 
 ## Guidance for Claude Code specifically
 
+- Read `COORDINATION.md` for what is open for each owner, and update it when you finish a task.
 - Ask which area/branch you're working on if it isn't clear; don't edit files outside that owner's paths unprompted.
 - Before writing code, check `models.py` and `ARCHITECTURE.md` so changes fit the contract.
 - Create a `feature/<owner>-<desc>` branch from `develop` for new work; never commit straight to `main` or `develop`.
