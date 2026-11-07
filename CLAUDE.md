@@ -51,7 +51,7 @@ We use **git flow**, slimmed down for a 12-hour build.
 
 | Branch | Purpose | Branches from | Merges into | Protected |
 |---|---|---|---|---|
-| `main` | Demo-ready code only. Every commit here must run the full demo. | — | — | Yes: PR only, no direct push |
+| `main` | Demo-ready code only. Every commit here must run the full demo. | — | — | No: direct pushes allowed (team decision), but tests must pass and never force-push |
 | `develop` | Integration branch; everything lands here first | `main` | `release/*` | Yes: PR only |
 | `feature/<owner>-<short-desc>` | One piece of work | `develop` | `develop` | No |
 | `release/<version>` | Stabilisation before a checkpoint; bug fixes only | `develop` | `main` **and** `develop` | No |
