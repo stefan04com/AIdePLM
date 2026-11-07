@@ -1,9 +1,10 @@
 """Trend source: the saved demo trend by default, a mock "live" trend on request.
 
 The saved trend in ``data/demo_trend.json`` (owned by Anda) is the default.
-"Live" is a mock of a Reddit fetch: nothing contacts Reddit, there are no
-network calls, and it returns a built-in sample trend. Both return
-``app.models.Trend``.
+"Live" is a mock of a Reddit/news fetch with no network calls: it reads real
+trends collected from the web into ``data/live_trends.json`` and returns the
+first one, or a built-in sample if that file is missing or malformed. Both
+return ``app.models.Trend``.
 """
 
 import hashlib
@@ -17,10 +18,12 @@ from app.models import Trend
 
 logger = logging.getLogger(__name__)
 
-SAVED_TREND_PATH = Path(__file__).resolve().parents[2] / "data" / "demo_trend.json"
+DATA_DIR = Path(__file__).resolve().parents[2] / "data"
+SAVED_TREND_PATH = DATA_DIR / "demo_trend.json"
+LIVE_TRENDS_PATH = DATA_DIR / "live_trends.json"
 
-# Sample "live" trend. Generic on purpose: no real person, brand or news event.
-# The team can replace the title and summary with any sample they prefer.
+# Fallback "live" trend when data/live_trends.json can't be read. Generic on
+# purpose: no real person, brand or news event.
 MOCK_LIVE_TREND_ID = "mock-reddit-sample"
 MOCK_LIVE_TREND_TITLE = "People share their tiny morning rituals"
 MOCK_LIVE_TREND_SUMMARY = (
@@ -30,8 +33,26 @@ MOCK_LIVE_TREND_SUMMARY = (
 
 
 def get_trend(*, live: bool = False) -> Trend:
-    """Return the saved trend, or the mock live trend if ``live``."""
-    return _mock_live_trend() if live else load_saved_trend()
+    """Return the saved trend, or the first collected live trend if ``live``."""
+    if not live:
+        return load_saved_trend()
+    collected = load_live_trends()
+    return collected[0] if collected else _mock_live_trend()
+
+
+def load_live_trends(path: Path | None = None) -> list[Trend]:
+    """Read the collected real trends, in file order. Empty if the file is unusable."""
+    target = path or LIVE_TRENDS_PATH
+    try:
+        items = json.loads(target.read_text(encoding="utf-8"))["trends"]
+        trends = [Trend.model_validate(item) for item in items]
+    # Same reasons as load_saved_trend, plus a missing "trends" key or a non-list.
+    except (OSError, ValueError, TypeError, KeyError, RecursionError) as exc:
+        logger.warning("Live trends %s unusable, using the built-in sample: %s", target, exc)
+        return []
+    for trend in trends:
+        trend.detected_at = _as_utc(trend.detected_at)
+    return trends
 
 
 def load_saved_trend(path: Path | None = None) -> Trend:

@@ -1,0 +1,53 @@
+{
+  "about": "Real trends from 2-7 November 2026, collected 2026-11-07 for the 'live' mock in backend/app/trends.py. Each url is the article the facts come from. Order = best fit for Boabe first; get_trend(live=True) returns the first one.",
+  "trends": [
+    {
+      "id": "live_small_luxuries",
+      "title": "\"Money can't buy you happiness\": montages of small luxuries",
+      "source": "news",
+      "url": "https://startups.co.uk/news/social-media-trends-november-2026/",
+      "summary": "A TikTok format listed among November's trends: creators post a montage of small luxuries, such as matching coffee cups, a new outfit, a holiday or a plated dessert, and end on a playful caption about cheesecake. The audio is \"suara asli - Nadora | Cycling Journal\".",
+      "detected_at": "2026-11-02T00:00:00Z"
+    },
+    {
+      "id": "live_winter_arc",
+      "title": "\"Winter Arc\": young Romanians start their New Year changes now, not on 1 January",
+      "source": "news",
+      "url": "https://observatornews.ro/eveniment/provocarea-de-50-de-zile-care-promite-o-viata-noua-pana-la-revelion-romanii-se-inspira-de-pe-tiktok-671566.html",
+      "summary": "A viral TikTok challenge picked up in Romania: instead of waiting for 1 January, people commit to becoming their best version before New Year's Eve. They go to the gym four to six times a week, cut chips and fast food, and read 10 to 20 pages a day instead of scrolling. A psychologist warns that a fast, radical change can lead to severe exhaustion.",
+      "detected_at": "2026-11-07T06:01:00Z"
+    },
+    {
+      "id": "live_christmas_countdown",
+      "title": "Early Christmas countdowns with cosy clips",
+      "source": "news",
+      "url": "https://startups.co.uk/news/social-media-trends-november-2026/",
+      "summary": "Creators post cosy clips, such as hot cocoa, fireplaces and holiday movie nights, with text like \"99 days until Christmas\" and milestone updates, set to Christmas songs.",
+      "detected_at": "2026-11-02T00:00:00Z"
+    },
+    {
+      "id": "live_thought_this_morning",
+      "title": "\"What I thought of this morning\": summer memories in November",
+      "source": "news",
+      "url": "https://startups.co.uk/news/social-media-trends-november-2026/",
+      "summary": "A nostalgia format on original audio: creators post summer memories, such as long lunches, golden-hour sunsets and sea dips, captioned with a version of \"what I thought of this morning\".",
+      "detected_at": "2026-11-02T00:00:00Z"
+    },
+    {
+      "id": "live_105_dollar_coffee",
+      "title": "A $105 cup of coffee in San Francisco loses a blind test to $5 drip",
+      "source": "news",
+      "url": "https://www.yahoo.com/lifestyle/articles/san-francisco-cafe-goes-viral-193516056.html",
+      "summary": "The Wild Fox, a Japanese-inspired cafe in San Francisco, went viral for a $105 cup made from a Brazilian Cup of Excellence lot (score 93.14) roasted in Tokyo by Glitch Coffee. In a CNN blind taste test the reporter found the $5 drip coffee \"way more balanced\". The cafe says the beans are grown for competition, not as commodities.",
+      "detected_at": "2026-11-03T00:00:00Z"
+    },
+    {
+      "id": "live_fibermaxxing",
+      "title": "\"Fibermaxxing\": people track how much fibre each meal has",
+      "source": "news",
+      "url": "https://brasovstiri.ro/fibrele-alimentare-noul-trend-al-anului-2026-de-ce-tot-mai-multi-oameni-isi-schimba-meniul/",
+      "summary": "On TikTok and Instagram, \"fibermaxxing\" encourages eating more fibre-rich foods, such as oats, chia seeds, lentils, beans, fruit and vegetables, sometimes tracking the fibre in every meal, with fibre-focused recipes, snacks and drinks.",
+      "detected_at": "2026-11-06T00:00:00Z"
+    }
+  ]
+}

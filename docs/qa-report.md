@@ -1,43 +1,33 @@
-# QA report, 2026-11-07
+# QA report, 2026-11-07 (updated)
 
-Two bugs in `backend/app/adapters.py` broke Slack and the live trend; **both fixed in `hotfix/adapters-trend-slack`** with `backend/tests/test_adapters.py`. Everything else is minor. Checked against `develop` at `5ca6d6e`, `feature/andu-skeleton` (PR #6) and `feature/militaru-adobe-integration`, each merged with `develop` locally. Nothing was pushed to those branches.
+Everything that blocked the demo is fixed on `main`; what's left is the image, the rejected-trend button and the rehearsal. Checked on `main` at `a9cc3e3`: 106 backend tests pass, the frontend builds, and the flow (draft, comments, personas, referee) was clicked through in Chrome against the real backend in demo mode.
 
-## Blocked the demo (fixed)
+## Fixed
 
-| # | Owner | Where | Problem | Fix |
-|---|---|---|---|---|
-| 1 | Stefan | `backend/app/adapters.py:163-169` | `send_to_slack` calls `mod.SlackTask` (doesn't exist) and passes `demo_mode=` / `timeout_s=`, which `slack.send_final_post` doesn't take. It raises, `_guarded` swallows it, nothing is sent. | `mod.send_final_post(draft.caption, draft.image_url, tasks, elapsed)` with `models.Task` list; read `.sent` |
-| 2 | Stefan | `backend/app/adapters.py:101` | `asdict()` on the Pydantic `Trend` that `trends.get_trend()` returns raises `TypeError`, so `_fallback_trend` is always used: the saved trend still showed, but `live=True` never reached `trends.py`. | `return mod.get_trend(live=live)` |
+| # | Owner | What was wrong | Fixed by |
+|---|---|---|---|
+| 1 | Stefan | `adapters.py` called `slack.send_final_post` with a `SlackTask` and arguments it doesn't take, so Slack was silently skipped on every apply | hotfix `adapters-trend-slack`, guarded by `backend/tests/test_adapters.py` |
+| 2 | Stefan | `adapters.py` ran `asdict()` on a Pydantic `Trend`, so `live=True` never reached `trends.py` | same hotfix |
+| 3 | Stefan | `needs_human` had no defined behaviour | Apply still ships; a blank `final_caption` keeps the current caption (PR #13, `ARCHITECTURE.md` §3) |
+| 4 | Andu | "Fill scripted comments" posted old Legal/Product wording | Synced with `data/demo_comments.json`; Product is pre-filled, Brand and Legal are left for the judges |
+| 5 | Stefan | Demo mode told the transit-app story | `demo_cache.py` shows the Boabe story from a live run, plus the rejected trend (fit 9) |
+| 6 | Militaru | Slack and Express looked real but were mocks | Previews labelled as simulated; fake Express link removed; `CLAUDE.md` lists only LLM keys as required |
+| 7 | Militaru | `.env.example` merge conflict | Resolved in the merges into `main` |
+| 8b | Militaru | Backend not `ruff format`-ed | Formatted (line length 100) |
 
-All 69 tests passed with both bugs. `test_adapters.py` now fails on each of them.
+## Left
 
-## Should fix
+| # | Owner | What | Done when |
+|---|---|---|---|
+| 8 | Ada, Militaru | The visual is still a placeholder card (the Slack preview now shows it) | `ADOBE_MOCK_IMAGE_URL` points to an https photo the team may use |
+| 9 | Andu | No UI for the rejected trend (backend `GET /trend?which=rejected` is ready) | "Try another trend" shows REJECTED with the fit reason |
+| 10 | Everyone | No rehearsal on the presentation laptop yet | Three clean runs in a row |
 
-| # | Owner | Where | Problem | Fix |
-|---|---|---|---|---|
-| 3 | Stefan | `backend/app/orchestrator.py:227-245` | `apply()` ignores `referee.status`; a `needs_human` result still ships. | Decide: block apply unless an override is sent, or allow and warn in the UI. Add it to the state machine in `ARCHITECTURE.md` §3. |
-| 4 | Andu | `frontend/src/mocks/run_refereed.json` | **Fixed.** Mocks are on Boabe, but the Legal and Product comments (posted by "Fill scripted comments", also in real mode) were the old wording. Synced with `data/demo_comments.json`. | Keep both in sync; ideally read the data file. |
-| 5 | Andu | demo setup | The demo must run against the real backend. | `VITE_USE_MOCKS=false` in `frontend/.env.local`. |
-| 6 | Stefan | `backend/app/demo_cache.py` | Canned draft, personas and referee are still the transit app. Demo mode would show the wrong story. | Align with `docs/demo-scenario.md`. |
-| 7 | Militaru | `backend/app/slack.py` | Pure mock: returns `sent=True` without posting. | Real webhook before the demo, or the pitch says Slack is simulated. |
-| 8 | Militaru | `slack.py:~99-107` | Default image is a `data:` URL, which Slack can't show. | Set `ADOBE_MOCK_IMAGE_URL` to an https image. |
-| 9 | Militaru | `.env.example` | Merge conflict with `develop` (both appended lines). | Keep both blocks. |
+## Minor (unchanged, harmless)
 
-## Minor
+- `frontend/src/api/types.ts`: `ApplyRequest.accept_all_edits` is required in TS, optional in the backend.
+- `adapters.py`: `Draft.version` never takes `post.version` from the Express mock; the orchestrator bumps it anyway.
 
-- `frontend/src/api/types.ts:~118`: `ApplyRequest.accept_all_edits` is required in TS, optional in the backend. Harmless.
-- `frontend/src/App.tsx:44-46`: `startRun` refreshes with a stale `runId`; the next poll fixes it.
-- `adapters.py`: `Draft.version` never takes `post.version` from Express; the orchestrator bumps it anyway.
-- `CLAUDE.md` still lists `SLACK_WEBHOOK_URL` and `ADOBE_*` as required although both modules are mocks.
+## Live LLM
 
-## What passed
-
-- Frontend (PR #6): `npm run build` and `npm run lint` clean; `types.ts` matches `models.py` on every model; the whole flow works through the Vite proxy against the real backend in demo mode.
-- Integrations branch: merges with `develop` with one trivial conflict; 69 tests and `ruff` pass; Adobe adapter signatures match; every external call has a 15s timeout; Express and Slack are only touched in `apply`; no secrets in the tree.
-- `trends.load_saved_trend()` parses the Boabe `data/demo_trend.json`.
-
-## Not tested yet
-
-- A run with the real LLM: does the conflict appear 3/3 with `data/demo_comments.json`? `qa/live_eval.py` (branch `feature/ada-live-eval`) does this once `.env` has `LLM_API_KEY` and `LLM_MODEL`.
-- The REJECTED path: no way to start a run on a second trend yet. Proposal in `docs/rejected-trend.md`.
-- The UI in a real browser.
+Two evals on 2026-11-07 (Bedrock, `eu.anthropic.claude-sonnet-4-6`, 3 runs each): `qa/results/live_eval_20261107_114731.md` (Ada) and `qa/results/live_eval_20261107_122427.md` (Stefan, final `main`). Both: conflict 3/3, no fallback, about 20 s per run. **Cost per post: $0.0566** at $3 / $15 per Mtok; this is the number for the cost slide. No more paid runs are needed: the demo runs in demo mode ($0).

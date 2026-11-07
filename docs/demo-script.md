@@ -33,11 +33,11 @@ The Product comment is pre-filled in the form. The driver sends it. Judges do no
 | 1:05 to 1:35 | Three human cards with timers. Three persona cards beside them. | Judges type cards B and L and send. Driver sends the pre-filled Product comment. | "Three humans and three personas review at the same time." "The personas are built from 65 real public reviews of Bucharest specialty cafés and coffee-ordering apps." "Boabe is fictional, so they are not its customers." | Problem 25, AI 25 |
 | 1:35 to 2:10 | Conflict cards: Legal vs Product on "no added sugar". Brand and student persona vs Product on the product as hero. Compromise text. | Driver clicks "Run referee" at the start of this beat. | "The referee reads all the feedback together." "Legal has no sugar documentation, so Product's claim cannot stay." "The compromise names the latte, drops the claim and softens the call to action." | AI 25 |
 | 2:10 to 2:30 | Caption updated in the canvas and post preview. | Driver clicks "Apply compromise". | "One click. Nothing goes out without a human." | Integrations 15, Technical 25 |
-| 2:30 to 2:45 | Slack message preview in the app (simulated): final caption, task list, "Trend to approved" clock. | Driver scrolls to the Slack message preview. | "This is the message the team gets in Slack." "Product's task: send the sugar documentation to Legal before any later post." | Integrations 15, Demo 10 |
+| 2:30 to 2:45 | Slack message preview in the app (simulated): final caption, task list, "Trend to approved" clock. | Driver scrolls to the Slack message preview. | "This is the message the team gets in Slack." "Product's task: send the sugar documentation to Legal before any later post." "Trend to approved post in [clock] minutes. On a real day, with reviewers answering between meetings, that's about two hours, not eight days." | Integrations 15, Demo 10 |
 | 2:45 to 2:55 | Architecture slide, then cost slide. | Driver advances the slides. | "Five AI calls per post, schema-checked and logged." "About $X per post, against Y hours of review time." | Technical 25, Cost bonus |
 | 2:55 to 3:00 | Close slide with the one-line pitch. | Nobody. | "Moment turns a trend into an approved post, with customers at the table. Thank you." | Demo 10 |
 
-Note for the Slack row: do not say "1h 50m" unless the on-screen clock shows it. A live run measures minutes, not hours.
+Note for the Slack row: read the real number from the header clock. Never say "1h 50m" on stage; the "about two hours" is the real-world claim, the clock is the proof.
 
 ## If something breaks
 
