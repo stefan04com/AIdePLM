@@ -2,7 +2,7 @@
 // the run's real data. A factor without data yet shows "—", never an invented number.
 
 import type { Run } from '../api/types'
-import { formatUsd } from './cost'
+import { formatUsd, MEASURED_IN_LIVE_EVAL } from './cost'
 import { formatElapsed, formatSentiment } from './format'
 import type { Tone } from './tones'
 
@@ -90,12 +90,14 @@ function timeToApproval(run: Run | null, nowMs: number): Factor {
   }
 }
 
-function cost(perPostUsd: number | null): Factor {
-  if (perPostUsd === null) return EMPTY('Cost per post', 'not measured yet (demo mode is cached)')
+function cost(run: Run | null, perPostUsd: number | null): Factor {
+  if (!run) return EMPTY('Cost per post', 'after the run')
+  // Same fallback as the cost panel: demo mode is cached, so show the live-eval measurement.
+  const measured = perPostUsd ?? MEASURED_IN_LIVE_EVAL.perPostUsd
   return {
     label: 'Cost per post',
-    value: formatUsd(perPostUsd),
-    detail: 'measured on live AI calls',
+    value: formatUsd(measured),
+    detail: perPostUsd === null ? 'measured in live eval' : 'measured on live AI calls',
     level: null,
     tone: 'neutral',
   }
@@ -108,6 +110,6 @@ export function computeFactors(run: Run | null, perPostUsd: number | null, nowMs
     expertVoices(run),
     conflicts(run),
     timeToApproval(run, nowMs),
-    cost(perPostUsd),
+    cost(run, perPostUsd),
   ]
 }

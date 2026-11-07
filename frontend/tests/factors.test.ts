@@ -52,6 +52,8 @@ test('factors come from the run data', () => {
   assert.equal(f['Cost per post'].value, '$0.0566')
 })
 
-test('cost stays empty until it was measured', () => {
-  assert.equal(byLabel(run)['Cost per post'].value, '—')
+test('cost falls back to the live-eval measurement in demo mode', () => {
+  const f = byLabel(run)['Cost per post']
+  assert.equal(f.value, '$0.0602')
+  assert.equal(f.detail, 'measured in live eval')
 })
