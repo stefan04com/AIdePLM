@@ -57,3 +57,46 @@ export const ADOBEE_TIPS = [
   'A verified coffee expert counts three times.',
   'Nothing ships until a human clicks apply.',
 ]
+
+/** Where Adobee flies to: the part of the screen where the run is happening right now. */
+export type AdobeeSpot = 'home' | 'spot' | 'draft' | 'review' | 'referee' | 'ship'
+
+export function adobeeSpot(run: Run | null): AdobeeSpot {
+  if (!run) return 'home'
+  switch (run.status) {
+    case 'SPOTTED':
+    case 'REJECTED':
+      return 'spot'
+    case 'DRAFTED':
+      return 'draft'
+    case 'IN_REVIEW':
+      return 'review'
+    case 'REFEREED':
+      return 'referee'
+    case 'SHIPPED':
+      return 'ship'
+  }
+}
+
+/** The honeycomb in the header: one cell per step, filled with honey as the run gets there. */
+export const HIVE_STEPS = ['Spot', 'Draft', 'Review', 'Referee', 'Ship'] as const
+
+export type HiveCell = 'full' | 'current' | 'empty' | 'failed'
+
+export function hiveCells(run: Run | null): HiveCell[] {
+  const done: Record<Run['status'], number> = {
+    SPOTTED: 0,
+    REJECTED: 0,
+    DRAFTED: 2,
+    IN_REVIEW: 2,
+    REFEREED: 4,
+    SHIPPED: 5,
+  }
+  const filled = run ? done[run.status] : 0
+  return HIVE_STEPS.map((_, i) => {
+    if (run?.status === 'REJECTED' && i === 0) return 'failed'
+    if (i < filled) return 'full'
+    if (run && i === filled && run.status !== 'REJECTED') return 'current'
+    return 'empty'
+  })
+}

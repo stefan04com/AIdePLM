@@ -50,7 +50,7 @@ Last updated: 2026-11-07 12:30 (Stefan)
 - [ ] Two full end-to-end rehearsals on the presentation laptop before the demo.
 
 ## Done
-- [x] Adobee, the animated red robot bee in the top bar: reacts to every run step, follows the cursor, gives tips on click (`frontend/src/components/Adobee.tsx`, `lib/adobee.ts`, tests)
+- [x] Adobee, the animated red robot bee: a header honeycomb fills with honey per step; the bee flies on an arc (pollen trail) to where the run is (fit gauge, post, comments, referee, Slack), rings the section, orbits on conflicts, bursts honey on ship; never covers the header or the ship bar (`frontend/src/components/Adobee.tsx`, `components/adobee/`, `lib/adobee.ts`, tests)
 - [x] Live eval 3/3 and cost per post measured on the final `main` (2026-11-07)
 - [x] `.env` model fixed to one the Bedrock account can use
 - [x] `needs_human` can ship; a blank `final_caption` keeps the current caption (PR #13)
