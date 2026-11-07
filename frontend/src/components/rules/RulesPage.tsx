@@ -1,8 +1,8 @@
-import type { ReactNode } from 'react'
+import { type ReactNode, useState } from 'react'
 import type { Usage } from '../../hooks/useUsage'
 import { PLATFORM_RULES, SCORING_FACTORS, WEIGHT_RULES, type Confidence, type Rule } from '../../lib/rules'
 import { CostPanel } from '../CostPanel'
-import { HashtagsSection } from './HashtagsSection'
+import { CurrentTrends, DEFAULT_KEYWORDS, type HashtagQuery, HashtagSuggestionsCard } from './HashtagsSection'
 import { Card, Pill, SectionHead } from '../ui'
 
 const TONE: Record<Confidence, 'ok' | 'warn' | 'neutral'> = {
@@ -14,6 +14,8 @@ const TONE: Record<Confidence, 'ok' | 'warn' | 'neutral'> = {
 
 /** Review workflow (departments, personas, referee, ship) next to what the scoring is based on. */
 export function RulesPage({ usage, review, hidden }: { usage: Usage; review: ReactNode; hidden: boolean }) {
+  // A trend picked in "Current trends" asks the hashtag card (under Platform rules) for its hashtags.
+  const [hashtagQuery, setHashtagQuery] = useState<HashtagQuery>({ text: DEFAULT_KEYWORDS, n: 0 })
   return (
     <main className="rules-page" id="panel-rules" role="tabpanel" aria-labelledby="tab-rules" hidden={hidden}>
       {review}
@@ -31,10 +33,11 @@ export function RulesPage({ usage, review, hidden }: { usage: Usage; review: Rea
           sources agree; <strong>single</strong> = one source. Industry posting times are averages:
           an account&apos;s own data always wins.
         </p>
+        <HashtagSuggestionsCard query={hashtagQuery} />
       </div>
       <div className="column">
-        <SectionHead id="04" title="Trends and hashtags" aside={<Pill>saved data</Pill>} />
-        <HashtagsSection />
+        <SectionHead id="04" title="Current trends" aside={<Pill>saved data</Pill>} />
+        <CurrentTrends onPick={(title) => setHashtagQuery((q) => ({ text: title, n: q.n + 1 }))} />
         <CostPanel usage={usage} />
       </div>
     </main>

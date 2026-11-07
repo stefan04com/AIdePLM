@@ -1,8 +1,9 @@
-// State of the Firefly mock for one run: idle → generating (step labels) → two variations → picked.
-// Resets when the run changes. Replace `generate` with a real API call when Firefly is connected.
+// State of the Firefly mock for one run: idle → generating (step labels) → generated (the post shows
+// the new image) → back to the original on undo. Resets when the run changes. Replace `generate` with
+// a real API call when Firefly is connected.
 
 import { useEffect, useState } from 'react'
-import { FIREFLY_TOTAL_MS, fireflyStepAt, fireflyVariant } from '../lib/firefly'
+import { FIREFLY_IMAGE, FIREFLY_TOTAL_MS, fireflyStepAt } from '../lib/firefly'
 
 const TICK_MS = 150
 
@@ -10,10 +11,9 @@ interface State {
   runId: string | null
   startedAt: number | null
   done: boolean
-  pickedId: string | null
 }
 
-const fresh = (runId: string | null): State => ({ runId, startedAt: null, done: false, pickedId: null })
+const fresh = (runId: string | null): State => ({ runId, startedAt: null, done: false })
 
 export function useFirefly(runId: string | null) {
   const [state, setState] = useState<State>(fresh(runId))
@@ -21,7 +21,7 @@ export function useFirefly(runId: string | null) {
 
   // A different run starts from scratch.
   if (state.runId !== runId) setState(fresh(runId))
-  const { startedAt, done, pickedId } = state
+  const { startedAt, done } = state
 
   useEffect(() => {
     if (startedAt === null || done) return
@@ -37,12 +37,14 @@ export function useFirefly(runId: string | null) {
   return {
     generating,
     step: generating ? fireflyStepAt(now) : null,
-    ready: done,
-    picked: fireflyVariant(pickedId),
+    /** The generated image once the call is done, else null (the post keeps its own image). */
+    image: done ? FIREFLY_IMAGE : null,
     generate: () => {
       setNow(0)
-      setState({ runId, startedAt: Date.now(), done: false, pickedId: null })
+      setState({ runId, startedAt: Date.now(), done: false })
     },
-    pick: (id: string) => setState((prev) => ({ ...prev, pickedId: id })),
+    undo: () => setState(fresh(runId)),
   }
 }
+
+export type Firefly = ReturnType<typeof useFirefly>

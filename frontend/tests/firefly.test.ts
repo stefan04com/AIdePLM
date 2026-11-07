@@ -1,12 +1,13 @@
-// The Firefly mock must show step labels in order, then finish, and offer exactly two photos.
+// The Firefly mock must show step labels in order, then finish, with one generated photo; the
+// rejected trend has its own photo that never becomes a post.
 
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { FIREFLY_STEPS, FIREFLY_TOTAL_MS, FIREFLY_VARIANTS, fireflyStepAt, fireflyVariant } from '../src/lib/firefly.ts'
+import { FIREFLY_IMAGE, FIREFLY_STEPS, FIREFLY_TOTAL_MS, fireflyStepAt, REJECTED_VISUAL } from '../src/lib/firefly.ts'
 
-test('two variations, both with a file path and a label', () => {
-  assert.equal(FIREFLY_VARIANTS.length, 2)
-  for (const v of FIREFLY_VARIANTS) assert.ok(v.url.startsWith('/visuals/') && v.label)
+test('one generated photo, different from the rejected-trend photo', () => {
+  for (const image of [FIREFLY_IMAGE, REJECTED_VISUAL]) assert.ok(image.url.startsWith('/visuals/') && image.label)
+  assert.notEqual(FIREFLY_IMAGE.url, REJECTED_VISUAL.url)
 })
 
 test('step labels follow the steps and end at the total time', () => {
@@ -14,10 +15,4 @@ test('step labels follow the steps and end at the total time', () => {
   assert.equal(fireflyStepAt(FIREFLY_STEPS[0].ms), FIREFLY_STEPS[1].label)
   assert.equal(fireflyStepAt(FIREFLY_TOTAL_MS - 1), FIREFLY_STEPS[2].label)
   assert.equal(fireflyStepAt(FIREFLY_TOTAL_MS), null)
-})
-
-test('unknown variation id gives null', () => {
-  assert.equal(fireflyVariant('a')?.id, 'a')
-  assert.equal(fireflyVariant('zzz'), null)
-  assert.equal(fireflyVariant(null), null)
 })

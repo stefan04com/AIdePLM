@@ -4,7 +4,6 @@ import { buildSlackPreview } from '../lib/slackPreview'
 import { ExpressPreview } from './canvas/ExpressPreview'
 import { EditPanel } from './canvas/EditPanel'
 import { HashtagCard } from './canvas/HashtagCard'
-import { FireflyPanel } from './canvas/FireflyPanel'
 import { BrandShield } from './wow/BrandShield'
 import { SlackPreview } from './canvas/SlackPreview'
 import { Muted, Pill, SectionHead } from './ui'
@@ -19,10 +18,10 @@ interface Props {
 
 export function CanvasColumn({ run, busy, onRegenerate, onHashtags }: Props) {
   const firefly = useFirefly(run?.id ?? null)
-  // The variation picked from the Firefly mock replaces the post's visual everywhere on screen.
+  // The image generated with the Firefly mock replaces the post's visual everywhere on screen.
   const shown: Run | null =
-    run?.draft && firefly.picked
-      ? { ...run, draft: { ...run.draft, image_url: firefly.picked.url } }
+    run?.draft && firefly.image
+      ? { ...run, draft: { ...run.draft, image_url: firefly.image.url } }
       : run
   const slack = shown ? buildSlackPreview(shown) : null
 
@@ -32,7 +31,9 @@ export function CanvasColumn({ run, busy, onRegenerate, onHashtags }: Props) {
       {run?.step && <StepIndicator label={run.step} />}
       {!run && <Muted>Start a run to generate a draft.</Muted>}
       {run?.status === 'REJECTED' && <BrandShield reason={run.fit?.reason ?? null} />}
-      {shown?.draft && <ExpressPreview draft={shown.draft} />}
+      {run?.draft && (
+        <ExpressPreview draft={run.draft} firefly={firefly} canGenerate={!busy && run.status !== 'SHIPPED'} />
+      )}
       {run?.draft && (
         <EditPanel
           key={run.id}
@@ -48,7 +49,6 @@ export function CanvasColumn({ run, busy, onRegenerate, onHashtags }: Props) {
           onChange={onHashtags}
         />
       )}
-      {run?.draft && <FireflyPanel firefly={firefly} disabled={run.status === 'SHIPPED'} />}
       {slack && (
         <>
           <SectionHead title="Slack message preview" aside={<Pill>simulated</Pill>} />
