@@ -9,14 +9,14 @@ Rules and architecture live in `CLAUDE.md` and `ARCHITECTURE.md`; this file only
 - After the feature freeze (hour 8) only fixes go here; ideas go to "What's next" in the pitch.
 - Open PRs into `develop`; `main` only gets `develop` or `release/*` / `hotfix/*` PRs. Don't push straight to `main`.
 
-Last updated: 2026-11-07 (Stefan)
+Last updated: 2026-11-07 (Ada)
 
 ## Status
 
 | Area | State |
 |---|---|
 | Backend flow (fit → draft → reactions → referee → apply) | Done in demo mode; 106 tests pass |
-| Real LLM (Bedrock) | Worked 3/3 in Ada's eval (~$0.056/run); re-run on final `main` pending |
+| Real LLM (Bedrock) | Worked 3/3 in Ada's eval (~$0.056/run). Team decision: no more paid runs; the demo uses demo mode ($0) |
 | Rejected trend (fit says no) | Backend done (`GET /trend?which=rejected`); UI button pending |
 | Adobe / Slack / trends | Local simulations by team decision, no keys needed |
 | Frontend | Builds and lints; not yet tested end to end in a real browser |
@@ -35,7 +35,7 @@ Last updated: 2026-11-07 (Stefan)
 
 ## Militaru: integrations
 - [ ] Check that the image in the Slack preview shows. If not, set `ADOBE_MOCK_IMAGE_URL` to an https image (the default is a `data:` URL).
-- [ ] Run `ruff format` on `backend/app/adobe.py` (the only unformatted file).
+- [ ] Run `ruff format` on `backend/app/adobe.py` and `slack.py` (the only unformatted files).
 - [ ] Align `ARCHITECTURE.md` §4.4–4.6, ADR-003 and §10 with the local simulations (a note sits above them for now).
 - [ ] Use PRs into `develop` instead of pushing to `main`.
 
@@ -43,8 +43,9 @@ Last updated: 2026-11-07 (Stefan)
 - [ ] Put the measured cost line into the cost slide (from Stefan).
 - [ ] Run the 3/3 rehearsal with `docs/demo-script.md`, including the rejected-trend beat. Done when: three clean runs in a row on the demo laptop.
 - [ ] Record the backup video.
-- [ ] Update `docs/qa-report.md`: mark what is fixed, list what is left.
-- [ ] Check that `docs/demo-scenario.md` matches the canned content on `main`.
+- [x] Update `docs/qa-report.md`: mark what is fixed, list what is left.
+- [x] Check that `docs/demo-scenario.md` matches the canned content on `main`.
+- [x] Replace "1h 50m" with the on-screen clock + "about two hours vs eight days" (README, demo script).
 
 ## Everyone
 - [ ] No new features after the freeze; fixes only.
