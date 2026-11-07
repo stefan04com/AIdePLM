@@ -34,9 +34,9 @@ Last updated: 2026-11-07 (Stefan)
 - [ ] Check the `needs_human` banner and that apply still works (it is allowed on purpose, see `ARCHITECTURE.md` §3).
 
 ## Militaru: integrations
-- [ ] Check that the image in the Slack preview shows. If not, set `ADOBE_MOCK_IMAGE_URL` to an https image (the default is a `data:` URL).
-- [ ] Run `ruff format` on `backend/app/adobe.py` (the only unformatted file).
-- [ ] Align `ARCHITECTURE.md` §4.4–4.6, ADR-003 and §10 with the local simulations (a note sits above them for now).
+- [x] Image in the Slack preview: the simulated preview now shows the post's image, the local placeholder included (no external image needed).
+- [x] `ruff format` on the backend (`adobe.py`, `slack.py`, `test_adobe.py`, `test_llm_client.py`).
+- [x] `ARCHITECTURE.md` §4.4–4.6, ADR-003 and §10 describe the local simulations.
 - [ ] Use PRs into `develop` instead of pushing to `main`.
 
 ## Anda: data, demo script, pitch, QA
