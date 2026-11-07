@@ -58,7 +58,8 @@ function requireStatus(run: Run, allowed: Run['status'][], action: string) {
   }
 }
 
-export async function getTrend(): Promise<Trend> {
+export async function getTrend(which?: 'rejected'): Promise<Trend> {
+  if (which) throw new ApiError(404, 'The rejected trend needs the real backend')
   return clone(fixture.trend)
 }
 

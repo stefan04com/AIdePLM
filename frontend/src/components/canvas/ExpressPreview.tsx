@@ -1,6 +1,7 @@
 import type { Draft } from '../../api/types'
 import { BRAND_HANDLE, BRAND_NAME } from '../../lib/brand'
 import { Badge } from '../ui'
+import { MorphCaption } from '../wow/MorphCaption'
 
 /**
  * The draft as a social post (demo script 0:40 and 2:10). A local simulation: the backend
@@ -35,7 +36,7 @@ export function ExpressPreview({ draft }: { draft: Draft }) {
         ) : (
           <div className="image-placeholder">{draft.visual_prompt}</div>
         )}
-        <p className="caption">{draft.caption}</p>
+        <MorphCaption caption={draft.caption} />
         <p className="hashtags">{draft.hashtags.join(' ')}</p>
       </div>
 

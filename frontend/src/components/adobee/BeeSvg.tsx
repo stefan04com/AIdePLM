@@ -193,6 +193,19 @@ export function BeeSvg({ mood, look }: { mood: AdobeeMood; look: { x: number; y:
       <ellipse cx="41" cy="76" rx="5.5" ry="2.8" fill="#ff7c8a" opacity="0.55" className="bee-blush" />
       <ellipse cx="79" cy="76" rx="5.5" ry="2.8" fill="#ff7c8a" opacity="0.55" className="bee-blush" />
 
+      {/* holds up a stop sign when brand safety says no */}
+      {mood === 'sad' && (
+        <g className="bee-stop">
+          <g transform="translate(99 84) scale(1.45) translate(-99 -84)">
+            <path d="M92 104 L100 84" stroke="#8a8796" strokeWidth="2.4" strokeLinecap="round" />
+            <polygon points="95,70 103,70 109,76 109,84 103,90 95,90 89,84 89,76" fill="#e5141c" stroke="#fff" strokeWidth="1.6" />
+            <text className="bee-stop-text" x="99" y="82.6" textAnchor="middle" fontSize="6.4" fontWeight="800" fill="#fff" fontFamily="system-ui, sans-serif">
+              STOP
+            </text>
+          </g>
+        </g>
+      )}
+
       {/* speculars */}
       <ellipse cx="44" cy="31" rx="10" ry="5" fill="#ffffff" opacity="0.42" transform="rotate(-26 44 31)" />
       <circle cx="35" cy="40" r="2.2" fill="#ffffff" opacity="0.55" />

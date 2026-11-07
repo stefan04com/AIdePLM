@@ -28,7 +28,7 @@ Last updated: 2026-11-07 12:30 (Stefan)
 - [ ] After a clean rehearsal, cut `release/1.0.0` and tag `v1.0.0-demo` on `main`.
 
 ## Andu: frontend
-- [ ] "Try another trend" button: `GET /trend?which=rejected`, then `POST /runs`; show `run.fit.reason` on `REJECTED`. Backend is ready (`docs/rejected-trend.md`).
+- [x] "Try another trend" button: `GET /trend?which=rejected`, then `POST /runs`; show `run.fit.reason` on `REJECTED`. Done by Ada on `feature/ada-friendly-adobe-theme` ("Try a risky trend", key B, brand-safety shield).
 - [ ] Test the full flow in a real browser with `VITE_USE_MOCKS=false` in `frontend/.env.local` (draft, comments, referee, apply).
 - [ ] Check the `needs_human` banner and that apply still works (it is allowed on purpose, see `ARCHITECTURE.md` §3).
 

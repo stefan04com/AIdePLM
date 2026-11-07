@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { Run } from '../../api/types'
 import { formatElapsed } from '../../lib/format'
+import { sound } from '../../lib/sound'
+import { formatLife, REVIEW_DAYS, speedup, trendLifeLeft } from '../../lib/wow'
 
 const SHOW_MS = 4200
 const DROPS = 36
@@ -19,6 +21,7 @@ export function ShipCelebration({ run }: { run: Run | null }) {
 
   useEffect(() => {
     if (!shipped) return
+    sound.chord()
     const timer = setTimeout(() => setShipped(null), SHOW_MS)
     return () => clearTimeout(timer)
   }, [shipped])
@@ -26,6 +29,8 @@ export function ShipCelebration({ run }: { run: Run | null }) {
   if (!shipped || !shipped.shipped_at) return null
   const elapsed = formatElapsed(shipped.started_at, shipped.shipped_at)
   const conflicts = shipped.referee?.conflicts.length ?? 0
+  const faster = speedup(shipped.started_at, shipped.shipped_at).toLocaleString('en-US')
+  const lifeLeft = formatLife(trendLifeLeft(shipped.trend.detected_at, Date.parse(shipped.shipped_at)))
   return (
     <div className="celebrate" role="status" aria-live="polite" onClick={() => setShipped(null)}>
       <div className="celebrate-rain" aria-hidden>
@@ -49,6 +54,10 @@ export function ShipCelebration({ run }: { run: Run | null }) {
         <p className="celebrate-kicker">Post approved</p>
         <p className="celebrate-time">{elapsed}</p>
         <p className="celebrate-sub">from trend to approved post</p>
+        <p className="celebrate-faster">
+          <strong>{faster}×</strong> faster than an {REVIEW_DAYS}-day review
+          <span>, with {lifeLeft} of trend life left</span>
+        </p>
         <div className="celebrate-stats">
           <span>
             <strong>{shipped.comments.length}</strong> reviewers

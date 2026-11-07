@@ -409,3 +409,225 @@ body::after {
     animation: none !important;
   }
 }
+
+/* --- header: trend life, presenter hint, sound --- */
+
+.trend-life {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  font-size: 13px;
+}
+.trend-life-label {
+  color: var(--muted);
+}
+.trend-life-bar {
+  position: relative;
+  width: 64px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+.trend-life-bar span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #f5a623, #eb1000);
+  transition: width 1s ease;
+  animation: life-drip 2.4s ease-in-out infinite alternate;
+}
+@keyframes life-drip {
+  to { filter: brightness(1.15); }
+}
+.trend-life-value {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.trend-life.is-shipped {
+  border-color: var(--ok);
+  color: var(--ok);
+}
+.trend-life.is-over .trend-life-value {
+  color: var(--bad);
+}
+
+.presenter-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.presenter-hint kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  border-bottom-width: 3px;
+  background: var(--surface);
+  font: 700 13px var(--sans);
+  color: var(--accent);
+}
+
+.sound-toggle {
+  padding: 4px 10px;
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* --- risky trend button --- */
+
+button.risky {
+  border-style: dashed;
+  color: var(--bad);
+  background: transparent;
+}
+
+/* --- brand-safety shield --- */
+
+.shield {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 28px 20px 22px;
+  border-radius: var(--radius);
+  border: 2px solid color-mix(in srgb, var(--bad) 40%, transparent);
+  background:
+    repeating-linear-gradient(-45deg, rgb(215 55 63 / 0.05) 0 12px, transparent 12px 24px),
+    var(--surface);
+  box-shadow: var(--shadow-lift);
+  text-align: center;
+  animation: shield-slam 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) both, shield-shake 0.4s 0.55s ease-in-out;
+}
+.shield-icon {
+  width: 72px;
+  height: 80px;
+}
+.shield-icon path:first-child {
+  fill: var(--bad);
+  filter: drop-shadow(0 6px 10px rgb(215 55 63 / 0.35));
+}
+.shield-x {
+  fill: none;
+  stroke: #fff;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: draw 0.5s 0.45s ease-out forwards;
+}
+.shield-title {
+  margin: 6px 0 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--bad);
+}
+.shield-reason {
+  margin: 0;
+  max-width: 34ch;
+}
+.shield-note {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+@keyframes shield-slam {
+  from { opacity: 0; transform: translateY(-40px) scale(1.25); }
+}
+@keyframes shield-shake {
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
+/* --- the caption rewrites itself --- */
+
+.caption.is-morphing .morph-removed {
+  display: inline-block;
+  max-width: 30em;
+  overflow: hidden;
+  white-space: pre;
+  vertical-align: bottom;
+  color: var(--bad);
+  text-decoration: line-through 2px;
+  animation: morph-out 0.9s var(--d, 0s) ease-in forwards;
+}
+.caption.is-morphing .morph-added {
+  border-radius: 4px;
+  background: rgb(245 166 35 / 0.35);
+  animation:
+    morph-in 0.5s var(--d, 0s) cubic-bezier(0.2, 0.8, 0.2, 1) backwards,
+    honey-fade 1.4s calc(var(--d, 0s) + 2.5s) ease-out forwards;
+}
+@keyframes morph-out {
+  60% { opacity: 0.6; max-width: 30em; }
+  to { opacity: 0; max-width: 0; }
+}
+@keyframes morph-in {
+  from { opacity: 0; filter: blur(4px); }
+}
+@keyframes honey-fade {
+  to { background: transparent; }
+}
+
+/* --- pollen carried to the referee; Adobee's stop sign --- */
+
+.adobee-carry {
+  position: absolute;
+  left: -7px;
+  top: -7px;
+  width: 14px;
+  height: 15px;
+  background: linear-gradient(#ffd970, #ef8a00);
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  filter: drop-shadow(0 2px 4px rgb(239 138 0 / 0.5));
+}
+.bee-stop {
+  transform-box: fill-box;
+  transform-origin: bottom center;
+  animation: stop-raise 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+@keyframes stop-raise {
+  from { transform: translateY(14px) rotate(20deg); opacity: 0; }
+}
+
+/* celebration: the speed-up line */
+.celebrate-faster {
+  margin: -6px 0 14px;
+  font-size: 15px;
+}
+.celebrate-faster strong {
+  color: var(--accent);
+  font-size: 18px;
+}
+.celebrate-faster span {
+  color: var(--muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shield,
+  .shield-x,
+  .caption.is-morphing span,
+  .bee-stop,
+  .trend-life-bar span {
+    animation: none !important;
+  }
+  .shield-x {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* the stop sign stays readable when Adobee faces left */
+.adobee-flyer[data-facing='left'] .bee-stop-text {
+  transform: scaleX(-1);
+  transform-box: fill-box;
+  transform-origin: center;
+}

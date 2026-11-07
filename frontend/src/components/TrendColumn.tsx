@@ -7,9 +7,10 @@ interface Props {
   fit: FitResult | null
   canStart: boolean
   onStart: () => void
+  onTryRisky?: () => void
 }
 
-export function TrendColumn({ trend, fit, canStart, onStart }: Props) {
+export function TrendColumn({ trend, fit, canStart, onStart, onTryRisky }: Props) {
   return (
     <section className="column">
       <SectionHead
@@ -22,6 +23,11 @@ export function TrendColumn({ trend, fit, canStart, onStart }: Props) {
       <button className="primary" disabled={!trend || !canStart} onClick={onStart}>
         Start run
       </button>
+      {onTryRisky && (
+        <button className="risky" disabled={!canStart} onClick={onTryRisky} title="Brand-safety demo: a trend the fit check should reject (key B)">
+          Try a risky trend
+        </button>
+      )}
     </section>
   )
 }

@@ -1,6 +1,7 @@
 import type { Run } from '../api/types'
 import { buildSlackPreview } from '../lib/slackPreview'
 import { ExpressPreview } from './canvas/ExpressPreview'
+import { BrandShield } from './wow/BrandShield'
 import { SlackPreview } from './canvas/SlackPreview'
 import { Muted, Pill, SectionHead } from './ui'
 
@@ -12,7 +13,7 @@ export function CanvasColumn({ run }: { run: Run | null }) {
       <SectionHead id="03" title="Company post" aside={<Pill>simulated</Pill>} />
       {run?.step && <StepIndicator label={run.step} />}
       {!run && <Muted>Start a run to generate a draft.</Muted>}
-      {run?.status === 'REJECTED' && <Muted>Trend rejected, so no draft was made.</Muted>}
+      {run?.status === 'REJECTED' && <BrandShield reason={run.fit?.reason ?? null} />}
       {run?.draft && <ExpressPreview draft={run.draft} />}
       {slack && (
         <>
