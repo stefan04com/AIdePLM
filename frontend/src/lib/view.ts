@@ -1,0 +1,29 @@
+// Which page is open: "post" (default) or "rules". Kept in the URL (?view=rules) so a refresh or a
+// shared link opens the same page; the run id (?run=…) is kept next to it. No value imports.
+
+export type View = 'post' | 'rules'
+
+export const VIEWS: readonly { id: View; label: string }[] = [
+  { id: 'post', label: 'Post' },
+  { id: 'rules', label: 'Rules' },
+]
+
+export function parseView(value: string | null): View {
+  return value === 'rules' ? 'rules' : 'post'
+}
+
+export const readViewFromUrl = (): View =>
+  parseView(new URLSearchParams(window.location.search).get('view'))
+
+export function writeViewToUrl(view: View): void {
+  const url = new URL(window.location.href)
+  if (view === 'post') url.searchParams.delete('view')
+  else url.searchParams.set('view', view)
+  window.history.replaceState(null, '', url)
+}
+
+/** Next or previous tab id for the arrow keys, wrapping around. */
+export function stepView(current: View, delta: 1 | -1): View {
+  const index = VIEWS.findIndex((v) => v.id === current)
+  return VIEWS[(index + delta + VIEWS.length) % VIEWS.length].id
+}

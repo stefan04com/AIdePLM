@@ -34,14 +34,14 @@ Read first: `docs/trending-research.md` (data sources and limits) and `docs/what
 - [ ] Stefan + Andu: agree the contract first (new **optional** fields and endpoints only), in `ARCHITECTURE.md` §5/§6, before any code.
 
 ### Andu (frontend)
-- [ ] Two menus: **Post** and **Rules**, switching without losing the run; Adobee flies correctly on both. Done when: switching keeps the run in the URL and the bee works on each.
+- [x] Two menus: **Post** and **Rules** (`?view=rules`, arrow keys, run kept in the URL); Adobee stays in the header on both.
 - [ ] **Post** page: the post with its description in the middle; scoring framed on the left (Adobee stays); department reviews on the right.
 - [ ] **Trend score** under the scoring: the post's keywords and how trending they are, plus suggestions that raise the "hype". Marked "saved" / "live".
 - [ ] **Hashtag suggestions** in Post with an "add to post" button.
 - [ ] **Edit + regenerate:** editable post text, a "Regenerate" button and a box to rephrase the prompt ("shorter, more playful"); keep versions so the tester can go back.
-- [ ] **Rules** page: move what the scoring is based on here (factors, weights, sources and their confidence, platform rules).
+- [x] **Rules** page: scoring factors, comment weight, platform rules with their confidence tag, and the AI cost (`lib/rules.ts`). Anda: edit the texts there when the scoring rules are written.
 - [ ] **Posting-time planner (UI):** choose the platform (Instagram, TikTok, X, LinkedIn); show the recommended time and why.
-- [ ] Design pass with the "UI UX Pro Max" skill if we install it; screenshots at 1600 px and below 1100 px.
+- [x] "UI UX Pro Max" skill installed in `.claude/skills/` (local Python search, no network). Still open: design pass on the new Post page, screenshots at 1600 px and below 1100 px.
 - [x] **Firefly mock** (done on `feature/andu-firefly-mock`): "Generate with Firefly" shows the steps of a Firefly call, then two photos to pick from; the pick replaces the post visual. Simulated and labelled so. Real call goes in `hooks/useFirefly.ts`.
 
 ### Stefan (backend / AI)
