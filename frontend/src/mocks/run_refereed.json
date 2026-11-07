@@ -52,13 +52,13 @@
     {
       "id": "c_legal",
       "role": "legal",
-      "text": "Remove 'no added sugar' and 'healthiest latte in town'. We have no documentation for the sugar claim, and we can't use health claims or unprovable superlatives.",
+      "text": "The caption can't say 'no added sugar', 'healthy' or 'the best latte in town'. We have no documentation for the sugar claim, and health claims and superlatives we can't prove are off-limits.",
       "created_at": "2026-11-07T09:22:00Z"
     },
     {
       "id": "c_product",
       "role": "product",
-      "text": "The Pumpkin & Cinnamon Latte launches this week and 'no added sugar' is its main selling point. Please keep it in the caption and make the drink the hero of the visual.",
+      "text": "The Pumpkin & Cinnamon Latte launches this week. Add that it has no added sugar, it's our main selling point, and make the drink the hero of the visual.",
       "created_at": "2026-11-07T09:24:00Z"
     }
   ],

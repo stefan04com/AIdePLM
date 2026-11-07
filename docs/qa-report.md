@@ -16,8 +16,8 @@ All 69 tests passed with both bugs. `test_adapters.py` now fails on each of them
 | # | Owner | Where | Problem | Fix |
 |---|---|---|---|---|
 | 3 | Stefan | `backend/app/orchestrator.py:227-245` | `apply()` ignores `referee.status`; a `needs_human` result still ships. | Decide: block apply unless an override is sent, or allow and warn in the UI. Add it to the state machine in `ARCHITECTURE.md` §3. |
-| 4 | Andu | `frontend/src/mocks/scriptedComments.ts:9` | "Fill scripted comments" posts the mock's #FirstSipFace comments, also in real mode. | Use the text from `data/demo_comments.json`. |
-| 5 | Andu | `frontend/src/mocks/` | Mocks are on #FirstSipFace; the demo is Boabe cozy autumn (`docs/demo-scenario.md`). | Update mocks; demo runs with `VITE_USE_MOCKS=false`. |
+| 4 | Andu | `frontend/src/mocks/run_refereed.json` | **Fixed.** Mocks are on Boabe, but the Legal and Product comments (posted by "Fill scripted comments", also in real mode) were the old wording. Synced with `data/demo_comments.json`. | Keep both in sync; ideally read the data file. |
+| 5 | Andu | demo setup | The demo must run against the real backend. | `VITE_USE_MOCKS=false` in `frontend/.env.local`. |
 | 6 | Stefan | `backend/app/demo_cache.py` | Canned draft, personas and referee are still the transit app. Demo mode would show the wrong story. | Align with `docs/demo-scenario.md`. |
 | 7 | Militaru | `backend/app/slack.py` | Pure mock: returns `sent=True` without posting. | Real webhook before the demo, or the pitch says Slack is simulated. |
 | 8 | Militaru | `slack.py:~99-107` | Default image is a `data:` URL, which Slack can't show. | Set `ADOBE_MOCK_IMAGE_URL` to an https image. |
