@@ -38,7 +38,7 @@ Read first: `docs/trending-research.md` (data sources and limits) and `docs/what
 - [ ] **Post** page: the post with its description in the middle; scoring framed on the left (Adobee stays); department reviews on the right.
 - [ ] **Trend score** under the scoring: the post's keywords and how trending they are, plus suggestions that raise the "hype". Marked "saved" / "live".
 - [ ] **Hashtag suggestions** in Post with an "add to post" button.
-- [ ] **Edit + regenerate:** editable post text, a "Regenerate" button and a box to rephrase the prompt ("shorter, more playful"); keep versions so the tester can go back.
+- [x] **Edit + regenerate** (Post page, under the post): editable caption, instruction box with 3 suggestions, "Regenerate" (`POST /runs/{id}/regenerate`), earlier versions to go back to. Restarts the review, comments are kept.
 - [x] **Rules** page: scoring factors, comment weight, platform rules with their confidence tag, and the AI cost (`lib/rules.ts`). Anda: edit the texts there when the scoring rules are written.
 - [ ] **Posting-time planner (UI):** choose the platform (Instagram, TikTok, X, LinkedIn); show the recommended time and why.
 - [x] "UI UX Pro Max" skill installed in `.claude/skills/` (local Python search, no network). Still open: design pass on the new Post page, screenshots at 1600 px and below 1100 px.

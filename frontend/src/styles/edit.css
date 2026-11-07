@@ -1,0 +1,45 @@
+/* Edit and regenerate card on the Post page. */
+
+.edit-panel textarea,
+.edit-panel input {
+  width: 100%;
+}
+
+.edit-label {
+  display: block;
+  margin: 10px 0 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.edit-chips,
+.edit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.edit-chips button {
+  padding: 4px 10px;
+  font-size: 13px;
+  border-radius: 999px;
+}
+
+.edit-history ul {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.edit-history li {
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+}
+
+.edit-history p {
+  margin: 0 0 6px;
+  font-size: 14px;
+}
