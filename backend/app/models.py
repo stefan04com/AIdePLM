@@ -56,6 +56,11 @@ class Comment(BaseModel):
     role: Literal["brand", "legal", "product"]
     text: str
     created_at: datetime
+    # Weighting (docs/comment-weighting.md). Optional and additive; set by the backend only.
+    author: str | None = None
+    author_title: str | None = None  # e.g. "Head barista", only for verified experts
+    industry_verified: bool = False  # author is a verified expert in the brand's industry
+    weight: float = 1.0  # expertise x recency, refreshed on every GET /runs/{id}
 
 
 class ConflictParty(BaseModel):
@@ -124,6 +129,7 @@ class CreateRunRequest(BaseModel):
 class CommentCreate(BaseModel):
     role: Literal["brand", "legal", "product"]
     text: str
+    author: str | None = Field(default=None, max_length=80)  # looked up in industry_experts.json
 
 
 class ApplyRequest(BaseModel):

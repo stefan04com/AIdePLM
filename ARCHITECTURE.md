@@ -188,7 +188,7 @@ Every call writes `{run_id, call, model, input_tokens, output_tokens, latency_ms
 | POST | `/runs` | `CreateRunRequest` `{trend_id}` | `Run` **immediately**, status `SPOTTED`. Fit + draft run in a background task |
 | GET | `/runs/{id}` | | `Run` (UI polls every 1s until `DRAFTED` or `REJECTED`; `step` shows progress) |
 | POST | `/runs/{id}/reactions` | | `PersonaReaction[]` (synchronous, must stay < ~10s) |
-| POST | `/runs/{id}/comments` | `CommentCreate` `{role, text}` | `Comment` |
+| POST | `/runs/{id}/comments` | `CommentCreate` `{role, text, author?}` | `Comment` (with `weight`, see `docs/comment-weighting.md`) |
 | POST | `/runs/{id}/referee` | | `RefereeResult` (synchronous, must stay < ~10s) |
 | POST | `/runs/{id}/apply` | `ApplyRequest` `{conflict_ids?, accept_all_edits}` | `Run` (status `SHIPPED`) |
 | GET | `/usage?run_id=` | | `UsageSummary` (no `run_id` = totals across all runs) |
@@ -251,6 +251,11 @@ class Comment(BaseModel):
     role: Literal["brand", "legal", "product"]
     text: str
     created_at: datetime
+    # weighting, set by the backend only (docs/comment-weighting.md)
+    author: str | None = None
+    author_title: str | None = None
+    industry_verified: bool = False
+    weight: float = 1.0   # expertise x recency, refreshed on every GET /runs/{id}
 
 class ConflictParty(BaseModel):
     kind: Literal["human", "persona"]
@@ -301,7 +306,7 @@ class Run(BaseModel):
     started_at: datetime
     shipped_at: datetime | None = None
 
-# Request bodies: CreateRunRequest{trend_id}, CommentCreate{role, text},
+# Request bodies: CreateRunRequest{trend_id}, CommentCreate{role, text, author?},
 # ApplyRequest{conflict_ids?: list[str], accept_all_edits: bool},
 # DemoModeRequest{on}, DemoModeResponse{on}
 

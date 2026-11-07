@@ -55,6 +55,11 @@ export interface Comment {
   role: CommentRole
   text: string
   created_at: IsoDateTime
+  // Weighting (docs/comment-weighting.md), set by the backend only.
+  author: string | null
+  author_title: string | null // e.g. "Head barista", only for verified experts
+  industry_verified: boolean // verified expert in the brand's industry
+  weight: number // expertise x recency, refreshed on every GET /runs/{id}
 }
 
 export interface ConflictParty {
@@ -122,6 +127,7 @@ export interface CreateRunRequest {
 export interface CommentCreate {
   role: CommentRole
   text: string
+  author?: string | null // looked up in data/industry_experts.json by the backend
 }
 
 export interface ApplyRequest {
