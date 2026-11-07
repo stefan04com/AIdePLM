@@ -9,7 +9,7 @@ Rules and architecture live in `CLAUDE.md` and `ARCHITECTURE.md`; this file only
 - **Feature freeze is on:** only fixes go here; ideas go to "What's next" in the pitch.
 - `main` is open: push or merge there as you like (team decision, 2026-11-07). Before you push, `git pull` first and run the tests (`pytest -q`, `npm run build && npm run lint && npm test`) so `main` still runs the demo. Never force-push `main`. Merge `main` back into `develop` after you push.
 
-Last updated: 2026-11-07 14:20 (Stefan)
+Last updated: 2026-11-07 14:55 (Stefan). **The demo runs on Stefan's laptop; we only need the recording as a backup.**
 
 ## Status
 
@@ -20,30 +20,30 @@ Last updated: 2026-11-07 14:20 (Stefan)
 | Browser e2e, `VITE_USE_MOCKS=false` | **Done in Chromium** (`qa/e2e_browser.py`): 3/3 clean runs, no console or HTTP errors, risky trend rejected, `needs_human` banner shows and apply still ships. Run in demo mode |
 | Slack | **Real** webhook on ship (`Run.slack` = posted / simulated / failed). Image: `SLACK_IMAGE_URL` or `PUBLIC_BASE_URL` (never localhost); a message rejected because of its image is retried once without it |
 | Adobe / trends | Local simulations by team decision, no keys needed |
-| Backup video | **Done:** `qa/results/moment-backup-demo.mp4` (72 s, no sound, demo mode) |
-| Tag `v1.0.0-demo` | **Cut** on `main` (see `git tag -n`); rehearsals on the presentation laptop still open |
+| Backup video | **Re-recorded 14:50:** `qa/results/moment-backup-demo.mp4` (72 s, no sound, demo mode): pumpkin latte photo, "Apply all & ship", 3 conflicts incl. **Brand vs Origin Seeker (synthetic customer)**, "37s vs 8 days", Slack, risky trend |
+| Tag `v1.0.0-demo` | **Cut** on `main`; re-tag `v1.0.1-demo` after this fix commit if you want the tag to match the video |
 
 ## Open
 
 ### Everyone
-- [ ] 3 clean rehearsals in a row on the **presentation laptop** with `docs/demo-script.md`, including the risky-trend beat. At least one with demo mode **off**, so the referee answers the comments typed live. Before each: `python qa/e2e_browser.py rehearsal` must exit 0.
+- [ ] 3 clean rehearsals in a row **on Stefan's laptop** (the presentation machine) with `docs/demo-script.md`, including the risky-trend beat and the referee live (`LIVE_IN_DEMO=referee`). Before each: `python qa/e2e_browser.py rehearsal` must exit 0.
 
 ### Stefan
 - [x] Persona conflict now shows up live: the referee prompt compares every persona reaction with the human demands, and `qa/live_eval.py` checks it. Eval 14:26: **human-vs-persona conflict 3/3**, conflicts backed by the persona's own reaction, $0.0602 per post (`qa/results/live_eval_20261107_142630.md`).
-- [x] Referee live on stage: set `LIVE_IN_DEMO=referee` (already in Stefan's `.env`; add it to every laptop). Demo mode stays on for the rest and is the automatic fallback if the LLM fails. Typed comments now change the answer (~22 s, ~$0.06). **Still open:** one full rehearsal with it on.
+- [x] Referee live on stage: `LIVE_IN_DEMO=referee` in Stefan's `.env`. Demo mode stays on for the rest and is the automatic fallback if the LLM fails. Typed comments now change the answer (~22 s, ~$0.06).
 - [x] Tag `v1.0.0-demo` cut on `main`; `frontend/package-lock.json` is clean. (If a rehearsal finds a bug: fix on `main`, tag `v1.0.1-demo`.)
 - [ ] Pitch, with Anda: say what is real (LLM, Slack) and what is simulated (Adobe, trends; `adobe.py` is the integration seam). Show `qa/results/live_eval_*.md` as proof the AI is real and measured, since demo mode answers from the cache.
 
 ### Andu
 - [x] "Accept compromise" removed: the per-conflict buttons did nothing (the backend ships the Referee's full `final_caption`), so cards now say "Applied when you ship" and the button reads **"Apply all & ship"** (`qa/e2e_browser.py` and `docs/demo-script.md` updated).
 - [x] Cost panel in demo mode shows the measured **$0.0602 per post** labelled "Measured in live eval". The estimate from live calls is used only when all 4 call types were live (with `LIVE_IN_DEMO=referee` one live call would show a wrong $0.03).
-- [ ] One human click-through on the presentation laptop with `VITE_USE_MOCKS=false` in `frontend/.env.local` (the automated run can't judge how it looks on the projector).
+- [ ] One human click-through on Stefan's laptop on the projector (readability, colours, bee, sound). `frontend/.env.local` with `VITE_USE_MOCKS=false` is set there.
 - [x] Ship screen shows "37s vs 8 days for a typical review" instead of the multiplier.
 
 ### Militaru
 - [x] **Replaced the laptop photo** with a pumpkin latte in a pumpkin mug (`frontend/public/visuals/boabe-pumpkin-latte.jpg`, provided by Militaru; license to confirm, see `CREDITS.md`). `ADOBE_MOCK_IMAGE_URL=/visuals/boabe-pumpkin-latte.jpg`; `SLACK_IMAGE_URL` = the same file's public GitHub raw URL; both defaults in `.env.example`.
 - [ ] Only if there's time and the team agrees (it's after the freeze): one real third integration, a live Reddit/news fetch in `trends.py` (fallback already there) or a Firefly call in `adobe.generate_visual()` if someone gets Adobe Developer credentials. Otherwise leave it in "What's next".
-- [ ] Give the team the webhook URL privately (not in git), so every laptop posts to the same channel.
+- [x] Webhook URL: only needed on Stefan's laptop (the demo machine); it is in his `.env`, not in git.
 - [x] `SLACK_IMAGE_URL` set to the public GitHub raw copy of the post photo (default in `.env.example`, so every laptop gets it).
 
 ### Anda
@@ -56,6 +56,8 @@ CI, `MAX_TOKENS` (2048) possibly cutting the referee JSON, file write under the 
 
 ## Done
 
+- [x] Demo fallback tells the same story as live (14:50): the canned referee has a third conflict, **Brand vs the coffee-curious persona**, and the final caption names the house espresso; the Analysis panel shows the measured $0.0602 instead of "not measured yet"; `qa/e2e_browser.py` checks that a synthetic customer is in a conflict (10/10 checks pass).
+- [x] Stefan's laptop configured for the demo: `.env` has `DEMO_MODE=1`, `LIVE_IN_DEMO=referee`, the webhook, `ADOBE_MOCK_IMAGE_URL` and `SLACK_IMAGE_URL` (pumpkin latte); `frontend/.env.local` has `VITE_USE_MOCKS=false`.
 - [x] Browser e2e with `VITE_USE_MOCKS=false`, `needs_human` banner check, backup video, `qa/e2e_browser.py` (2026-11-07 14:00)
 - [x] Slack: time in seconds under a minute ("37s", not "0m") in the message and the preview; `SLACK_IMAGE_URL`; retry without the image on HTTP 400; "Shipped" banner follows the real delivery
 - [x] Real Slack integration: webhook post on ship, preview fallback, UI label posted / not posted (tested in `#all-ai-de-plm-marketing-team`); Slack gets the reviewed post and tasks, nothing before apply
