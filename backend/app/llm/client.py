@@ -57,7 +57,8 @@ def _client():
     import anthropic
 
     if _bedrock():
-        return anthropic.AnthropicBedrockMantle(
+        # bedrock-runtime client: models like eu.anthropic.claude-sonnet-4-6 are served here
+        return anthropic.AnthropicBedrock(
             aws_region=os.environ.get("AWS_REGION", "").strip() or None,
             timeout=TIMEOUT_S,
             max_retries=0,
