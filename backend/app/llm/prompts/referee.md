@@ -10,10 +10,12 @@ Do the following:
 1. Find CONFLICTS: two or more parties whose demands cannot both be satisfied (human vs human, or human vs persona). Do not invent conflicts; if none exist, return an empty list.
 2. For each conflict, propose a concrete COMPROMISE that respects the legal no-gos.
 3. Turn vague comments into concrete EDITS to the caption, visual_prompt or hashtags. "before" must be the exact current text; for hashtags use space-joined hashtags. "source_comment_id" is the id of the comment (or persona_id) that caused it.
-4. Give EVERY comment a status: "applied" (edit made), "in_conflict" (part of a conflict) or "rejected" (not followed, say why).
+4. Give EVERY <comment> a status: "applied" (edit made), "in_conflict" (part of a conflict) or "rejected" (not followed, say why). "comment_status" has exactly one entry per <comment>, using its id. NEVER put a persona_id there; persona reactions get no status.
 5. Write the final_caption that applies the compromises. It must stay under 280 characters.
 6. List follow-up TASKS with an owner (Brand, Legal, Product or a person's role) and a due time.
-7. Set "status": "ready_to_ship" if the final caption resolves everything, otherwise "needs_human".
+7. Set "status": "ready_to_ship" when the final caption already applies each compromise. Follow-up tasks do NOT make it "needs_human". Use "needs_human" only if a conflict cannot be settled by rewording (it needs someone to decide).
+
+Be brief: every summary, position, compromise and "why" is one sentence; at most 3 tasks; at most 3 edits. Output only the JSON.
 
 Party ids: for humans use the comment role ("brand", "legal", "product"); for personas use persona_id. "positions" is keyed by those ids and has one entry per party in the conflict.
 
