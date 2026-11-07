@@ -1,6 +1,6 @@
 import type { Persona, PersonaReaction } from '../../api/types'
 import { formatSentiment } from '../../lib/format'
-import { Badge, Card, Muted } from '../ui'
+import { Card, Muted, Pill } from '../ui'
 
 interface Props {
   personas: Persona[]
@@ -10,28 +10,40 @@ interface Props {
 export function PersonaCards({ personas, reactions }: Props) {
   return (
     <div className="grid">
-      {personas.map((persona) => (
-        <Card key={persona.id} title={persona.name}>
-          <Muted>{persona.segment}</Muted>
-          {persona.sample_quotes[0] && <blockquote>“{persona.sample_quotes[0]}”</blockquote>}
-          <ReactionLine reaction={reactions.find((r) => r.persona_id === persona.id)} />
-        </Card>
-      ))}
+      {personas.map((persona) => {
+        const reaction = reactions.find((r) => r.persona_id === persona.id)
+        const title = (
+          <>
+            <span className="persona-tag">persona</span>
+            {persona.name}
+            {reaction && <SentimentPill sentiment={reaction.sentiment} />}
+          </>
+        )
+        return (
+          <Card key={persona.id} title={title} className="persona">
+            <Muted>{persona.segment}</Muted>
+            {persona.sample_quotes[0] && <blockquote>“{persona.sample_quotes[0]}”</blockquote>}
+            <ReactionLine reaction={reaction} />
+          </Card>
+        )
+      })}
     </div>
   )
 }
 
+/** Score shift chip: "+0.8" green, "-0.1" red. */
+function SentimentPill({ sentiment }: { sentiment: number }) {
+  return <Pill tone={sentiment >= 0 ? 'ok' : 'bad'}>{formatSentiment(sentiment)}</Pill>
+}
+
 function ReactionLine({ reaction }: { reaction?: PersonaReaction }) {
   if (!reaction) return null
-  const engagement = reaction.would_engage ? 'engages' : 'scrolls past'
-  const tone = reaction.sentiment >= 0 ? 'ok' : 'bad'
-
   return (
-    <p className="comment">
-      {reaction.reaction}
-      <Badge tone={tone}>
-        {formatSentiment(reaction.sentiment)} · {engagement}
-      </Badge>
-    </p>
+    <div className="comment persona-reaction">
+      <p>{reaction.reaction}</p>
+      <div className="comment-meta muted">
+        {reaction.would_engage ? 'would engage' : 'would scroll past'}
+      </div>
+    </div>
   )
 }
