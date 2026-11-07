@@ -112,3 +112,31 @@ def test_live_trends_endpoint_returns_the_saved_feed(client):
     assert out["source"] == "saved" and out["collected_at"] == "2026-11-07"
     assert len(out["trends"]) >= 3
     assert all(t["url"].startswith("https://") for t in out["trends"])
+
+
+def test_posting_windows_returns_the_structured_data(client):
+    out = client.get("/posting-windows", params={"platform": "instagram_reels"}).json()
+    assert out["platform"] == "instagram"  # Reels and feed share the app's entry
+    assert out["best_days"] and out["confidence"] in {"high", "medium", "low"}
+    assert out["reason"]
+    for window in out["windows"]:
+        assert window["days"] and ":" in window["start"] and ":" in window["end"]
+    assert out["sources"] and all(
+        s["url"].startswith("https://") and s["name"] for s in out["sources"]
+    )
+    assert (
+        client.get("/posting-windows", params={"platform": "facebook_feed"}).json()["platform"]
+        == "facebook"
+    )
+    for platform in ("tiktok", "x", "linkedin"):
+        assert client.get("/posting-windows", params={"platform": platform}).status_code == 200
+
+
+def test_posting_windows_404_without_data(client, monkeypatch):
+    assert client.get("/posting-windows", params={"platform": "myspace"}).status_code == 404
+    assert client.get("/posting-windows").status_code == 422
+    from app import posting_times
+
+    monkeypatch.setattr(posting_times, "recommend", lambda platform, path=None: None)
+    r = client.get("/posting-windows", params={"platform": "instagram"})
+    assert r.status_code == 404 and "detail" in r.json()

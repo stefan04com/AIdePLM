@@ -56,6 +56,12 @@ export const AFTER_SHIP_S = CELEBRATE_MS / 1000 + 0.4
 /** The phone with the Slack notification slides in once the caption is rewriting. */
 export const PHONE_AT_MS = CELEBRATE_MS + 1500
 
+/** How long the phone stays; Adobee sits on it meanwhile. */
+export const PHONE_SHOW_MS = 8000
+
+/** Where the phone docks (px from the bottom-right corner) and its size; matches `.phone` in wow.css. */
+export const PHONE_BOX = { right: 28, bottom: 24, width: 250, height: 500 } as const
+
 /** Real public reviews the three personas are built from (data/reviews.csv). */
 export const REAL_REVIEWS = 65
 

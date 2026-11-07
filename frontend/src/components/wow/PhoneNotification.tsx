@@ -3,9 +3,8 @@ import { createPortal } from 'react-dom'
 import type { Run } from '../../api/types'
 import type { SlackPreview } from '../../lib/slackPreview'
 import { sound } from '../../lib/sound'
-import { PHONE_AT_MS } from '../../lib/wow'
+import { PHONE_AT_MS, PHONE_SHOW_MS } from '../../lib/wow'
 
-const SHOW_MS = 8000
 const EXCERPT = 110
 
 const clock = () => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -34,7 +33,7 @@ export function PhoneNotification({ run, preview }: { run: Run | null; preview: 
       setOpen(true)
       sound.notify()
     }, PHONE_AT_MS)
-    const hide = setTimeout(() => setOpen(false), PHONE_AT_MS + SHOW_MS)
+    const hide = setTimeout(() => setOpen(false), PHONE_AT_MS + PHONE_SHOW_MS)
     return () => {
       clearTimeout(show)
       clearTimeout(hide)

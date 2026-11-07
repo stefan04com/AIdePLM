@@ -2,6 +2,7 @@ import type { CallUsage } from '../api/types'
 import type { Usage } from '../hooks/useUsage'
 import { estimatePostCost, formatUsd, isLiveCall, MEASURED_IN_LIVE_EVAL } from '../lib/cost'
 import { formatDuration } from '../lib/format'
+import { CostTicker } from './CostTicker'
 import { Card, Muted, Pill, SectionHead } from './ui'
 
 /** AI cost per post (for the cost slide) and the calls of the current run. */
@@ -19,6 +20,7 @@ export function CostPanel({ usage }: { usage: Usage }) {
           </Pill>
         }
       />
+      <CostTicker all={usage.all} />
       <Card title="Per post (measured)">
         {estimate ? (
           <>

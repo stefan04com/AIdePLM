@@ -1,0 +1,126 @@
+/* Live cost ticker: coins flip in per LLM call; totals count up in JS. Transform/opacity only. */
+
+.ticker {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.ticker-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ticker-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ticker-label {
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.ticker-value {
+  font-family: var(--mono);
+  font-size: 22px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.ticker-hours .ticker-value {
+  color: var(--ok);
+}
+
+.ticker-coins {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  perspective: 400px;
+}
+
+.ticker-coin {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 9px 2px 3px;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+}
+
+.ticker-coin.is-cached {
+  color: var(--muted);
+  background: var(--bg);
+}
+
+.ticker-face {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--honey);
+  color: var(--accent-text);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.ticker-coin.is-cached .ticker-face {
+  background: var(--border-strong);
+}
+
+.ticker-coin.is-new {
+  animation: coin-toast 0.7s calc(var(--n, 0) * 140ms) cubic-bezier(0.2, 0.9, 0.3, 1.2) backwards;
+}
+
+.ticker-coin.is-new .ticker-face {
+  animation: coin-flip 0.8s calc(var(--n, 0) * 140ms) ease-out backwards;
+}
+
+@keyframes coin-toast {
+  from {
+    opacity: 0;
+    transform: translateY(-14px) scale(0.8);
+  }
+}
+
+@keyframes coin-flip {
+  0% {
+    transform: rotateY(0) scale(0.6);
+  }
+  100% {
+    transform: rotateY(720deg) scale(1);
+  }
+}
+
+.ticker-note {
+  margin: 0;
+  font-size: 11px;
+  color: var(--faint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-coin.is-new,
+  .ticker-coin.is-new .ticker-face {
+    animation: none;
+  }
+}

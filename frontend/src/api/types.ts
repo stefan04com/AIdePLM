@@ -177,6 +177,18 @@ export interface PostingTime {
   sources?: string[] // report URLs behind the window
 }
 
+export type Weekday = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday'
+
+/** GET /posting-windows: the structured windows behind PostingTime (data/posting_windows.json). */
+export interface PostingWindows {
+  platform: string // data key: "instagram", "facebook", "tiktok", "x", "linkedin", ...
+  best_days: Weekday[] // strongest first
+  windows: { days: Weekday[]; start: string; end: string }[] // "HH:MM", audience's local time
+  reason: string
+  confidence: 'high' | 'medium' | 'low'
+  sources: { name: string; url: string }[]
+}
+
 export type HashtagKind = 'broad' | 'niche' | 'local' | 'branded-generic'
 
 export interface HashtagSuggestion {

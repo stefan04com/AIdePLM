@@ -182,6 +182,31 @@ class PostingTime(BaseModel):
     sources: list[str] = []  # report URLs behind the window
 
 
+Weekday = Literal["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
+
+
+class PostingWindow(BaseModel):
+    days: list[Weekday]
+    start: str  # "HH:MM", audience's local time
+    end: str
+
+
+class PostingSource(BaseModel):
+    name: str
+    url: str
+
+
+class PostingWindows(BaseModel):
+    """GET /posting-windows: the structured windows behind PostingTime, for the heatmap."""
+
+    platform: str  # data key: "instagram", "facebook", "tiktok", "x", ...
+    best_days: list[Weekday]  # strongest first
+    windows: list[PostingWindow]
+    reason: str
+    confidence: Literal["high", "medium", "low"]
+    sources: list[PostingSource]
+
+
 class LiveTrends(BaseModel):
     """Current trends for the "Fetch current trends" button: saved from the web, not live."""
 

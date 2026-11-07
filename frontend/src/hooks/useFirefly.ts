@@ -37,6 +37,8 @@ export function useFirefly(runId: string | null) {
   return {
     generating,
     step: generating ? fireflyStepAt(now) : null,
+    /** Date.now() when the call started (drives the denoise reveal), null when idle. */
+    startedAt: generating ? startedAt : null,
     /** The generated image once the call is done, else null (the post keeps its own image). */
     image: done ? FIREFLY_IMAGE : null,
     generate: () => {
