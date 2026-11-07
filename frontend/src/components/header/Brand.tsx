@@ -1,9 +1,9 @@
-/** Header logo: gradient square with "M", the name and the event line. */
+/** Header logo: gradient square with "AB", the name and the event line. */
 export function Brand() {
   return (
     <div className="brand">
       <span className="logo" aria-hidden>
-        M
+        AB
       </span>
       <div>
         <h1>AdoBee</h1>

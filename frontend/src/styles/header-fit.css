@@ -42,3 +42,9 @@
     display: none; /* the bar and "7h 56m left" stay; the tooltip still says what it is */
   }
 }
+
+/* Two letters ("AB") in the logo square. */
+.logo {
+  font-size: 16px;
+  letter-spacing: -0.5px;
+}
