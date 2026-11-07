@@ -9,7 +9,7 @@ Decided 2026-11-07 (Ada). The demo uses **Boabe**, a fictional Bucharest special
 | Brand voice, legal no-gos, product facts | `data/brand.md` |
 | Saved trend | `data/demo_trend.json` |
 | Scripted Brand / Legal / Product comments | `data/demo_comments.json` |
-| Reviews for personas (87, real) | `data/reviews.csv`, provenance in `data/reviews_sources.md` |
+| Reviews for personas (65, real) | `data/reviews.csv`, provenance in `data/reviews_sources.md` |
 
 Mocks and canned responses should copy from these files, not the other way round.
 
