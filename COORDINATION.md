@@ -77,9 +77,12 @@ Read first: `docs/trending-research.md` (data sources and limits) and `docs/what
 - [x] Persona conflict now shows up live: the referee prompt compares every persona reaction with the human demands, and `qa/live_eval.py` checks it. Eval 14:26: **human-vs-persona conflict 3/3**, conflicts backed by the persona's own reaction, $0.0602 per post (`qa/results/live_eval_20261107_142630.md`).
 - [x] Referee live on stage: `LIVE_IN_DEMO=referee` in Stefan's `.env`. Demo mode stays on for the rest and is the automatic fallback if the LLM fails. Typed comments now change the answer (~22 s, ~$0.06).
 - [x] Tag `v1.0.0-demo` cut on `main`; `frontend/package-lock.json` is clean. (If a rehearsal finds a bug: fix on `main`, tag `v1.0.1-demo`.)
-- [ ] Pitch, with Anda: say what is real (LLM, Slack) and what is simulated (Adobe, trends; `adobe.py` is the integration seam). Show `qa/results/live_eval_*.md` as proof the AI is real and measured, since demo mode answers from the cache.
+- [x] Pitch, with Anda (Stefan's part done: `docs/pitch-real-vs-simulated.md`; Anda puts it on the slides): say what is real (LLM, Slack) and what is simulated (Adobe, trends; `adobe.py` is the integration seam). Show `qa/results/live_eval_*.md` as proof the AI is real and measured, since demo mode answers from the cache.
+
+- [x] Extras (team decision 2026-11-07, freeze lifted for these): `POST /runs/{id}/regenerate` (6th LLM call), `POST /trend-score` (7th, saved-data fallback), `GET /posting-time` (rules, no LLM), optional `Draft.regenerations`; mirrored in `frontend/src/api/` and the mocks, 139 backend tests. Live check done (real model, no fallback, ~$0.02); prompts tightened after it.
 
 ### Andu
+- [ ] Use the new endpoints in the UI if wanted: edit caption + "Regenerate", trend score, recommended time (`api.regenerate`, `api.getTrendScore`, `api.getPostingTime` already exist, with mocks).
 - [x] "Accept compromise" removed: the per-conflict buttons did nothing (the backend ships the Referee's full `final_caption`), so cards now say "Applied when you ship" and the button reads **"Apply all & ship"** (`qa/e2e_browser.py` and `docs/demo-script.md` updated).
 - [x] Cost panel in demo mode shows the measured **$0.0602 per post** labelled "Measured in live eval". The estimate from live calls is used only when all 4 call types were live (with `LIVE_IN_DEMO=referee` one live call would show a wrong $0.03).
 - [ ] One human click-through on Stefan's laptop on the projector (readability, colours, bee, sound). `frontend/.env.local` with `VITE_USE_MOCKS=false` is set there.

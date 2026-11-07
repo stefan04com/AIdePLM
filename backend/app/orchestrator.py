@@ -20,7 +20,10 @@ from .models import (
     Persona,
     PersonaReaction,
     RefereeResult,
+    RegenerateRequest,
     Run,
+    TrendScore,
+    TrendScoreRequest,
 )
 
 log = logging.getLogger(__name__)
@@ -266,3 +269,32 @@ def apply(run_id: str, body: ApplyRequest) -> Run:
         return get_run(run_id)
     finally:
         _release(run_id)
+
+
+# --- optional extras: regenerate the caption, score a text against the trends -----------------
+
+EDITABLE = {"DRAFTED", "IN_REVIEW", "REFEREED"}
+
+
+def regenerate(run_id: str, body: RegenerateRequest) -> Run:
+    """Rewrite the caption from the person's edit + instruction. The review starts over:
+    reactions and referee answered the old text, so they are cleared (comments are kept)."""
+    run = _claim(run_id, EDITABLE, "Rewriting the caption…")
+    try:
+        assert run.draft is not None
+        content = calls.regenerate(
+            run.draft, body.caption, body.instruction, adapters.brand_guidelines(), run_id
+        )
+        with store.mutate(run_id) as r:
+            if r is not None and r.draft is not None:
+                r.draft.caption = content.caption.strip()
+                r.draft.hashtags = content.hashtags or r.draft.hashtags
+                r.draft.regenerations += 1
+                r.reactions, r.referee, r.status = [], None, "DRAFTED"
+    finally:
+        _release(run_id)
+    return get_run(run_id)  # after the release, so the caller sees step=None
+
+
+def trend_score(body: TrendScoreRequest) -> TrendScore:
+    return calls.score_trend(body.words, body.hashtags)

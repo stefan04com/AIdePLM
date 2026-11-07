@@ -102,16 +102,33 @@ export default function App() {
     },
   )
 
+  const changeView = (next: View) => {
+    setView(next)
+    writeViewToUrl(next)
+  }
+
+  const reviewColumn = (
+    <ReviewColumn
+      run={run}
+      personas={personas}
+      busy={uiBusy}
+      onComment={(role: CommentRole, text: string, author: string | null) =>
+        onRun((id) => api.addComment(id, { role, text, author }))()
+      }
+      onRequestReactions={onRun(api.requestReactions)}
+      onFillScripted={onRun(fillScripted)}
+      onReferee={onRun(api.referee)}
+      onApply={(body: ApplyRequest) => onRun((id) => api.apply(id, body))()}
+    />
+  )
+
   return (
     <div className="app">
       <header className="topbar">
         <Brand />
         <ViewTabs
           view={view}
-          onChange={(next) => {
-            setView(next)
-            writeViewToUrl(next)
-          }}
+          onChange={changeView}
         />
         <Adobee run={run} busy={uiBusy} />
         <div className="topbar-status">
@@ -127,10 +144,17 @@ export default function App() {
 
       {error && <Banner tone="bad">{error}</Banner>}
 
+      {view === 'post' && run && !isFinished(run) && run.status !== 'SPOTTED' && (
+        <Banner tone="warn">
+          Review, referee and ship happen in the Rules page.{' '}
+          <button onClick={() => changeView('rules')}>Open Rules</button>
+        </Banner>
+      )}
+
       {view === 'rules' ? (
-        <RulesPage usage={usage} />
+        <RulesPage usage={usage} review={reviewColumn} />
       ) : (
-        <main className="columns" id="panel-post" role="tabpanel" aria-labelledby="tab-post">
+        <main className="columns post-page" id="panel-post" role="tabpanel" aria-labelledby="tab-post">
           <div className="column">
             <TrendColumn
               trend={run?.trend ?? trend}
@@ -142,18 +166,6 @@ export default function App() {
             <AnalysisPanel run={run} usage={usage} />
           </div>
           <CanvasColumn run={run} />
-          <ReviewColumn
-            run={run}
-            personas={personas}
-            busy={uiBusy}
-            onComment={(role: CommentRole, text: string, author: string | null) =>
-              onRun((id) => api.addComment(id, { role, text, author }))()
-            }
-            onRequestReactions={onRun(api.requestReactions)}
-            onFillScripted={onRun(fillScripted)}
-            onReferee={onRun(api.referee)}
-            onApply={(body: ApplyRequest) => onRun((id) => api.apply(id, body))()}
-          />
         </main>
       )}
 

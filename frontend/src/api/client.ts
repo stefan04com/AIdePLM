@@ -12,9 +12,14 @@ import type {
   DemoModeResponse,
   Persona,
   PersonaReaction,
+  Platform,
+  PostingTime,
   RefereeResult,
+  RegenerateRequest,
   Run,
   Trend,
+  TrendScore,
+  TrendScoreRequest,
   UsageSummary,
 } from './types'
 
@@ -64,6 +69,11 @@ const backendApi = {
   addComment: (id: string, body: CommentCreate) => post<Comment>(runPath(id, '/comments'), body),
   referee: (id: string) => post<RefereeResult>(runPath(id, '/referee')),
   apply: (id: string, body: ApplyRequest) => post<Run>(runPath(id, '/apply'), body),
+  /** Rewrites the edited caption; the review restarts (status DRAFTED, reactions cleared). */
+  regenerate: (id: string, body: RegenerateRequest) => post<Run>(runPath(id, '/regenerate'), body),
+  getTrendScore: (body: TrendScoreRequest) => post<TrendScore>('/trend-score', body),
+  getPostingTime: (platform: Platform) =>
+    get<PostingTime>(`/posting-time?platform=${encodeURIComponent(platform)}`),
   getUsage: (runId?: string) =>
     get<UsageSummary>(runId ? `/usage?run_id=${encodeURIComponent(runId)}` : '/usage'),
   getDemoMode: () => get<DemoModeResponse>('/admin/demo-mode'),

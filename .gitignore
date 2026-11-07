@@ -6,3 +6,4 @@ dist/
 logs/*.jsonl
 data/runs.json
 data/last_good.json
+.DS_Store
