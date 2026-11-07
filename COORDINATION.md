@@ -51,9 +51,15 @@ Read first: `docs/trending-research.md` (data sources and limits) and `docs/what
 - [ ] New fields in `models.py`: optional only, mirrored in `frontend/src/api/types.ts` and the mocks.
 
 ### Militaru (data sources)
-- [ ] Source for the Trend score: try Google Trends (alpha request or a third-party route) and keep X / YouTube `mostPopular` / Reddit ready; write down limits and cost.
-- [ ] **Hashtag suggestions** from real sources, with a saved cache for the demo (Instagram: max 30 unique hashtags per 7 days).
-- [ ] Data for the recommended time: posting windows per platform, with the source.
+- [x] Source for the Trend score: `docs/trend-score-sources.md` (access, cost, limits, risk; 16 sources).
+    - Demo: saved data marked "saved". Live later: SerpApi Google Trends (`geo=RO`, free 250 searches/month, key in `.env`) + YouTube `mostPopular` RO.
+    - Apply for the official Google Trends alpha. Skip pytrends (archived, scrapes against Google's Terms).
+- [x] **Hashtag suggestions:** `data/hashtags.json` (12 topics, 53 tags, each with a source URL; trademarks and health tags excluded).
+    - `backend/app/hashtags.py`: `suggest(keywords, platform, limit)` → `.model_dump()` for Stefan's endpoint; Boabe cap 3.
+    - Instagram now allows **5 hashtags per post** (since 18 Dec 2025). The 30-per-7-days limit is the Graph API hashtag *search*.
+- [x] Posting windows: `data/posting_windows.json` (7 platforms, Sprout/Buffer/Hootsuite/Metricool/Later 2025-26, confidence each; TikTok low).
+    - `backend/app/posting_times.py`: `recommend(platform)` for the posting-time endpoint.
+    - Differs from `docs/trending-research.md` §3 for Instagram, LinkedIn, Facebook: the JSON follows the verified reports.
 - [ ] Replace the simulated Firefly photos in `frontend/public/visuals/` with real Firefly output if someone gets Adobe credentials (update `CREDITS.md`).
 
 ### Anda (data, content, QA)
@@ -80,11 +86,14 @@ Read first: `docs/trending-research.md` (data sources and limits) and `docs/what
 - [x] Ship screen shows "37s vs 8 days for a typical review" instead of the multiplier.
 
 ### Militaru
-- [x] **Replaced the laptop photo** with a pumpkin latte in a pumpkin mug (`frontend/public/visuals/boabe-pumpkin-latte.jpg`, provided by Militaru; license to confirm, see `CREDITS.md`). `ADOBE_MOCK_IMAGE_URL=/visuals/boabe-pumpkin-latte.jpg`; `SLACK_IMAGE_URL` = the same file's public GitHub raw URL; both defaults in `.env.example`.
+- [x] **Replaced the laptop photo** with a pumpkin latte in a pumpkin mug (`frontend/public/visuals/boabe-pumpkin-latte.jpg`; license to confirm, `CREDITS.md`).
+    - `ADOBE_MOCK_IMAGE_URL=/visuals/boabe-pumpkin-latte.jpg`, default in `.env.example`.
 - [ ] Only if there's time and the team agrees (it's after the freeze): one real third integration, a live Reddit/news fetch in `trends.py` (fallback already there) or a Firefly call in `adobe.generate_visual()` if someone gets Adobe Developer credentials. Otherwise leave it in "What's next".
 - [x] Webhook URL: only needed on Stefan's laptop (the demo machine); it is in his `.env`, not in git.
 - [x] `SLACK_IMAGE_URL` set to the public GitHub raw copy of the post photo (default in `.env.example`, so every laptop gets it).
-- [x] **Visual after review:** on apply the post (v2) switches to `boabe-pumpkin-latte-revised.jpg` (`ADOBE_MOCK_REVISED_IMAGE_URL`, `adobe.revised_visual`), and the Slack message shows the same image (`SLACK_IMAGE_URL`). **That photo has a dreamstime.com watermark: replace it with a licensed image before the demo** (`CREDITS.md`).
+- [x] **Visual after review:** on apply, post v2 switches to `boabe-pumpkin-latte-revised.jpg` (`ADOBE_MOCK_REVISED_IMAGE_URL`, `adobe.revised_visual`).
+    - The Slack message shows the same image (`SLACK_IMAGE_URL`, public GitHub raw URL).
+    - **That photo has a dreamstime.com watermark: replace it with a licensed image before the demo** (`CREDITS.md`).
 
 ### Anda
 - [ ] Pitch: say "37 s vs 8 days" rather than the multiplier, and state plainly what is real (LLM, Slack) and what is simulated (Adobe, trends).
