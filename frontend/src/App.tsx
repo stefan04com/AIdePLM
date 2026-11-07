@@ -3,6 +3,11 @@ import { api, USE_MOCKS } from './api/client'
 import { errorMessage } from './api/errors'
 import type { ApplyRequest, CommentRole, Persona, Trend } from './api/types'
 import { Adobee } from './components/Adobee'
+import { Intro } from './components/wow/Intro'
+import { PresenterHint } from './components/wow/PresenterHint'
+import { ShipCelebration } from './components/wow/ShipCelebration'
+import { SoundToggle } from './components/wow/SoundToggle'
+import { TrendLife } from './components/wow/TrendLife'
 import { CanvasColumn } from './components/CanvasColumn'
 import { CostPanel } from './components/CostPanel'
 import { AnalysisPanel } from './components/spot/AnalysisPanel'
@@ -14,9 +19,12 @@ import { ReviewColumn } from './components/ReviewColumn'
 import { TrendColumn } from './components/TrendColumn'
 import { Badge, Banner } from './components/ui'
 import { useRun } from './hooks/useRun'
+import { usePresenter } from './hooks/usePresenter'
+import { useSpotlight } from './hooks/useSpotlight'
 import { useUsage } from './hooks/useUsage'
 import { isFinished, isRunBusy } from './lib/runStatus'
 import { readRunIdFromUrl, writeRunIdToUrl } from './lib/runUrl'
+import { nextStep } from './lib/wow'
 import { scriptedComments } from './mocks/scriptedComments'
 
 export default function App() {
@@ -26,6 +34,7 @@ export default function App() {
   const [busy, setBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const { run, error: pollError, refresh, setRun } = useRun(runId)
+  useSpotlight()
   const usage = useUsage(run)
 
   const showError = useCallback((err: unknown) => setActionError(errorMessage(err)), [])
@@ -54,14 +63,18 @@ export default function App() {
     if (run) void act(() => call(run.id))
   }
 
-  const startRun = () =>
+  /** Starts a run on the saved trend, or on the risky one the fit check should reject. */
+  const startRunOn = (pick: () => Promise<Trend | null>) =>
     act(async () => {
-      if (!trend) return
-      const created = await api.createRun(trend.id)
+      const chosen = await pick()
+      if (!chosen) return
+      const created = await api.createRun(chosen.id)
       setRun(created)
       setRunId(created.id)
       writeRunIdToUrl(created.id)
     })
+  const startRun = () => startRunOn(async () => trend)
+  const startRisky = () => startRunOn(() => api.getTrend('rejected'))
 
   const fillScripted = async (id: string) => {
     for (const comment of scriptedComments) await api.addComment(id, comment)
@@ -69,6 +82,22 @@ export default function App() {
 
   const error = actionError ?? pollError
   const uiBusy = busy || isRunBusy(run)
+  const canStart = !uiBusy && (run === null || isFinished(run))
+  const step = uiBusy ? null : nextStep(run)
+
+  // Presenter mode: one key per demo step, so the stage never depends on finding a button.
+  usePresenter(
+    () => {
+      if (step === 'start') void startRun()
+      else if (step === 'reactions') onRun(api.requestReactions)()
+      else if (step === 'comments') onRun(fillScripted)()
+      else if (step === 'referee') onRun(api.referee)()
+      else if (step === 'apply') onRun((id) => api.apply(id, { accept_all_edits: true }))()
+    },
+    () => {
+      if (canStart) void startRisky()
+    },
+  )
 
   return (
     <div className="app">
@@ -76,10 +105,13 @@ export default function App() {
         <Brand />
         <Adobee run={run} busy={uiBusy} />
         <div className="topbar-status">
+          <TrendLife trend={run?.trend ?? trend} run={run} />
           {run && <RunClock run={run} />}
           {run && <RunMeta run={run} usage={usage} />}
           {USE_MOCKS && <Badge tone="warn">mock API</Badge>}
           <DemoModeToggle onError={showError} />
+          <PresenterHint step={step} />
+          <SoundToggle />
         </div>
       </header>
 
@@ -88,10 +120,11 @@ export default function App() {
       <main className="columns">
         <div className="column">
           <TrendColumn
-            trend={trend}
+            trend={run?.trend ?? trend}
             fit={run?.fit ?? null}
-            canStart={!uiBusy && (run === null || isFinished(run))}
+            canStart={canStart}
             onStart={startRun}
+            onTryRisky={USE_MOCKS ? undefined : startRisky}
           />
           <AnalysisPanel run={run} usage={usage} />
           <CostPanel usage={usage} />
@@ -110,6 +143,9 @@ export default function App() {
           onApply={(body: ApplyRequest) => onRun((id) => api.apply(id, body))()}
         />
       </main>
+
+      <ShipCelebration run={run} />
+      <Intro />
     </div>
   )
 }

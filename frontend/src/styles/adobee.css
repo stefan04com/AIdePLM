@@ -291,9 +291,9 @@
 }
 @keyframes bee-orbit {
   0% { transform: translate(0, 0) rotate(0); }
-  25% { transform: translate(-14px, -8px) rotate(-8deg); }
-  50% { transform: translate(-28px, 0) rotate(0); }
-  75% { transform: translate(-14px, 8px) rotate(8deg); }
+  25% { transform: translate(8px, -8px) rotate(8deg); }
+  50% { transform: translate(0, -14px) rotate(0); }
+  75% { transform: translate(-8px, -8px) rotate(-8deg); }
   100% { transform: translate(0, 0) rotate(0); }
 }
 @keyframes bee-loop {

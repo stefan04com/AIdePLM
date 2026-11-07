@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Run } from '../api/types'
 import { ADOBEE_TIPS, adobeeSpot, adobeeState, hiveCells, type AdobeeSpot } from '../lib/adobee'
+import { sound } from '../lib/sound'
 import { BeeSvg } from './adobee/BeeSvg'
 import { Hive } from './adobee/Hive'
 
@@ -11,6 +12,7 @@ const MAX_LOOK = 3 // px the eyes move toward the cursor
 const TIP_MS = 5000
 const TRAIL = 9 // pollen hexes dropped per flight
 const BURST = 18 // honey hexes when the post ships
+const CARRY_MAX = 9 // pollen hexes carried from reviewers to the referee
 
 /** Where Adobee lands for each spot; the first selector found on the page wins. */
 const TARGETS: Record<Exclude<AdobeeSpot, 'home'>, string[]> = {
@@ -60,6 +62,13 @@ const bezier = (a: Point, c: Point, b: Point, t: number): Point => ({
   y: (1 - t) ** 2 * a.y + 2 * (1 - t) * t * c.y + t ** 2 * b.y,
 })
 
+/** Scrolls so `el` starts just below the sticky header. */
+function scrollBelowHeader(el: Element) {
+  const header = document.querySelector('.topbar')?.getBoundingClientRect().bottom ?? 0
+  const top = el.getBoundingClientRect().top + window.scrollY - header - 16
+  window.scrollTo({ top, behavior: reducedMotion() ? 'auto' : 'smooth' })
+}
+
 /** Adds a short-lived decoration (pollen, ring, honey) to the sky layer; it removes itself. */
 function spawn(sky: HTMLElement, className: string, style: Record<string, string>) {
   const el = document.createElement('span')
@@ -67,6 +76,31 @@ function spawn(sky: HTMLElement, className: string, style: Record<string, string
   for (const [key, value] of Object.entries(style)) el.style.setProperty(key, value)
   el.addEventListener('animationend', () => el.remove(), { once: true })
   sky.appendChild(el)
+}
+
+/**
+ * Every review voice (comments, persona reactions) flies as a pollen hex into the referee panel:
+ * the referee reads them all at once. Returns the time the last one lands.
+ */
+function pollinate(sky: HTMLElement, target: HTMLElement): number {
+  const sources = [...document.querySelectorAll<HTMLElement>('.comment, .persona')].slice(0, CARRY_MAX)
+  const box = target.getBoundingClientRect()
+  const end = { x: box.left + box.width / 2, y: Math.max(box.top + 24, 90) }
+  sources.forEach((source, i) => {
+    const from = source.getBoundingClientRect()
+    const start = { x: from.left + from.width / 2, y: from.top + from.height / 2 }
+    const control = { x: (start.x + end.x) / 2 + (i % 2 ? 60 : -60), y: Math.min(start.y, end.y) - 80 }
+    const el = document.createElement('span')
+    el.className = 'adobee-carry'
+    sky.appendChild(el)
+    const frames = Array.from({ length: 12 }, (_, k) => {
+      const p = bezier(start, control, end, k / 11)
+      return { transform: `translate(${p.x}px, ${p.y}px) rotate(${k * 30}deg) scale(${1 - k * 0.04})` }
+    })
+    const flight = el.animate(frames, { duration: 900, delay: i * 90, easing: 'ease-in-out', fill: 'both' })
+    flight.onfinish = () => el.remove()
+  })
+  return sources.length * 90 + 900
 }
 
 /**
@@ -84,6 +118,7 @@ export function Adobee({ run, busy }: { run: Run | null; busy: boolean }) {
   const flyerRef = useRef<HTMLDivElement>(null)
   const skyRef = useRef<HTMLDivElement>(null)
   const pos = useRef<Point | null>(null)
+  const lastSpot = useRef<AdobeeSpot>(spot)
   const flying = useRef(false)
   const tipIndex = useRef(0)
 
@@ -99,9 +134,29 @@ export function Adobee({ run, busy }: { run: Run | null; busy: boolean }) {
       pos.current = p
     }
     const from = pos.current
+    const cameFrom = lastSpot.current
+    lastSpot.current = spot
     if (!from || reducedMotion()) {
       place(to)
       return
+    }
+    const later: number[] = []
+    if (cameFrom === 'review' && spot === 'referee' && target) {
+      // bring the referee into view, then let every review voice fly into it
+      scrollBelowHeader(target)
+      later.push(window.setTimeout(() => pollinate(sky, target), 450))
+    }
+    if (spot === 'ship') {
+      // after the celebration, show the post with its caption rewriting itself
+      later.push(
+        window.setTimeout(() => {
+          const caption = document.querySelector('.express .caption')
+          if (!caption) return
+          const box = caption.getBoundingClientRect()
+          const top = box.top + window.scrollY - window.innerHeight / 2 + box.height / 2
+          window.scrollTo({ top, behavior: reducedMotion() ? 'auto' : 'smooth' })
+        }, 4100),
+      )
     }
 
     const distance = Math.hypot(to.x - from.x, to.y - from.y)
@@ -118,6 +173,7 @@ export function Adobee({ run, busy }: { run: Run | null; busy: boolean }) {
 
     flying.current = true
     flyer.classList.add('is-flying')
+    sound.buzz()
     const animation = flyer.animate(frames, { duration, easing: 'cubic-bezier(.45,.05,.3,1)' })
     const timers = Array.from({ length: TRAIL }, (_, i) => {
       const t = (i + 1) / (TRAIL + 1)
@@ -140,6 +196,8 @@ export function Adobee({ run, busy }: { run: Run | null; busy: boolean }) {
           height: `${box.height + 8}px`,
         })
       }
+      if (flyer.classList.contains('adobee-alert')) sound.ding()
+      if (flyer.classList.contains('adobee-sad')) sound.bonk()
       if (spot === 'ship' && !reducedMotion()) {
         for (let i = 0; i < BURST; i++) {
           const angle = (i / BURST) * Math.PI * 2
@@ -156,6 +214,7 @@ export function Adobee({ run, busy }: { run: Run | null; busy: boolean }) {
     animation.onfinish = land
     return () => {
       timers.forEach(clearTimeout)
+      later.forEach(clearTimeout)
       animation.onfinish = null
       animation.cancel()
       flying.current = false

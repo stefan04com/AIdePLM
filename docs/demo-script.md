@@ -23,6 +23,10 @@ The Product comment is pre-filled in the form. The driver sends it. Judges do no
 **Product (pre-filled, driver sends):**
 "The Pumpkin & Cinnamon Latte launches this week. Add that it has no added sugar, it's our main selling point, and make the drink the hero of the visual."
 
+## Presenter mode
+
+The driver never needs to find a button: **→** (or **PageDown**, which a slide clicker sends) runs the next step, and the header shows what it will do (`→ start run`, `→ run referee`…). **B** starts the risky trend for the brand-safety beat. Open `http://localhost:5173/?intro` right before going on stage to play the opening title; **🔊** in the header mutes the sound effects.
+
 ## Timing table (total 3:00)
 
 | Time | On screen | Who clicks what | Presenter says | Judging criterion |
