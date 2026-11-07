@@ -16,7 +16,7 @@ interface Props {
 }
 
 export function RefereePanel({ referee, comments, canShip, onApply }: Props) {
-  const { accepted, toggle, acceptedIds } = useAcceptedConflicts(referee.conflicts)
+  const { accepted, toggle, acceptAll, acceptedIds } = useAcceptedConflicts(referee.conflicts)
   const needsHuman = referee.status === 'needs_human'
 
   return (
@@ -48,9 +48,13 @@ export function RefereePanel({ referee, comments, canShip, onApply }: Props) {
         acceptedCount={acceptedIds.length}
         totalConflicts={referee.conflicts.length}
         canShip={canShip}
-        onShip={(acceptAllEdits) =>
-          onApply({ conflict_ids: acceptedIds, accept_all_edits: acceptAllEdits })
-        }
+        onShip={(acceptAllEdits) => {
+          acceptAll() // one click accepts every compromise (docs/demo-script.md)
+          onApply({
+            conflict_ids: referee.conflicts.map((c) => c.id),
+            accept_all_edits: acceptAllEdits,
+          })
+        }}
       />
     </>
   )
