@@ -160,9 +160,7 @@ def _prompt_lines(prompt: str) -> list[str]:
     text = " ".join(_replace_non_xml_chars(prompt).split())
     if not text:
         return [BLANK_PROMPT_TEXT]
-    return textwrap.wrap(
-        text, width=WRAP_WIDTH_CHARS, max_lines=MAX_TEXT_LINES, placeholder=" ..."
-    )
+    return textwrap.wrap(text, width=WRAP_WIDTH_CHARS, max_lines=MAX_TEXT_LINES, placeholder=" ...")
 
 
 def _replace_non_xml_chars(text: str) -> str:

@@ -25,9 +25,7 @@ export function SlackPreview({ preview }: { preview: Preview }) {
           {preview.imageUrl ? (
             <img src={preview.imageUrl} alt="Final post image" />
           ) : (
-            <p className="muted slack-note">
-              Image not attached: Slack only accepts a public image URL.
-            </p>
+            <p className="muted slack-note">No image for this post.</p>
           )}
           {preview.taskLines.length > 0 && (
             <>
