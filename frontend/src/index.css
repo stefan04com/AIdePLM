@@ -420,7 +420,7 @@ ins {
   margin-right: 6px;
 }
 
-/* --- Express and Slack previews ------------------------------------------ */
+/* --- Post and Slack previews (simulated) --------------------------------- */
 
 .express,
 .slack {
@@ -442,18 +442,6 @@ ins {
 
 .express-bar .badge {
   margin-left: auto;
-}
-
-.express-logo {
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  background: var(--accent);
-  color: var(--accent-text);
-  font-size: 11px;
-  font-weight: 700;
 }
 
 .post {

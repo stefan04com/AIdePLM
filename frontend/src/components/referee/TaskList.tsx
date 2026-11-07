@@ -5,7 +5,7 @@ export function TaskList({ tasks }: { tasks: Task[] }) {
   if (tasks.length === 0) return null
 
   return (
-    <Card title="Follow-up tasks (go to Slack on ship)">
+    <Card title="Follow-up tasks (added to the Slack message on ship)">
       <ul className="task-list">
         {tasks.map((task, index) => (
           <li key={index}>
