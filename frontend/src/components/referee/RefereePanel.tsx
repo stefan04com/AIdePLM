@@ -1,7 +1,7 @@
 import type { ApplyRequest, Comment, RefereeResult } from '../../api/types'
 import { useAcceptedConflicts } from '../../hooks/useAcceptedConflicts'
 import { humanize } from '../../lib/format'
-import { Badge, Banner } from '../ui'
+import { Badge, Banner, SectionHead } from '../ui'
 import { ConflictCard } from './ConflictCard'
 import { EditList } from './EditList'
 import { ShipBar } from './ShipBar'
@@ -22,11 +22,12 @@ export function RefereePanel({ referee, comments, canShip, shipped, onApply }: P
   const needsHuman = referee.status === 'needs_human'
 
   return (
-    <>
-      <h3>
-        Referee
-        <Badge tone={needsHuman ? 'warn' : 'ok'}>{humanize(referee.status)}</Badge>
-      </h3>
+    <div className="referee-panel">
+      <SectionHead
+        id="05"
+        title="Referee"
+        aside={<Badge tone={needsHuman ? 'warn' : 'ok'}>{humanize(referee.status)}</Badge>}
+      />
       {needsHuman && (
         <Banner tone="warn">
           The Referee couldn't settle everything. Review the conflicts below before shipping.
@@ -62,6 +63,6 @@ export function RefereePanel({ referee, comments, canShip, shipped, onApply }: P
           }}
         />
       )}
-    </>
+    </div>
   )
 }

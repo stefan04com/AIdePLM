@@ -1,0 +1,145 @@
+/* Middle column: the company's post (hero of the page) and the Slack message preview. */
+
+.express,
+.slack {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.express-bar,
+.slack-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  font-size: 13px;
+}
+
+.express-bar .badge,
+.slack-bar .muted {
+  margin-left: auto;
+}
+
+.post {
+  padding: 16px;
+}
+
+.post-author {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  line-height: 1.25;
+}
+
+.avatar,
+.slack-avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #6b4226;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.post img,
+.image-placeholder {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+}
+
+.image-placeholder {
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+  background: var(--surface-2);
+  border: 1px dashed var(--border-strong);
+}
+
+.caption {
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.hashtags {
+  color: var(--highlight);
+  font-size: 15px;
+}
+
+.express-footer {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+}
+
+/* --- Slack message ------------------------------------------------------------ */
+
+.slack-hash {
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.slack-message {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+}
+
+.slack-avatar {
+  border-radius: 6px;
+  background: var(--surface-3);
+}
+
+.slack-body {
+  min-width: 0;
+  font-size: 14px;
+}
+
+.slack-body img {
+  max-width: 100%;
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+}
+
+.slack-body ul {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+
+.slack-app {
+  padding: 0 4px;
+  border-radius: 3px;
+  background: var(--surface-3);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.slack-header {
+  font-weight: 700;
+  margin: 6px 0 4px;
+}
+
+.slack-note {
+  font-size: 13px;
+}
+
+.slack-clock {
+  font-family: var(--mono);
+  font-weight: 600;
+  color: var(--ok);
+}

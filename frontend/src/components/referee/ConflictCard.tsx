@@ -31,7 +31,7 @@ export function ConflictCard({ conflict, accepted, disabled, onToggle }: Props) 
         disabled={disabled}
         onClick={onToggle}
       >
-        {accepted ? '✓ Compromise accepted' : 'Accept compromise'}
+        {accepted ? 'Compromise accepted' : 'Accept compromise'}
       </button>
     </Card>
   )

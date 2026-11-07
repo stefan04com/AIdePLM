@@ -1,0 +1,36 @@
+/* Design tokens. Warm, dark "coffee house operations room": espresso surfaces, cream text,
+   caramel highlights. Flat panels and thin borders on purpose: no glows, no gradients. */
+
+:root {
+  /* surfaces */
+  --bg: #0f0e0d;
+  --surface: #181614;
+  --surface-2: #211e1b;
+  --surface-3: #2a2622;
+  --border: #2e2a26;
+  --border-strong: #3d3832;
+
+  /* text */
+  --text: #f2ede6;
+  --muted: #a39b91;
+  --faint: #7a7269;
+
+  /* actions and highlights */
+  --accent: #ece2d0; /* cream: primary buttons */
+  --accent-text: #17130f;
+  --highlight: #d4945a; /* caramel: logo, hashtags, links, section numbers */
+
+  /* meaning */
+  --ok: #8fbf86; /* sage */
+  --warn: #e3ab55; /* amber */
+  --bad: #e2725f; /* terracotta */
+
+  /* shape and type */
+  --radius: 10px;
+  --radius-sm: 6px;
+  --gap: 16px;
+  --sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+
+  color-scheme: dark;
+}

@@ -4,6 +4,7 @@ import { RefereePanel } from './referee/RefereePanel'
 import { HumanReviewers } from './review/HumanReviewers'
 import { PersonaCards } from './review/PersonaCards'
 import { ReviewActions, type ReviewHandlers } from './review/ReviewActions'
+import { Pill, SectionHead } from './ui'
 
 interface Props extends ReviewHandlers {
   run: Run | null
@@ -17,7 +18,7 @@ interface Props extends ReviewHandlers {
 export function ReviewColumn({ run, personas, busy, onComment, onApply, ...handlers }: Props) {
   return (
     <section className="column">
-      <h2>Review</h2>
+      <SectionHead id="04" title="Stakeholders and personas" aside={<StreamStatus run={run} />} />
       <ReviewActions run={run} busy={busy} {...handlers} />
 
       <h3>Humans</h3>
@@ -44,4 +45,12 @@ export function ReviewColumn({ run, personas, busy, onComment, onApply, ...handl
       )}
     </section>
   )
+}
+
+/** "2 conflicts" once the Referee ran, otherwise the run status. */
+function StreamStatus({ run }: { run: Run | null }) {
+  if (!run) return null
+  const conflicts = run.referee?.conflicts.length
+  if (conflicts === undefined) return <Pill>{run.status.toLowerCase().replace('_', ' ')}</Pill>
+  return <Pill tone={conflicts > 0 ? 'warn' : 'ok'}>{conflicts} conflicts</Pill>
 }
