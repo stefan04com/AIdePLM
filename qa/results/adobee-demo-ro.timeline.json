@@ -1,0 +1,102 @@
+[
+  {
+    "at": 4.6,
+    "step": "Detectează",
+    "text": "AdoBee urmărește ce e în trend chiar acum"
+  },
+  {
+    "at": 7.8,
+    "step": "1 · Siguranța brandului",
+    "text": "Un trend riscant: provocarea „10 espresso”. AdoBee spune nu."
+  },
+  {
+    "at": 11.5,
+    "step": "1 · Siguranța brandului",
+    "text": "Blocat: risc pentru sănătate, ton greșit. Fără draft, fără ore de review."
+  },
+  {
+    "at": 13.9,
+    "step": "2 · Draft",
+    "text": "Un trend potrivit pentru Boabe: colțuri cozy de toamnă. 88/100, draftul e gata."
+  },
+  {
+    "at": 16.9,
+    "step": "2 · Imagine",
+    "text": "Adobe Firefly generează imaginea din brief (simulat)."
+  },
+  {
+    "at": 22.1,
+    "step": "2 · Rescriere",
+    "text": "Nu sună bine? O singură instrucțiune rescrie textul."
+  },
+  {
+    "at": 29.4,
+    "step": "2 · Hashtag-uri",
+    "text": "Hashtag-uri din surse salvate, în limita fiecărei platforme."
+  },
+  {
+    "at": 32.9,
+    "step": "2 · Ora postării",
+    "text": "Când postăm: cea mai bună oră pe platformă, cu surse."
+  },
+  {
+    "at": 40.0,
+    "step": "2 · Scorul de trend",
+    "text": "Cât de „fierbinți” sunt cuvintele postării față de trendurile salvate?"
+  },
+  {
+    "at": 44.4,
+    "step": "3 · Review",
+    "text": "Trei clienți AI, construiți din 65 de recenzii reale, reacționează primii."
+  },
+  {
+    "at": 47.3,
+    "step": "3 · Review",
+    "text": "Comentează Brand, Legal și Produs. Legal blochează „fără zahăr adăugat”."
+  },
+  {
+    "at": 50.5,
+    "step": "4 · Arbitru",
+    "text": "Arbitrul citește toate vocile deodată și găsește conflictele."
+  },
+  {
+    "at": 54.9,
+    "step": "4 · Arbitru",
+    "text": "Fiecare conflict primește un compromis. Interdicțiile Legal câștigă mereu."
+  },
+  {
+    "at": 58.1,
+    "step": "5 · Publică",
+    "text": "Albinuța stă pe buton. Nimic nu pleacă fără click-ul unui om."
+  },
+  {
+    "at": 61.9,
+    "step": "5 · Publică",
+    "text": "Aprobat în secunde, față de 8 zile pentru un review obișnuit."
+  },
+  {
+    "at": 64.7,
+    "step": "5 · Publică",
+    "text": "Textul se rescrie singur, iar echipa primește postarea în Slack."
+  },
+  {
+    "at": 71.9,
+    "step": "6 · Reguli",
+    "text": "Fiecare scor e explicat: factori, ponderi, reguli pe platforme, cost."
+  },
+  {
+    "at": 78.5,
+    "step": "6 · Reguli",
+    "text": "Trenduri curente și sugestii de hashtag-uri, marcate salvate sau live."
+  },
+  {
+    "at": 82.3,
+    "step": "6 · Cost",
+    "text": "Măsurat: 0,06 $ pe postare. Modul demo răspunde din cache, la 0 $."
+  },
+  {
+    "at": 88.2,
+    "step": "",
+    "text": ""
+  }
+]

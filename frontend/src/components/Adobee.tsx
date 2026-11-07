@@ -211,7 +211,7 @@ export function Adobee({ run, busy, view }: { run: Run | null; busy: boolean; vi
       window.setTimeout(() => {
         const button = shipButton()
         const box = button?.getBoundingClientRect()
-        if (box && (box.top < 0 || box.bottom > window.innerHeight)) {
+        if (box && (box.top > window.innerHeight - 40 || box.bottom < 40)) { // really out of sight
           button?.scrollIntoView({ block: 'center', behavior: reducedMotion() ? 'auto' : 'smooth' })
         }
       }, clashesDone),

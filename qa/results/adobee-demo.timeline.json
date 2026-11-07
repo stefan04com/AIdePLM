@@ -1,0 +1,102 @@
+[
+  {
+    "at": 5.8,
+    "step": "Spot",
+    "text": "AdoBee watches what is trending right now"
+  },
+  {
+    "at": 9.7,
+    "step": "1 · Brand safety",
+    "text": "A risky trend: the “10 espressos” dare. AdoBee says no."
+  },
+  {
+    "at": 14.4,
+    "step": "1 · Brand safety",
+    "text": "Blocked: health risk, wrong tone. No draft, no reviewer hours spent."
+  },
+  {
+    "at": 17.4,
+    "step": "2 · Draft",
+    "text": "A trend that fits Boabe: cozy autumn corners. Fit 88/100, draft ready."
+  },
+  {
+    "at": 21.1,
+    "step": "2 · Visual",
+    "text": "Adobe Firefly generates the visual from the brief (simulated)."
+  },
+  {
+    "at": 27.5,
+    "step": "2 · Rewrite",
+    "text": "Not quite right? One instruction rewrites the caption."
+  },
+  {
+    "at": 36.7,
+    "step": "2 · Hashtags",
+    "text": "Hashtags from saved sources, within each platform's limit."
+  },
+  {
+    "at": 41.1,
+    "step": "2 · Timing",
+    "text": "When to post: the best slot per platform, with sources."
+  },
+  {
+    "at": 50.0,
+    "step": "2 · Trend score",
+    "text": "How hot are the post's words against saved trends?"
+  },
+  {
+    "at": 55.4,
+    "step": "3 · Review",
+    "text": "Three synthetic customers, built from 65 real reviews, react first."
+  },
+  {
+    "at": 59.0,
+    "step": "3 · Review",
+    "text": "Brand, Legal and Product comment. Legal blocks “no added sugar”."
+  },
+  {
+    "at": 63.0,
+    "step": "4 · Referee",
+    "text": "The Referee reads every voice at once and finds the conflicts."
+  },
+  {
+    "at": 68.5,
+    "step": "4 · Referee",
+    "text": "Each conflict gets a compromise. Legal no-gos always win."
+  },
+  {
+    "at": 72.5,
+    "step": "5 · Ship",
+    "text": "Adobee is on the ship button. Nothing goes out without a human click."
+  },
+  {
+    "at": 77.2,
+    "step": "5 · Ship",
+    "text": "Approved in seconds, against 8 days for a typical review."
+  },
+  {
+    "at": 80.7,
+    "step": "5 · Ship",
+    "text": "The caption rewrites itself, and the team gets it in Slack."
+  },
+  {
+    "at": 89.7,
+    "step": "6 · Rules",
+    "text": "Every score is explained: factors, weights, platform rules, cost."
+  },
+  {
+    "at": 98.0,
+    "step": "6 · Rules",
+    "text": "Current trends and hashtag suggestions, marked saved or live."
+  },
+  {
+    "at": 102.8,
+    "step": "6 · Cost",
+    "text": "Measured: $0.0602 per post. Demo mode answers from the cache, at $0."
+  },
+  {
+    "at": 110.1,
+    "step": "",
+    "text": ""
+  }
+]
