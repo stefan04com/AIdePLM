@@ -22,10 +22,12 @@ export function useAcceptedConflicts(conflicts: Conflict[]) {
       return { key, ids: next }
     })
 
+  const acceptAll = () => setState({ key, ids: new Set(conflicts.map((c) => c.id)) })
+
   return {
     accepted,
     toggle,
+    acceptAll,
     acceptedIds: conflicts.filter((c) => accepted.has(c.id)).map((c) => c.id),
-    allAccepted: conflicts.every((c) => accepted.has(c.id)),
   }
 }

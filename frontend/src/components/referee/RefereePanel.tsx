@@ -12,11 +12,13 @@ interface Props {
   comments: Comment[]
   /** True when the run is REFEREED and no action is running. */
   canShip: boolean
+  /** True once the run is SHIPPED: every compromise was accepted by "Apply compromise". */
+  shipped: boolean
   onApply: (body: ApplyRequest) => void
 }
 
-export function RefereePanel({ referee, comments, canShip, onApply }: Props) {
-  const { accepted, toggle, acceptedIds } = useAcceptedConflicts(referee.conflicts)
+export function RefereePanel({ referee, comments, canShip, shipped, onApply }: Props) {
+  const { accepted, toggle, acceptAll, acceptedIds } = useAcceptedConflicts(referee.conflicts)
   const needsHuman = referee.status === 'needs_human'
 
   return (
@@ -35,7 +37,7 @@ export function RefereePanel({ referee, comments, canShip, onApply }: Props) {
         <ConflictCard
           key={conflict.id}
           conflict={conflict}
-          accepted={accepted.has(conflict.id)}
+          accepted={shipped || accepted.has(conflict.id)}
           disabled={!canShip}
           onToggle={() => toggle(conflict.id)}
         />
@@ -44,14 +46,22 @@ export function RefereePanel({ referee, comments, canShip, onApply }: Props) {
       <EditList edits={referee.edits} comments={comments} />
       <TaskList tasks={referee.tasks} />
 
-      <ShipBar
-        acceptedCount={acceptedIds.length}
-        totalConflicts={referee.conflicts.length}
-        canShip={canShip}
-        onShip={(acceptAllEdits) =>
-          onApply({ conflict_ids: acceptedIds, accept_all_edits: acceptAllEdits })
-        }
-      />
+      {shipped ? (
+        <Banner tone="ok">Shipped: the compromise is in Express and the post went to Slack.</Banner>
+      ) : (
+        <ShipBar
+          acceptedCount={acceptedIds.length}
+          totalConflicts={referee.conflicts.length}
+          canShip={canShip}
+          onShip={(acceptAllEdits) => {
+            acceptAll() // one click accepts every compromise (docs/demo-script.md)
+            onApply({
+              conflict_ids: referee.conflicts.map((c) => c.id),
+              accept_all_edits: acceptAllEdits,
+            })
+          }}
+        />
+      )}
     </>
   )
 }
