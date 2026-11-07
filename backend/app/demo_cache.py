@@ -58,65 +58,101 @@ def _recall(call: str) -> dict | None:
         return deepcopy(_last_good.get(call))
 
 
-# --- canned defaults (match the scripted demo: Legal vs Product, Brand vs a persona) ---------
+# --- canned defaults: the Boabe cozy-autumn scenario (docs/demo-scenario.md) ------------------
+# Copied from frontend/src/mocks so demo mode, the mocks and the fixture tell the same story.
 
 CANNED_FIT = FitResult(
     fits=True,
-    score=82,
-    reason="Playful, self-aware tone matches the brand voice; no competitor or claim risk.",
+    score=91,
+    reason="Boabe's core moment is the slow cup in a warm corner; the trend is wholesome, "
+    "local-friendly and touches no sensitive topic.",
 )
 
 CANNED_DRAFT = DraftContent(
-    brief="Own the 'running late' joke: a lighthearted post that promises our app gets you "
-    "there faster than the excuses.",
-    caption="Late again? Our app guarantees you'll arrive 10 minutes earlier than the train "
-    "announcement. Download now.",
-    visual_prompt="Flat illustration of a commuter sprinting past a stationary train, warm "
-    "sunrise colours, brand palette",
-    hashtags=["#MondayCommute", "#RunningLate"],
+    brief="Join the cozy autumn setup trend with the new Pumpkin & Cinnamon Latte as the warm "
+    "thing in the mug.",
+    caption="Meet our new Pumpkin & Cinnamon Latte: no added sugar and the healthiest latte in "
+    "town. Order now in the Boabe app.",
+    visual_prompt="Close-up of a Pumpkin & Cinnamon Latte in a ceramic cup, centred on a wooden "
+    "desk, latte art, autumn leaves, warm window light",
+    hashtags=["#CozyAutumn", "#PumpkinCinnamonLatte", "#Boabe"],
 )
 
 CANNED_PERSONAS = [
     Persona(
-        id="gen_z_commuter",
-        name="Gen Z commuter",
-        segment="18-25, daily public transport, skeptical of ads",
-        cares_about=["authentic tone", "humour", "no hard sell"],
-        pet_peeves=["brands trying too hard", "fake urgency"],
-        sample_quotes=["Honestly the app is fine but every ad feels like it's trying too hard."],
+        id="student_night_owl",
+        name="Student night owl",
+        segment="20-28, studies or works on a laptop for hours",
+        cares_about=["wifi and seats", "a calm corner", "honest, low-key posts"],
+        pet_peeves=["the weekend laptop ban", "posts that look like ads"],
+        sample_quotes=[
+            "Nice cosy café in the heart of Bucharest. Perfect for chill or work.",
+            "Also you can work with laptop or just chat.",
+        ],
     ),
     Persona(
         id="busy_parent",
         name="Busy parent",
-        segment="30-45, juggles school runs and work",
-        cares_about=["saving time", "reliability", "concrete benefits"],
-        pet_peeves=["vague promises", "complicated sign-ups"],
-        sample_quotes=["If it saves me ten minutes in the morning, I'm in."],
+        segment="30-45, orders ahead, short on time",
+        cares_about=["ordering ahead in the app", "no queues", "clear prices"],
+        pet_peeves=["wrong or late orders", "prices shown too late"],
+        sample_quotes=[
+            "I like to order my coffees in advance and collect. So very convenient for me.",
+            "Their app is so easy to manage and is very convenient in tight situations.",
+        ],
     ),
     Persona(
-        id="skeptical_veteran",
-        name="Skeptical veteran",
-        segment="45+, long-time customer, burned by marketing claims",
-        cares_about=["honesty", "proof", "service quality"],
-        pet_peeves=["guarantees", "exaggerated claims"],
-        sample_quotes=["I've heard 'guaranteed' before. Show me, don't tell me."],
+        id="coffee_purist",
+        name="Coffee purist",
+        segment="25-45, cares about beans, origin and brewing",
+        cares_about=["origin", "roast and extraction", "baristas who explain"],
+        pet_peeves=["over-roasted coffee", "old crop", "marketing hype"],
+        sample_quotes=[
+            "Nice place, kind staff, good extraction in Hario V60 and espresso.",
+            "Not the best coffee (most probably over roasted).",
+        ],
     ),
 ]
 
 _CANNED_REACTIONS = [
-    ("Funny and relatable, but 'download now' feels like an ad. Drop the hard sell.", 0.4, True),
-    ("I only care if it really saves me time. A guarantee would get my attention.", 0.6, True),
-    ("'Guarantees' sounds like marketing fluff. I've been burned by this before.", -0.5, False),
+    (
+        "The cozy corner is exactly my vibe, but 'healthiest latte in town' turns it into an "
+        "ad. Show the setup, not the sales pitch.",
+        0.2,
+        False,
+    ),
+    (
+        "Nice to know I can order it ahead in the app. A seasonal drink for the school-run "
+        "morning sounds good.",
+        0.6,
+        True,
+    ),
+    (
+        "'Healthiest' tells me nothing. Real pumpkin and Ceylon cinnamon with your house "
+        "espresso would.",
+        -0.3,
+        False,
+    ),
 ]
 
 _CANNED_TASKS = [
-    Task(owner="Legal", task="Sign off the revised caption wording", due="today 15:00"),
     Task(
         owner="Product",
-        task="Provide a substantiated time-saving stat for follow-up posts",
+        task="Send the 'no added sugar' documentation to Legal before using the claim",
         due="this week",
     ),
+    Task(owner="Legal", task="Sign off the final caption", due="today 15:00"),
 ]
+
+FINAL_CAPTION = (
+    "Grey week, warm corner. Our Pumpkin & Cinnamon Latte, with real pumpkin and Ceylon "
+    "cinnamon, keeps us company. Pull up a chair."
+)
+FINAL_VISUAL_PROMPT = (
+    "Cozy desk by a rainy window, wool blanket, candle and open laptop, a Pumpkin & Cinnamon "
+    "Latte steaming in a ceramic cup, warm light"
+)
+FINAL_HASHTAGS = "#CozyAutumn #AutumnCorner #Boabe"
 
 
 def fit() -> FitResult:
@@ -154,16 +190,12 @@ def _heaviest_per_role(comments: list[Comment]) -> dict[str, str]:
 
 
 def referee(comments: list[Comment], draft_: Draft, personas_: list[Persona]) -> RefereeResult:
-    """Canned referee result built from the run's real comment ids / persona ids / caption."""
+    """Canned referee result built from the run's real comment ids / persona ids / draft."""
     latest = _heaviest_per_role(comments)  # docs/comment-weighting.md
     labels = {"brand": "Brand", "legal": "Legal", "product": "Product"}
 
     def human(role: str) -> ConflictParty:
         return ConflictParty(kind="human", id=role, label=labels[role])
-
-    def persona(i: int) -> ConflictParty:
-        p = personas_[min(i, len(personas_) - 1)]
-        return ConflictParty(kind="persona", id=p.id, label=p.name)
 
     conflicts: list[Conflict] = []
     if "legal" in latest and "product" in latest:
@@ -171,57 +203,76 @@ def referee(comments: list[Comment], draft_: Draft, personas_: list[Persona]) ->
             Conflict(
                 id="conf_1",
                 between=[human("legal"), human("product")],
-                summary="Legal wants the guarantee removed; Product wants the time-saving "
-                "promise to stay prominent.",
+                summary="Product wants 'no added sugar' as the main selling point; Legal has no "
+                "documentation for it and blocks it.",
                 positions={
-                    "legal": "No 'guarantee' or fixed-minutes claim.",
-                    "product": "Keep time-saving as the headline benefit.",
+                    "legal": "No 'no added sugar' and no 'healthiest' until the claim is "
+                    "documented.",
+                    "product": "'No added sugar' is the launch's main selling point and must "
+                    "stay.",
                 },
-                compromise="Keep the time-saving angle but phrase it as 'helps you arrive "
-                "earlier', with no guarantee and no number.",
+                compromise="Drop the sugar and health claims now; name the real ingredients "
+                "instead (pumpkin purée, Ceylon cinnamon). Product sends the sugar "
+                "documentation to Legal for a later post.",
             )
         )
-    if "brand" in latest and personas_:
-        p = persona(1)
+    if "brand" in latest and "product" in latest and personas_:
+        p = personas_[0]  # the first persona stands for the "moment first" audience
         conflicts.append(
             Conflict(
                 id="conf_2",
-                between=[human("brand"), p],
-                summary=f"Brand wants a soft CTA; {p.label} responds to a concrete benefit.",
+                between=[
+                    human("brand"),
+                    ConflictParty(kind="persona", id=p.id, label=p.name),
+                    human("product"),
+                ],
+                summary=f"Brand and {p.name} want the cozy moment first; Product wants the "
+                "latte as the hero.",
                 positions={
-                    "brand": "Soft, on-brand call to action.",
-                    p.id: "Wants a concrete, credible time-saving benefit.",
+                    "brand": "Lead with the moment, latte in the background, soft CTA.",
+                    p.id: "Show the setup; a sales pitch kills it.",
+                    "product": "The new latte must be the hero of the visual.",
                 },
-                compromise="End with a soft CTA ('See how it works') after one concrete "
-                "benefit line.",
+                compromise="The cozy corner leads, and the latte is the one warm thing in it: "
+                "named once in the caption and in focus on the desk, but not a product shot.",
             )
         )
 
-    final_caption = "Late again? Our app helps you beat the train announcement. See how it works."
     edits: list[Edit] = []
     if "legal" in latest:
         edits.append(
             Edit(
                 target="caption",
                 before=draft_.caption,
-                after=final_caption,
+                after=FINAL_CAPTION,
                 source_comment_id=latest["legal"],
             )
         )
     if "brand" in latest:
         edits.append(
             Edit(
+                target="visual_prompt",
+                before=draft_.visual_prompt,
+                after=FINAL_VISUAL_PROMPT,
+                source_comment_id=latest["brand"],
+            )
+        )
+        edits.append(
+            Edit(
                 target="hashtags",
                 before=" ".join(draft_.hashtags),
-                after="#MondayCommute #BeatTheDelay",
+                after=FINAL_HASHTAGS,
                 source_comment_id=latest["brand"],
             )
         )
 
     why = {
-        "brand": ("applied", "CTA softened and hashtag updated."),
-        "legal": ("applied", "Guarantee and fixed-minutes claim removed."),
-        "product": ("in_conflict", "Conflicts with Legal; resolved via compromise wording."),
+        "brand": ("applied", "Moment leads, latte stays in the scene, soft CTA."),
+        "legal": ("applied", "Sugar and health claims removed."),
+        "product": (
+            "in_conflict",
+            "Sugar claim waits for documentation; the latte is still named and in focus.",
+        ),
     }
     statuses = [
         CommentStatus(comment_id=cid, status=why[role][0], why=why[role][1])  # type: ignore[arg-type]
@@ -232,6 +283,6 @@ def referee(comments: list[Comment], draft_: Draft, personas_: list[Persona]) ->
         edits=edits,
         tasks=[t.model_copy() for t in _CANNED_TASKS],
         comment_status=statuses,
-        final_caption=final_caption,
+        final_caption=FINAL_CAPTION,
         status="ready_to_ship",
     )

@@ -3,12 +3,9 @@
 from app import adapters, demo_cache
 
 INLINE_COMMENTS = [
-    {"role": "brand", "text": "Love the tone, but keep the CTA softer and on-brand."},
-    {"role": "legal", "text": "We cannot promise a guaranteed time saving. Remove the guarantee."},
-    {
-        "role": "product",
-        "text": "The time-saving angle is our strongest feature, keep it prominent.",
-    },
+    {"role": "brand", "text": "Lead with the moment, keep the latte in the background."},
+    {"role": "legal", "text": "No 'no added sugar', 'healthy' or 'the best' claims."},
+    {"role": "product", "text": "Add 'no added sugar' and make the drink the hero."},
 ]
 
 
@@ -133,3 +130,31 @@ def test_openapi_is_complete(client):
         for method, op in ops.items():
             schema = op["responses"]["200"]["content"]["application/json"]["schema"]
             assert schema != {}, f"{method.upper()} {path} has no response_model"
+
+
+def test_demo_mode_tells_the_boabe_story(client):
+    """Demo mode on the saved trend + scripted comments must give the planned scenario."""
+    trend = client.get("/trend").json()
+    assert "autumn" in trend["title"].lower()
+    run = start_run(client)
+    assert "Latte" in run["draft"]["caption"]
+    run_id = run["id"]
+    for c in scripted_comments():
+        client.post(f"/runs/{run_id}/comments", json={"role": c["role"], "text": c["text"]})
+    ref = client.post(f"/runs/{run_id}/referee").json()
+    pairs = [sorted(p["id"] for p in c["between"]) for c in ref["conflicts"]]
+    assert ["legal", "product"] in pairs  # the sugar-claim conflict
+    assert any("brand" in p and "product" in p for p in pairs)  # moment vs hero
+    assert "sugar" not in ref["final_caption"].lower()
+    assert ref["status"] == "ready_to_ship"
+
+
+def test_fixture_matches_models():
+    from pathlib import Path
+
+    from app.models import Run
+
+    raw = (Path(__file__).parent / "fixtures" / "run_refereed.json").read_text()
+    run = Run.model_validate_json(raw)
+    assert run.status == "REFEREED" and run.referee and run.referee.conflicts
+    assert "Latte" in run.draft.caption

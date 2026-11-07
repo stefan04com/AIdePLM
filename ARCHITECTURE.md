@@ -234,7 +234,7 @@ class Draft(BaseModel):
 
 class Persona(BaseModel):
     id: str              # never equal to a Comment role
-    name: str            # e.g. "Gen Z commuter"
+    name: str            # e.g. "Student night owl"
     segment: str
     cares_about: list[str]
     pet_peeves: list[str]
@@ -260,7 +260,7 @@ class Comment(BaseModel):
 class ConflictParty(BaseModel):
     kind: Literal["human", "persona"]
     id: str              # comment role ("legal") or persona_id
-    label: str           # display text, e.g. "Legal", "Gen Z commuter"
+    label: str           # display text, e.g. "Legal", "Student night owl"
 
 class Conflict(BaseModel):
     id: str

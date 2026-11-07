@@ -97,11 +97,13 @@ def _fallback_trend() -> Trend:
         return Trend.model_validate(d)
     except (OSError, ValueError):
         return Trend(
-            id="trend_saved_demo",
-            title="Commuters are roasting delayed-train apology emails",
+            id="trend_cozy_autumn_setup",
+            title="People are sharing their cozy autumn work-from-anywhere setups",
             source="saved",
-            summary="A viral thread: people share the most tone-deaf delay apologies and "
-            "reward brands that own the delay with humour.",
+            summary="A fast-growing thread: people post photos of their autumn corner (blanket, "
+            "candle, laptop, something warm in a mug) with one line about why it makes the grey "
+            "week bearable. Top posts are wholesome and low-key; replies reward honesty and mock "
+            "anything that looks like an ad.",
             detected_at=datetime.now(UTC),
         )
 
