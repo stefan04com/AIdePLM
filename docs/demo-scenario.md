@@ -42,4 +42,3 @@ Built by call #3 from `reviews.csv`; demo mode uses the set from the live run:
 ## Still open
 
 - Rejected-trend UI button (Andu, see `COORDINATION.md`).
-- A real https image instead of the placeholder (Militaru: `ADOBE_MOCK_IMAGE_URL`).

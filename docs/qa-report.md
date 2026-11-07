@@ -1,6 +1,6 @@
 # QA report, 2026-11-07 (updated)
 
-Everything that blocked the demo is fixed on `main`; what's left is the image, the rejected-trend button and the rehearsal. Checked on `main` at `a9cc3e3`: 106 backend tests pass, the frontend builds, and the flow (draft, comments, personas, referee) was clicked through in Chrome against the real backend in demo mode.
+Everything that blocked the demo is fixed on `main`; what's left is the rejected-trend button and the rehearsal. Checked on `main` at `a9cc3e3`: 106 backend tests pass, the frontend builds, and the flow (draft, comments, personas, referee) was clicked through in Chrome against the real backend in demo mode.
 
 ## Fixed
 
@@ -14,12 +14,12 @@ Everything that blocked the demo is fixed on `main`; what's left is the image, t
 | 6 | Militaru | Slack and Express looked real but were mocks | Previews labelled as simulated; fake Express link removed; `CLAUDE.md` lists only LLM keys as required |
 | 7 | Militaru | `.env.example` merge conflict | Resolved in the merges into `main` |
 | 8b | Militaru | Backend not `ruff format`-ed | Formatted (line length 100) |
+| 8 | Militaru | The visual was a placeholder card | Real CC0 photo served locally: `ADOBE_MOCK_IMAGE_URL=/visuals/boabe-laptop-mug.jpg` (default in `.env.example`; credits in `frontend/public/visuals/CREDITS.md`). No internet needed on stage |
 
 ## Left
 
 | # | Owner | What | Done when |
 |---|---|---|---|
-| 8 | Ada, Militaru | The visual is still a placeholder card (the Slack preview now shows it) | `ADOBE_MOCK_IMAGE_URL` points to an https photo the team may use |
 | 9 | Andu | No UI for the rejected trend (backend `GET /trend?which=rejected` is ready) | "Try another trend" shows REJECTED with the fit reason |
 | 10 | Everyone | No rehearsal on the presentation laptop yet | Three clean runs in a row |
 
