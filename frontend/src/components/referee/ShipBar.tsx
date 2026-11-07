@@ -29,7 +29,7 @@ export function ShipBar({ acceptedCount, totalConflicts, canShip, onShip }: Prop
       </label>
       <span className="muted">{summary(acceptedCount, totalConflicts)}</span>
       <button className="primary" disabled={!canShip} onClick={() => onShip(acceptAllEdits)}>
-        Apply compromise
+        Apply compromise &amp; ship
       </button>
     </div>
   )

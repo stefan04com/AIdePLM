@@ -5,12 +5,16 @@ import type { ApplyRequest, CommentRole, Persona, Trend } from './api/types'
 import { Adobee } from './components/Adobee'
 import { CanvasColumn } from './components/CanvasColumn'
 import { CostPanel } from './components/CostPanel'
+import { AnalysisPanel } from './components/spot/AnalysisPanel'
+import { Brand } from './components/header/Brand'
 import { DemoModeToggle } from './components/header/DemoModeToggle'
 import { RunClock } from './components/header/RunClock'
+import { RunMeta } from './components/header/RunMeta'
 import { ReviewColumn } from './components/ReviewColumn'
 import { TrendColumn } from './components/TrendColumn'
 import { Badge, Banner } from './components/ui'
 import { useRun } from './hooks/useRun'
+import { useUsage } from './hooks/useUsage'
 import { isFinished, isRunBusy } from './lib/runStatus'
 import { readRunIdFromUrl, writeRunIdToUrl } from './lib/runUrl'
 import { scriptedComments } from './mocks/scriptedComments'
@@ -22,6 +26,7 @@ export default function App() {
   const [busy, setBusy] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const { run, error: pollError, refresh, setRun } = useRun(runId)
+  const usage = useUsage(run)
 
   const showError = useCallback((err: unknown) => setActionError(errorMessage(err)), [])
 
@@ -68,12 +73,14 @@ export default function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <h1>Moment</h1>
+        <Brand />
         <Adobee run={run} busy={uiBusy} />
-        {run && <RunClock run={run} />}
-        {run && <Badge>{`${run.id} · ${run.status}`}</Badge>}
-        {USE_MOCKS && <Badge tone="warn">mock API</Badge>}
-        <DemoModeToggle onError={showError} />
+        <div className="topbar-status">
+          {run && <RunClock run={run} />}
+          {run && <RunMeta run={run} usage={usage} />}
+          {USE_MOCKS && <Badge tone="warn">mock API</Badge>}
+          <DemoModeToggle onError={showError} />
+        </div>
       </header>
 
       {error && <Banner tone="bad">{error}</Banner>}
@@ -86,7 +93,8 @@ export default function App() {
             canStart={!uiBusy && (run === null || isFinished(run))}
             onStart={startRun}
           />
-          <CostPanel run={run} />
+          <AnalysisPanel run={run} usage={usage} />
+          <CostPanel usage={usage} />
         </div>
         <CanvasColumn run={run} />
         <ReviewColumn

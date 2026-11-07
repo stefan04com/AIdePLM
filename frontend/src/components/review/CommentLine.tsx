@@ -14,7 +14,7 @@ interface Props {
 /** One reviewer comment with who wrote it, how much it counts and what the Referee did with it. */
 export function CommentLine({ comment, status }: Props) {
   return (
-    <div className="comment">
+    <div className={`comment ${comment.industry_verified ? 'verified' : ''}`}>
       <p>{comment.text}</p>
       <div className="comment-meta">
         <span className="muted">

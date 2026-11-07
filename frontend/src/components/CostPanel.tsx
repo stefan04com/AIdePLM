@@ -1,18 +1,20 @@
-import type { CallUsage, Run } from '../api/types'
-import { useUsage } from '../hooks/useUsage'
+import type { CallUsage } from '../api/types'
+import type { Usage } from '../hooks/useUsage'
 import { estimatePostCost, formatUsd, isLiveCall } from '../lib/cost'
 import { formatDuration } from '../lib/format'
-import { Card, Muted } from './ui'
+import { Card, Muted, Pill, SectionHead } from './ui'
 
 /** AI cost per post (for the cost slide) and the calls of the current run. */
-export function CostPanel({ run }: { run: Run | null }) {
-  const usage = useUsage(run)
+export function CostPanel({ usage }: { usage: Usage }) {
   const estimate = usage.all ? estimatePostCost(usage.all.calls) : null
   const runCalls = usage.run?.calls ?? []
 
   return (
     <section className="column">
-      <h2>AI cost</h2>
+      <SectionHead
+        title="Compute cost"
+        aside={<Pill tone={estimate ? 'ok' : 'neutral'}>{estimate ? formatUsd(estimate.perPostUsd) : 'n/a'}</Pill>}
+      />
       <Card title="Per post (measured)">
         {estimate ? (
           <>

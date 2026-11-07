@@ -1,0 +1,215 @@
+/* Shared pieces: section heads, cards, badges, pills, banners, tones. */
+
+/* Tones: components add tone-* and read var(--tone). */
+.tone-ok {
+  --tone: var(--ok);
+}
+
+.tone-warn {
+  --tone: var(--warn);
+}
+
+.tone-bad {
+  --tone: var(--bad);
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.section-id {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--highlight);
+}
+
+.section-aside {
+  margin-left: auto;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+}
+
+.accent-left {
+  border-left: 3px solid var(--tone);
+}
+
+.badge,
+.pill {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--tone, var(--border-strong));
+  color: var(--tone, var(--muted));
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.badge {
+  margin-left: 6px;
+}
+
+.pill {
+  font-family: var(--mono);
+  font-size: 12px;
+  background: var(--surface-2);
+}
+
+.banner {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--tone);
+  background: color-mix(in srgb, var(--tone) 12%, var(--surface));
+}
+
+.app > .banner {
+  margin: 12px 20px 0;
+}
+
+/* --- left column: trend, fit, analysis, cost ------------------------------- */
+
+.trend h3 {
+  font-size: 19px;
+}
+
+.trend p {
+  color: var(--muted);
+}
+
+.fit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.fit-yes {
+  border-color: color-mix(in srgb, var(--ok) 35%, var(--border));
+}
+
+.fit-no {
+  border-color: color-mix(in srgb, var(--bad) 35%, var(--border));
+}
+
+.gauge {
+  width: 170px;
+}
+
+.gauge-track,
+.gauge-value {
+  fill: none;
+  stroke-width: 9;
+  stroke-linecap: round;
+}
+
+.gauge-track {
+  stroke: var(--surface-3);
+}
+
+.gauge-value {
+  stroke: var(--tone);
+}
+
+.gauge-score {
+  fill: var(--text);
+  font-family: var(--mono);
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.fit-status {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.factors {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.factor + .factor {
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.factor-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.factor-label {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.factor-value {
+  font-family: var(--mono);
+  font-weight: 600;
+  color: var(--tone, var(--text));
+}
+
+.factor-bar {
+  height: 4px;
+  margin: 6px 0 4px;
+  border-radius: 2px;
+  background: var(--surface-3);
+  overflow: hidden;
+}
+
+.factor-bar span {
+  display: block;
+  height: 100%;
+  background: var(--tone, var(--muted));
+}
+
+.factor-detail {
+  font-size: 13px;
+  color: var(--faint);
+}
+
+.cost-big {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.cost-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.cost-table th,
+.cost-table td {
+  padding: 5px 4px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.cost-table th {
+  color: var(--faint);
+  font-weight: 400;
+}
