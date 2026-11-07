@@ -1,0 +1,132 @@
+{
+  "id": "run_demo01",
+  "trend": {
+    "id": "trend_cozy_autumn_setup",
+    "title": "People are sharing their cozy autumn work-from-anywhere setups",
+    "source": "saved",
+    "url": null,
+    "summary": "A fast-growing thread: people post photos of their autumn corner (blanket, candle, laptop, something warm in a mug) with one line about why it makes the grey week bearable. Top posts are wholesome and low-key; replies reward honesty and mock anything that looks like an ad.",
+    "detected_at": "2026-11-07T08:40:00Z"
+  },
+  "fit": {
+    "fits": true,
+    "score": 91,
+    "reason": "Boabe's core moment is the slow cup in a warm corner; the trend is wholesome, local-friendly and touches no sensitive topic."
+  },
+  "draft": {
+    "brief": "Join the cozy autumn setup trend with the new Pumpkin & Cinnamon Latte as the warm thing in the mug.",
+    "caption": "Meet our new Pumpkin & Cinnamon Latte: no added sugar and the healthiest latte in town. Order now in the Boabe app.",
+    "visual_prompt": "Close-up of a Pumpkin & Cinnamon Latte in a ceramic cup, centred on a wooden desk, latte art, autumn leaves, warm window light",
+    "hashtags": ["#CozyAutumn", "#PumpkinCinnamonLatte", "#Boabe"],
+    "image_url": "https://example.com/demo/boabe_latte_v1.png",
+    "express_doc_id": "express_demo01",
+    "version": 1
+  },
+  "reactions": [
+    {
+      "persona_id": "student_night_owl",
+      "reaction": "The cozy corner is exactly my vibe, but 'healthiest latte in town' turns it into an ad. Show the setup, not the sales pitch.",
+      "sentiment": 0.2,
+      "would_engage": false
+    },
+    {
+      "persona_id": "busy_parent",
+      "reaction": "Nice to know I can order it ahead in the app. A seasonal drink for the school-run morning sounds good.",
+      "sentiment": 0.6,
+      "would_engage": true
+    },
+    {
+      "persona_id": "coffee_purist",
+      "reaction": "'Healthiest' tells me nothing. Real pumpkin and Ceylon cinnamon with your house espresso would.",
+      "sentiment": -0.3,
+      "would_engage": false
+    }
+  ],
+  "comments": [
+    {
+      "id": "c_brand",
+      "role": "brand",
+      "text": "This reads like an ad. The trend is about the cozy moment, not about us. Lead with the moment, keep the latte in the background and make the call to action softer.",
+      "created_at": "2026-11-07T09:20:00Z"
+    },
+    {
+      "id": "c_legal",
+      "role": "legal",
+      "text": "Remove 'no added sugar' and 'healthiest latte in town'. We have no documentation for the sugar claim, and we can't use health claims or unprovable superlatives.",
+      "created_at": "2026-11-07T09:22:00Z"
+    },
+    {
+      "id": "c_product",
+      "role": "product",
+      "text": "The Pumpkin & Cinnamon Latte launches this week and 'no added sugar' is its main selling point. Please keep it in the caption and make the drink the hero of the visual.",
+      "created_at": "2026-11-07T09:24:00Z"
+    }
+  ],
+  "referee": {
+    "conflicts": [
+      {
+        "id": "conf_1",
+        "between": [
+          {"kind": "human", "id": "legal", "label": "Legal"},
+          {"kind": "human", "id": "product", "label": "Product"}
+        ],
+        "summary": "Product wants 'no added sugar' as the main selling point; Legal has no documentation for it and blocks it.",
+        "positions": {
+          "legal": "No 'no added sugar' and no 'healthiest' until the claim is documented.",
+          "product": "'No added sugar' is the launch's main selling point and must stay."
+        },
+        "compromise": "Drop the sugar and health claims now; name the real ingredients instead (pumpkin purée, Ceylon cinnamon). Product sends the sugar documentation to Legal for a later post."
+      },
+      {
+        "id": "conf_2",
+        "between": [
+          {"kind": "human", "id": "brand", "label": "Brand"},
+          {"kind": "persona", "id": "student_night_owl", "label": "Student night owl"},
+          {"kind": "human", "id": "product", "label": "Product"}
+        ],
+        "summary": "Brand and the student persona want the cozy moment first; Product wants the latte as the hero.",
+        "positions": {
+          "brand": "Lead with the moment, latte in the background, soft CTA.",
+          "student_night_owl": "Show the setup; a sales pitch kills it.",
+          "product": "The new latte must be the hero of the visual."
+        },
+        "compromise": "The cozy corner leads, and the latte is the one warm thing in it: named once in the caption and in focus on the desk, but not a product shot."
+      }
+    ],
+    "edits": [
+      {
+        "target": "caption",
+        "before": "Meet our new Pumpkin & Cinnamon Latte: no added sugar and the healthiest latte in town. Order now in the Boabe app.",
+        "after": "Grey week, warm corner. Our Pumpkin & Cinnamon Latte, with real pumpkin and Ceylon cinnamon, keeps us company. Pull up a chair.",
+        "source_comment_id": "c_legal"
+      },
+      {
+        "target": "visual_prompt",
+        "before": "Close-up of a Pumpkin & Cinnamon Latte in a ceramic cup, centred on a wooden desk, latte art, autumn leaves, warm window light",
+        "after": "Cozy desk by a rainy window, wool blanket, candle and open laptop, a Pumpkin & Cinnamon Latte steaming in a ceramic cup, warm light",
+        "source_comment_id": "c_brand"
+      },
+      {
+        "target": "hashtags",
+        "before": "#CozyAutumn #PumpkinCinnamonLatte #Boabe",
+        "after": "#CozyAutumn #AutumnCorner #Boabe",
+        "source_comment_id": "c_brand"
+      }
+    ],
+    "tasks": [
+      {"owner": "Product", "task": "Send the 'no added sugar' documentation to Legal before using the claim", "due": "this week"},
+      {"owner": "Legal", "task": "Sign off the final caption", "due": "today 15:00"}
+    ],
+    "comment_status": [
+      {"comment_id": "c_brand", "status": "applied", "why": "Moment leads, latte stays in the scene, soft CTA."},
+      {"comment_id": "c_legal", "status": "applied", "why": "Sugar and health claims removed."},
+      {"comment_id": "c_product", "status": "in_conflict", "why": "Sugar claim waits for documentation; the latte is still named and in focus."}
+    ],
+    "final_caption": "Grey week, warm corner. Our Pumpkin & Cinnamon Latte, with real pumpkin and Ceylon cinnamon, keeps us company. Pull up a chair.",
+    "status": "ready_to_ship"
+  },
+  "status": "REFEREED",
+  "step": null,
+  "started_at": "2026-11-07T09:00:00Z",
+  "shipped_at": null
+}
