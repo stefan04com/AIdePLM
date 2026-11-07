@@ -27,7 +27,7 @@ Status: **Proposed** (freeze in hour 1). Date: 2026-11-07.
 ```mermaid
 flowchart LR
     subgraph Sources
-        R["Reddit / News<br/>mock live sample"]
+        R["Reddit / News<br/>collected real trends, offline"]
         S[(Saved demo trend)]
     end
 
@@ -164,7 +164,7 @@ Every call writes `{run_id, call, model, input_tokens, output_tokens, latency_ms
 
 ### 4.4 Trend source (owner: Militaru)
 - `trends.get_trend()` returns the saved `data/demo_trend.json` by default, normalised to the `Trend` model.
-- "Live" is a local mock: it returns a built-in sample trend with `source="reddit"` and makes no network call. A real Reddit/news fetch would plug in here.
+- "Live" (env `LIVE_TRENDS=1`) is a local mock with no network call: it returns the first of the real trends collected from the web into `data/live_trends.json` (2–7 Nov 2026, each with its source article), or a built-in sample if that file is unusable. A real Reddit/news fetch would plug in here.
 
 ### 4.5 Adobe module: local simulation (owner: Militaru)
 - **Visual:** `adobe.generate_visual(visual_prompt)` returns a placeholder SVG (same prompt, same image, labelled as a mock), or `ADOBE_MOCK_IMAGE_URL` if set.
