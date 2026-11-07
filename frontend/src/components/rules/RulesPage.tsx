@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import type { Usage } from '../../hooks/useUsage'
 import { PLATFORM_RULES, SCORING_FACTORS, WEIGHT_RULES, type Confidence, type Rule } from '../../lib/rules'
 import { CostPanel } from '../CostPanel'
@@ -10,10 +11,11 @@ const TONE: Record<Confidence, 'ok' | 'warn' | 'neutral'> = {
   ours: 'neutral',
 }
 
-/** What the scoring is based on: factors, comment weight, platform rules and the AI cost. */
-export function RulesPage({ usage }: { usage: Usage }) {
+/** Review workflow (departments, personas, referee, ship) next to what the scoring is based on. */
+export function RulesPage({ usage, review }: { usage: Usage; review: ReactNode }) {
   return (
     <main className="rules-page" id="panel-rules" role="tabpanel" aria-labelledby="tab-rules">
+      {review}
       <div className="column">
         <SectionHead id="01" title="Scoring factors" />
         <RuleTable rules={SCORING_FACTORS} />
