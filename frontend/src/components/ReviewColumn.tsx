@@ -40,6 +40,7 @@ export function ReviewColumn({ run, personas, busy, onComment, onApply, ...handl
           comments={run.comments}
           canShip={!busy && canApply(run)}
           shipped={run.status === 'SHIPPED'}
+          slack={run.slack ?? null}
           onApply={onApply}
         />
       )}

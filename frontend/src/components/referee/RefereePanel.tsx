@@ -1,4 +1,4 @@
-import type { ApplyRequest, Comment, RefereeResult } from '../../api/types'
+import type { ApplyRequest, Comment, RefereeResult, SlackDelivery } from '../../api/types'
 import { useAcceptedConflicts } from '../../hooks/useAcceptedConflicts'
 import { humanize } from '../../lib/format'
 import { Badge, Banner, SectionHead } from '../ui'
@@ -14,10 +14,18 @@ interface Props {
   canShip: boolean
   /** True once the run is SHIPPED: every compromise was accepted by "Apply compromise". */
   shipped: boolean
+  /** What happened to the Slack message on ship: posted, simulated (no webhook) or failed. */
+  slack: SlackDelivery | null
   onApply: (body: ApplyRequest) => void
 }
 
-export function RefereePanel({ referee, comments, canShip, shipped, onApply }: Props) {
+const SHIPPED_TEXT: Record<SlackDelivery, string> = {
+  posted: 'Shipped: the post preview is updated and the message is posted in Slack.',
+  simulated: 'Shipped: the post preview is updated and the Slack message is ready (simulated).',
+  failed: "Shipped: the post preview is updated, but Slack didn't accept the message.",
+}
+
+export function RefereePanel({ referee, comments, canShip, shipped, slack, onApply }: Props) {
   const { accepted, toggle, acceptAll, acceptedIds } = useAcceptedConflicts(referee.conflicts)
   const needsHuman = referee.status === 'needs_human'
 
@@ -48,7 +56,7 @@ export function RefereePanel({ referee, comments, canShip, shipped, onApply }: P
       <TaskList tasks={referee.tasks} />
 
       {shipped ? (
-        <Banner tone="ok">Shipped: the post preview is updated and the Slack message is ready (simulated).</Banner>
+        <Banner tone={slack === 'failed' ? 'warn' : 'ok'}>{SHIPPED_TEXT[slack ?? 'simulated']}</Banner>
       ) : (
         <ShipBar
           acceptedCount={acceptedIds.length}
