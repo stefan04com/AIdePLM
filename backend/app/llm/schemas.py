@@ -18,3 +18,8 @@ class PersonasOut(BaseModel):
 
 class ReactionsOut(BaseModel):
     reactions: list[PersonaReaction]
+
+
+class RegenerateContent(BaseModel):
+    caption: str
+    hashtags: list[str] = []

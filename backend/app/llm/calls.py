@@ -1,6 +1,11 @@
-"""The five LLM calls. Each: untrusted text in tags -> validated output -> fallback."""
+"""The LLM calls: five per run, plus optional regenerate and trend score.
 
-from .. import demo_cache
+Each: untrusted text in tags -> validated output -> fallback.
+"""
+
+import re
+
+from .. import demo_cache, store
 from ..models import (
     Comment,
     Draft,
@@ -9,9 +14,10 @@ from ..models import (
     PersonaReaction,
     RefereeResult,
     Trend,
+    TrendScore,
 )
 from .client import call_structured, wrap
-from .schemas import DraftContent, PersonasOut, ReactionsOut
+from .schemas import DraftContent, PersonasOut, ReactionsOut, RegenerateContent
 
 HUMAN_ROLES = {"brand", "legal", "product"}
 
@@ -156,4 +162,49 @@ def referee(  # call #5
         fallback=lambda: demo_cache.referee(comments, draft, personas),
         run_id=run_id,
         check=check,
+    )
+
+
+def regenerate(draft: Draft, edited_caption: str, instruction: str, brand: str, run_id: str):
+    """Call #6 (optional, team decision 2026-11-07): rewrite the caption the person edited."""
+    post = wrap("post", f"caption: {draft.caption}\nhashtags: {' '.join(draft.hashtags)}")
+    return call_structured(
+        call="regenerate",
+        user="\n\n".join(
+            [
+                wrap("brand", brand),
+                post,
+                wrap("edited_caption", edited_caption),
+                wrap("instruction", instruction),
+            ]
+        ),
+        model_cls=RegenerateContent,
+        fallback=lambda: demo_cache.regenerate(edited_caption, draft),
+        run_id=run_id,
+        check=lambda out: _need(out.caption.strip(), "caption must not be empty"),
+    )
+
+
+def _need(value: object, message: str) -> None:
+    if not value:
+        raise ValueError(message)
+
+
+def _popularity_rules() -> str:
+    """The one-line rules (### 1.x headings) of docs/what-makes-a-post-popular.md."""
+    try:
+        text = (store.ROOT / "docs" / "what-makes-a-post-popular.md").read_text()
+    except OSError:
+        return ""
+    return "\n".join(re.findall(r"^### 1\.\d+ .+$", text, re.MULTILINE))
+
+
+def score_trend(words: str, hashtags: list[str]) -> TrendScore:  # call #7 (optional)
+    trends = "\n".join(wrap("trend", f"{t.title}\n{t.summary}") for t in demo_cache.saved_trends())
+    post = wrap("post", f"words: {words}\nhashtags: {' '.join(hashtags)}")
+    return call_structured(
+        call="trend_score",
+        user="\n\n".join([post, trends, wrap("rules", _popularity_rules())]),
+        model_cls=TrendScore,
+        fallback=lambda: demo_cache.trend_score(words, hashtags),
     )

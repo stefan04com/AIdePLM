@@ -34,7 +34,10 @@ Last updated: 2026-11-07 14:55 (Stefan). **The demo runs on Stefan's laptop; we 
 - [x] Tag `v1.0.0-demo` cut on `main`; `frontend/package-lock.json` is clean. (If a rehearsal finds a bug: fix on `main`, tag `v1.0.1-demo`.)
 - [ ] Pitch, with Anda: say what is real (LLM, Slack) and what is simulated (Adobe, trends; `adobe.py` is the integration seam). Show `qa/results/live_eval_*.md` as proof the AI is real and measured, since demo mode answers from the cache.
 
+- [x] Extras (team decision 2026-11-07, freeze lifted for these): `POST /runs/{id}/regenerate` (6th LLM call), `POST /trend-score` (7th, saved-data fallback), `GET /posting-time` (rules, no LLM), optional `Draft.regenerations`; mirrored in `frontend/src/api/` and the mocks, 135 backend tests. Prompts untested against the live model: run a live check before showing them.
+
 ### Andu
+- [ ] Use the new endpoints in the UI if wanted: edit caption + "Regenerate", trend score, recommended time (`api.regenerate`, `api.getTrendScore`, `api.getPostingTime` already exist, with mocks).
 - [x] "Accept compromise" removed: the per-conflict buttons did nothing (the backend ships the Referee's full `final_caption`), so cards now say "Applied when you ship" and the button reads **"Apply all & ship"** (`qa/e2e_browser.py` and `docs/demo-script.md` updated).
 - [x] Cost panel in demo mode shows the measured **$0.0602 per post** labelled "Measured in live eval". The estimate from live calls is used only when all 4 call types were live (with `LIVE_IN_DEMO=referee` one live call would show a wrong $0.03).
 - [ ] One human click-through on Stefan's laptop on the projector (readability, colours, bee, sound). `frontend/.env.local` with `VITE_USE_MOCKS=false` is set there.

@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from fastapi import BackgroundTasks, FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from . import adapters, orchestrator, store
+from . import adapters, orchestrator, posting_time, store
 from .llm import usage
 from .models import (
     ApplyRequest,
@@ -20,9 +20,14 @@ from .models import (
     DemoModeResponse,
     Persona,
     PersonaReaction,
+    Platform,
+    PostingTime,
     RefereeResult,
+    RegenerateRequest,
     Run,
     Trend,
+    TrendScore,
+    TrendScoreRequest,
     UsageSummary,
 )
 
@@ -95,6 +100,21 @@ def post_referee(run_id: str) -> RefereeResult:
 @app.post("/runs/{run_id}/apply", response_model=Run)
 def post_apply(run_id: str, body: ApplyRequest) -> Run:
     return orchestrator.apply(run_id, body)
+
+
+@app.post("/runs/{run_id}/regenerate", response_model=Run)
+def post_regenerate(run_id: str, body: RegenerateRequest) -> Run:
+    return orchestrator.regenerate(run_id, body)
+
+
+@app.post("/trend-score", response_model=TrendScore)
+def post_trend_score(body: TrendScoreRequest) -> TrendScore:
+    return orchestrator.trend_score(body)
+
+
+@app.get("/posting-time", response_model=PostingTime)
+def get_posting_time(platform: Platform) -> PostingTime:
+    return posting_time.recommend(platform)
 
 
 @app.get("/usage", response_model=UsageSummary)

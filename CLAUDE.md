@@ -167,7 +167,7 @@ Types: `feat`, `fix`, `refactor`, `test`, `chore`, `docs`, `style`. Scopes: `llm
 - All LLM calls go through `backend/app/llm/client.py`. Never call the provider directly from elsewhere.
 - Each prompt lives in `backend/app/llm/prompts/<name>.md` and has a Pydantic output model. Validate every response; retry once on validation error; then return the cached last-good response.
 - Every call logs `{call, model, input_tokens, output_tokens, latency_ms}` to `logs/usage.jsonl`. Don't remove this; it feeds the cost slide.
-- Stay at ~5 calls per run (fit, draft, personas-once, reactions, referee). Adding a call needs a team decision.
+- Stay at ~5 calls per run (fit, draft, personas-once, reactions, referee). Adding a call needs a team decision. Team decision 2026-11-07: two optional extras outside the flow, `regenerate` (#6, per run, on demand) and `trend_score` (#7, on demand). They are not in the $0.0602 per post.
 - Untrusted text (trends, reviewer comments, reviews) goes into prompts inside delimited tags (`<trend>…</trend>`, `<comment role="legal">…</comment>`) with an instruction to treat it as data. Never concatenate it into the instruction part of a prompt.
 
 ### Reliability

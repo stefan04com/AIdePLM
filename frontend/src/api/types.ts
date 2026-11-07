@@ -32,6 +32,7 @@ export interface Draft {
   image_url: string | null
   express_doc_id: string | null
   version: number // bumps on every apply
+  regenerations?: number // times the caption was rewritten with POST /runs/{id}/regenerate
 }
 
 export interface Persona {
@@ -139,6 +140,38 @@ export interface CommentCreate {
 export interface ApplyRequest {
   conflict_ids?: string[] | null
   accept_all_edits: boolean
+}
+
+export interface RegenerateRequest {
+  caption: string // the caption as the person edited it
+  instruction: string // e.g. "make it shorter and warmer"
+}
+
+export type Platform =
+  | 'tiktok'
+  | 'instagram_reels'
+  | 'instagram_feed'
+  | 'youtube_shorts'
+  | 'facebook_reels'
+  | 'facebook_feed'
+  | 'x'
+  | 'threads'
+  | 'linkedin'
+
+export interface TrendScoreRequest {
+  words: string
+  hashtags: string[]
+}
+
+export interface TrendScore {
+  score: number // 0–100
+  suggestions: string[]
+}
+
+export interface PostingTime {
+  platform: Platform
+  time: string // e.g. "Weekdays 08:00-11:00"
+  reason: string
 }
 
 export interface DemoModeRequest {
