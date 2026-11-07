@@ -1,0 +1,659 @@
+{
+  "about": "Saved hashtag cache for the Boabe demo (backend/app/hashtags.py). Collected 2026-11-07 from public, citable pages only; nothing scraped. Each tag has the URL where it appears. Counts only where the page states them, dated by the page (third-party estimates).",
+  "collected_at": "2026-11-07",
+  "source_type": "saved",
+  "platform_limits": [
+    {
+      "platform": "instagram",
+      "max_hashtags_per_post": 5,
+      "recommended": "3-5",
+      "confidence": "consistent",
+      "note": "Up to 5 hashtags per post or Reel since 18 Dec 2025 (@creators: \"Starting today, Instagram will allow up to 5 hashtags in a reel or post\"; Help Center: \"You can use up to 5 tags on a post\"). Was 30; old pages still say 30.",
+      "source": "https://www.storycut.com/blog/instagram-hashtag-limit",
+      "official_sources": [
+        "https://help.instagram.com/351460621611097",
+        "https://www.threads.com/@creators/post/DSalXGPCWM4"
+      ],
+      "note_source": "The Help Center page did not render for our fetch; the quotes are from the guide in source."
+    },
+    {
+      "platform": "instagram-graph-api",
+      "max_unique_hashtag_queries_per_7_days": 30,
+      "recommended": null,
+      "confidence": "official",
+      "note": "\"You can query a maximum of 30 unique hashtags on behalf of an Instagram Business or Creator Account within a rolling, 7 day period.\" Re-querying a tag in the window does not count again.",
+      "source": "https://developers.facebook.com/documentation/instagram-platform/instagram-api-with-facebook-login/hashtag-search",
+      "access": "App Review (Instagram Public Content Access) + instagram_basic; no Stories. Limits live checks, not posting."
+    },
+    {
+      "platform": "tiktok",
+      "max_hashtags_per_post": null,
+      "recommended": "3-5",
+      "confidence": "consistent",
+      "note": "No hard hashtag count published by TikTok; hashtags share the caption limit (2,200 characters via the API). 3-5 per video is the common 2026 recommendation (guide published 2026-04-10). One unconfirmed guide claims a 5-tag cap in the app since Aug 2025.",
+      "source": "https://www.sendcove.app/integrations/tiktok/hashtag-strategy"
+    },
+    {
+      "platform": "x",
+      "max_hashtags_per_post": null,
+      "recommended": "1-2",
+      "confidence": "official",
+      "note": "X Help Center calls 2 hashtags per post best practice; not a hard cap. The page answered 403 to our fetch, so this is from its search snippet.",
+      "source": "https://help.x.com/en/using-x/how-to-use-hashtags"
+    },
+    {
+      "platform": "linkedin",
+      "max_hashtags_per_post": null,
+      "recommended": "3-5",
+      "confidence": "consistent",
+      "note": "No hard limit; 'Aim for three to five highly relevant hashtags per post' (Sprout Social, 2026-05-12).",
+      "source": "https://sproutsocial.com/insights/linkedin-hashtags/"
+    }
+  ],
+  "topics": [
+    {
+      "topic": "specialty coffee",
+      "keywords": [
+        "coffee",
+        "specialty coffee",
+        "speciality coffee",
+        "espresso",
+        "flat white",
+        "filter coffee",
+        "pour over",
+        "barista",
+        "cafe",
+        "coffee shop",
+        "roastery",
+        "roast",
+        "single origin",
+        "beans"
+      ],
+      "hashtags": [
+        {
+          "tag": "#specialtycoffee",
+          "kind": "niche",
+          "evidence": "Top specialty tag in the 2026 coffee guide; tracker: 3,687,728 posts.",
+          "posts": 3687728,
+          "posts_as_of": "2026-11-07",
+          "source": "https://displaypurposes.com/hashtags/hashtag/coffee"
+        },
+        {
+          "tag": "#singleorigin",
+          "kind": "niche",
+          "evidence": "In the guide's 'roaster or coffee shop promo' set (updated 2026-09-15); Boabe names the farm on every bag.",
+          "source": "https://taskant.com/hashtag/coffee/"
+        },
+        {
+          "tag": "#filtercoffee",
+          "kind": "niche",
+          "evidence": "In the guide's pour-over/filter set; fits Boabe's filter of the week.",
+          "source": "https://taskant.com/hashtag/coffee/"
+        },
+        {
+          "tag": "#coffeeroaster",
+          "kind": "niche",
+          "evidence": "Listed as a mid-size tag and in the roaster promo set; Boabe roasts in small batches.",
+          "source": "https://taskant.com/hashtag/coffee/"
+        },
+        {
+          "tag": "#supportlocalcoffee",
+          "kind": "niche",
+          "evidence": "In the guide's roaster or coffee shop promo set.",
+          "source": "https://taskant.com/hashtag/coffee/"
+        },
+        {
+          "tag": "#cafeculture",
+          "kind": "niche",
+          "evidence": "In the guide's cafe-hopping set.",
+          "source": "https://taskant.com/hashtag/coffee/"
+        },
+        {
+          "tag": "#pourover",
+          "kind": "niche",
+          "evidence": "One of the guide's quick-answer picks for 2026.",
+          "source": "https://taskant.com/hashtag/coffee/"
+        },
+        {
+          "tag": "#coffeeshop",
+          "kind": "broad",
+          "evidence": "Fourth most used coffee tag on the tracker: 11,952,375 posts.",
+          "posts": 11952375,
+          "posts_as_of": "2026-11-07",
+          "source": "https://displaypurposes.com/hashtags/hashtag/coffee"
+        },
+        {
+          "tag": "#espresso",
+          "kind": "broad",
+          "evidence": "Listed as a broad tag in the 2026 coffee guide.",
+          "source": "https://taskant.com/hashtag/coffee/"
+        },
+        {
+          "tag": "#coffee",
+          "kind": "broad",
+          "evidence": "Largest coffee tag: 124,399,158 posts on the tracker; very crowded.",
+          "posts": 124399158,
+          "posts_as_of": "2026-11-07",
+          "source": "https://displaypurposes.com/hashtags/hashtag/coffee"
+        }
+      ]
+    },
+    {
+      "topic": "latte",
+      "keywords": [
+        "latte",
+        "latte art",
+        "oat milk",
+        "cappuccino",
+        "milk foam"
+      ],
+      "hashtags": [
+        {
+          "tag": "#latteart",
+          "kind": "niche",
+          "evidence": "Quick-answer pick and latte-art set in the 2026 coffee guide.",
+          "source": "https://taskant.com/hashtag/coffee/"
+        },
+        {
+          "tag": "#lattelover",
+          "kind": "niche",
+          "evidence": "In the recommended list for #pumpkinlatte (page updated 2024-10-19).",
+          "source": "https://best-hashtags.com/hashtag/pumpkinlatte/"
+        },
+        {
+          "tag": "#latte",
+          "kind": "broad",
+          "evidence": "Listed as a broad tag in the 2026 coffee guide.",
+          "source": "https://taskant.com/hashtag/coffee/"
+        },
+        {
+          "tag": "#cappuccino",
+          "kind": "broad",
+          "evidence": "Listed as a broad tag in the 2026 coffee guide.",
+          "source": "https://taskant.com/hashtag/coffee/"
+        }
+      ]
+    },
+    {
+      "topic": "pumpkin latte",
+      "keywords": [
+        "pumpkin",
+        "pumpkin latte",
+        "pumpkin spice",
+        "pumpkin & cinnamon latte",
+        "cinnamon",
+        "seasonal drink",
+        "autumn drink",
+        "fall drink"
+      ],
+      "hashtags": [
+        {
+          "tag": "#pumpkinlatte",
+          "kind": "niche",
+          "evidence": "Own tracker page; 59,184 posts. Generic words, not a chain's drink name.",
+          "posts": 59184,
+          "posts_as_of": "2024-10-19",
+          "source": "https://best-hashtags.com/hashtag/pumpkinlatte/"
+        },
+        {
+          "tag": "#pumpkinspice",
+          "kind": "niche",
+          "evidence": "In the best set for #pumpkinlatte and in a Sept 2025 fall hashtag list.",
+          "source": "https://best-hashtags.com/hashtag/pumpkinlatte/"
+        },
+        {
+          "tag": "#fallcoffee",
+          "kind": "niche",
+          "evidence": "In the recommended list for #pumpkinlatte.",
+          "source": "https://best-hashtags.com/hashtag/pumpkinlatte/"
+        },
+        {
+          "tag": "#falldrinks",
+          "kind": "niche",
+          "evidence": "In a 124-tag fall list (Sept 2025).",
+          "source": "https://rebeccascountrynotes.com/2025/09/15/124-hashtags-for-the-fall-season-2025/"
+        },
+        {
+          "tag": "#cinnamon",
+          "kind": "broad",
+          "evidence": "In the second set for #pumpkinlatte; Boabe's drink uses Ceylon cinnamon.",
+          "source": "https://best-hashtags.com/hashtag/pumpkinlatte/"
+        }
+      ]
+    },
+    {
+      "topic": "cozy autumn",
+      "keywords": [
+        "autumn",
+        "fall",
+        "cozy",
+        "cosy",
+        "sweater",
+        "blanket",
+        "candle",
+        "rain",
+        "grey",
+        "november",
+        "autumn setup",
+        "cozy corner"
+      ],
+      "hashtags": [
+        {
+          "tag": "#cozyfall",
+          "kind": "niche",
+          "evidence": "In a 124-tag fall list (Sept 2025); also related to #cozyautumn.",
+          "source": "https://rebeccascountrynotes.com/2025/09/15/124-hashtags-for-the-fall-season-2025/"
+        },
+        {
+          "tag": "#autumnvibes",
+          "kind": "niche",
+          "evidence": "In the Sept 2025 fall list and the recommended list for #cozy.",
+          "source": "https://rebeccascountrynotes.com/2025/09/15/124-hashtags-for-the-fall-season-2025/"
+        },
+        {
+          "tag": "#sweaterweather",
+          "kind": "niche",
+          "evidence": "Medium-difficulty set for #pumpkinlatte; 5,691,582 posts.",
+          "posts": 5691582,
+          "posts_as_of": "2024-10-19",
+          "source": "https://best-hashtags.com/hashtag/pumpkinlatte/"
+        },
+        {
+          "tag": "#cozyvibes",
+          "kind": "niche",
+          "evidence": "Easy-difficulty set for #cozy; 537,037 posts.",
+          "posts": 537037,
+          "posts_as_of": "2025-10-20",
+          "source": "https://best-hashtags.com/hashtag/cozy/"
+        },
+        {
+          "tag": "#hygge",
+          "kind": "niche",
+          "evidence": "In the recommended list for #cozy.",
+          "source": "https://best-hashtags.com/hashtag/cozy/"
+        },
+        {
+          "tag": "#fallvibes",
+          "kind": "broad",
+          "evidence": "In the Sept 2025 fall list and the second set for #cozy.",
+          "source": "https://rebeccascountrynotes.com/2025/09/15/124-hashtags-for-the-fall-season-2025/"
+        },
+        {
+          "tag": "#cozy",
+          "kind": "broad",
+          "evidence": "17,572,691 posts; 33.7K uses in the last 7 days at the page update.",
+          "posts": 17572691,
+          "posts_as_of": "2025-10-20",
+          "source": "https://best-hashtags.com/hashtag/cozy/"
+        },
+        {
+          "tag": "#autumn",
+          "kind": "broad",
+          "evidence": "Popular set for #pumpkinlatte; 98,690,633 posts.",
+          "posts": 98690633,
+          "posts_as_of": "2024-10-19",
+          "source": "https://best-hashtags.com/hashtag/pumpkinlatte/"
+        }
+      ]
+    },
+    {
+      "topic": "work from anywhere",
+      "keywords": [
+        "work from anywhere",
+        "remote work",
+        "remote",
+        "wfh",
+        "work from home",
+        "laptop",
+        "digital nomad",
+        "coworking",
+        "work setup",
+        "setup",
+        "working"
+      ],
+      "hashtags": [
+        {
+          "tag": "#workfromanywhere",
+          "kind": "niche",
+          "evidence": "Own tracker page: 3,937,048 posts, 7.5K uses in the last 7 days.",
+          "posts": 3937048,
+          "posts_as_of": "2025-12-05",
+          "source": "https://best-hashtags.com/hashtag/workfromanywhere/"
+        },
+        {
+          "tag": "#remotework",
+          "kind": "niche",
+          "evidence": "Own tracker page (updated 2026-05-16); 5.4K uses in the last 7 days.",
+          "source": "https://best-hashtags.com/hashtag/remotework/"
+        },
+        {
+          "tag": "#laptoplifestyle",
+          "kind": "niche",
+          "evidence": "In the recommended list for #workfromanywhere.",
+          "source": "https://best-hashtags.com/hashtag/workfromanywhere/"
+        },
+        {
+          "tag": "#coworking",
+          "kind": "niche",
+          "evidence": "In the best set for #remotework; 2,560,583 posts.",
+          "posts": 2560583,
+          "posts_as_of": "2026-05-16",
+          "source": "https://best-hashtags.com/hashtag/remotework/"
+        },
+        {
+          "tag": "#digitalnomad",
+          "kind": "broad",
+          "evidence": "In the best set for #remotework; 3,434,376 posts.",
+          "posts": 3434376,
+          "posts_as_of": "2026-05-16",
+          "source": "https://best-hashtags.com/hashtag/remotework/"
+        },
+        {
+          "tag": "#workfromhome",
+          "kind": "broad",
+          "evidence": "In the best sets for #workfromanywhere and #remotework.",
+          "source": "https://best-hashtags.com/hashtag/workfromanywhere/"
+        }
+      ]
+    },
+    {
+      "topic": "bucharest",
+      "keywords": [
+        "bucharest",
+        "bucuresti",
+        "bucurești",
+        "romania",
+        "românia",
+        "romanian",
+        "local",
+        "lipscani",
+        "old town"
+      ],
+      "hashtags": [
+        {
+          "tag": "#igersbucharest",
+          "kind": "local",
+          "evidence": "Community tag in the recommended list for #bucharest.",
+          "source": "https://best-hashtags.com/hashtag/bucharest/"
+        },
+        {
+          "tag": "#discoverbucharest",
+          "kind": "local",
+          "evidence": "In the best set for #bucharest.",
+          "source": "https://best-hashtags.com/hashtag/bucharest/"
+        },
+        {
+          "tag": "#buchareststreets",
+          "kind": "local",
+          "evidence": "In the recommended list for #bucharest; fits 'Bucharest streets' in the brand voice.",
+          "source": "https://best-hashtags.com/hashtag/bucharest/"
+        },
+        {
+          "tag": "#bucharest",
+          "kind": "local",
+          "evidence": "City tag; 8.7K uses in the last 7 days at the page update (2025-11-14).",
+          "source": "https://best-hashtags.com/hashtag/bucharest/"
+        },
+        {
+          "tag": "#bucuresti",
+          "kind": "local",
+          "evidence": "Romanian spelling, in the best set for #bucharest; 2,242,989 posts.",
+          "posts": 2242989,
+          "posts_as_of": "2025-11-14",
+          "source": "https://best-hashtags.com/hashtag/bucharest/"
+        },
+        {
+          "tag": "#visitromania",
+          "kind": "local",
+          "evidence": "In the recommended list for #bucharest; 540,403 posts.",
+          "posts": 540403,
+          "posts_as_of": "2025-11-14",
+          "source": "https://best-hashtags.com/hashtag/bucharest/"
+        },
+        {
+          "tag": "#romania",
+          "kind": "broad",
+          "evidence": "Country tag in the best set for #bucharest; 9,836,237 posts.",
+          "posts": 9836237,
+          "posts_as_of": "2025-11-14",
+          "source": "https://best-hashtags.com/hashtag/bucharest/"
+        }
+      ]
+    },
+    {
+      "topic": "small luxuries",
+      "trend_id": "live_small_luxuries",
+      "keywords": [
+        "small luxuries",
+        "small luxury",
+        "little treat",
+        "little treats",
+        "treat yourself",
+        "treat",
+        "small joys",
+        "matching cups"
+      ],
+      "hashtags": [
+        {
+          "tag": "#littletreat",
+          "kind": "niche",
+          "evidence": "Own tracker page; 44,918 posts. 'Little treat culture' is the 2025-2026 name for this behaviour.",
+          "posts": 44918,
+          "posts_as_of": "2024-11-08",
+          "source": "https://best-hashtags.com/hashtag/littletreat/"
+        },
+        {
+          "tag": "#treatyourself",
+          "kind": "broad",
+          "evidence": "In the best set for #littletreat.",
+          "source": "https://best-hashtags.com/hashtag/littletreat/"
+        }
+      ]
+    },
+    {
+      "topic": "winter arc",
+      "trend_id": "live_winter_arc",
+      "keywords": [
+        "winter arc",
+        "self-improvement",
+        "new year",
+        "new year's resolution",
+        "habits",
+        "routine",
+        "best version"
+      ],
+      "hashtags": [
+        {
+          "tag": "#winterarc",
+          "kind": "niche",
+          "evidence": "The trend's own tag; TODAY (2024-11-14) reported almost half a million TikTok videos under it. Fitness/diet angle: keep Boabe's post about routine, never health claims (legal no-go 1).",
+          "source": "https://www.today.com/health/diet-fitness/winter-arc-challenge-rcna179745"
+        }
+      ]
+    },
+    {
+      "topic": "christmas countdown",
+      "trend_id": "live_christmas_countdown",
+      "keywords": [
+        "christmas",
+        "countdown",
+        "christmas countdown",
+        "holiday",
+        "holidays",
+        "festive",
+        "december",
+        "hot cocoa"
+      ],
+      "hashtags": [
+        {
+          "tag": "#christmascountdown",
+          "kind": "niche",
+          "evidence": "The trend's format as a tag; own tracker page (no date given for its counts).",
+          "source": "https://iqhashtags.com/hashtags/hashtag/christmascountdown"
+        },
+        {
+          "tag": "#christmasvibes",
+          "kind": "niche",
+          "evidence": "Related tag on the #christmascountdown page.",
+          "source": "https://iqhashtags.com/hashtags/hashtag/christmascountdown"
+        },
+        {
+          "tag": "#christmasmood",
+          "kind": "niche",
+          "evidence": "Related tag on the #christmascountdown page.",
+          "source": "https://iqhashtags.com/hashtags/hashtag/christmascountdown"
+        },
+        {
+          "tag": "#christmas",
+          "kind": "broad",
+          "evidence": "Top popular tag on the #christmascountdown page; very crowded.",
+          "source": "https://iqhashtags.com/hashtags/hashtag/christmascountdown"
+        }
+      ]
+    },
+    {
+      "topic": "summer memories",
+      "trend_id": "live_thought_this_morning",
+      "keywords": [
+        "summer",
+        "summer memories",
+        "memories",
+        "nostalgia",
+        "throwback",
+        "what i thought of this morning"
+      ],
+      "hashtags": [
+        {
+          "tag": "#summermemories",
+          "kind": "niche",
+          "evidence": "Own tracker page; 1,288,645 posts, 2.5K uses in the last 7 days.",
+          "posts": 1288645,
+          "posts_as_of": "2025-10-17",
+          "source": "https://best-hashtags.com/hashtag/summermemories/"
+        },
+        {
+          "tag": "#throwback",
+          "kind": "broad",
+          "evidence": "In the recommended list for #summermemories.",
+          "source": "https://best-hashtags.com/hashtag/summermemories/"
+        },
+        {
+          "tag": "#summervibes",
+          "kind": "broad",
+          "evidence": "In the best set for #summermemories.",
+          "source": "https://best-hashtags.com/hashtag/summermemories/"
+        }
+      ]
+    },
+    {
+      "topic": "coffee tasting",
+      "trend_id": "live_105_dollar_coffee",
+      "keywords": [
+        "blind test",
+        "blind tasting",
+        "tasting",
+        "cupping",
+        "expensive coffee",
+        "coffee price",
+        "competition coffee",
+        "origin"
+      ],
+      "hashtags": [
+        {
+          "tag": "#specialtycoffee",
+          "kind": "niche",
+          "evidence": "Top specialty tag; 3,687,728 posts on the tracker.",
+          "posts": 3687728,
+          "posts_as_of": "2026-11-07",
+          "source": "https://displaypurposes.com/hashtags/hashtag/coffee"
+        },
+        {
+          "tag": "#singleorigin",
+          "kind": "niche",
+          "evidence": "In the guide's roaster promo set; matches the origin angle of the story.",
+          "source": "https://taskant.com/hashtag/coffee/"
+        },
+        {
+          "tag": "#pourover",
+          "kind": "niche",
+          "evidence": "In the guide's pour-over/filter set; the story compares drip coffee.",
+          "source": "https://taskant.com/hashtag/coffee/"
+        }
+      ]
+    },
+    {
+      "topic": "fibermaxxing",
+      "trend_id": "live_fibermaxxing",
+      "keywords": [
+        "fibermaxxing",
+        "fibre",
+        "fiber",
+        "oats",
+        "chia"
+      ],
+      "hashtags": [],
+      "note": "No hashtags on purpose: a nutrition trend. Any tag would imply a health/nutrition claim (Boabe legal no-go 1, EU Regulation 1924/2006)."
+    }
+  ],
+  "excluded": [
+    {
+      "tag": "#pumpkinspicelatte",
+      "reason": "Name of a chain's seasonal drink (brand rule 4: no trademarked seasonal drink names).",
+      "seen_at": "https://best-hashtags.com/hashtag/pumpkinlatte/"
+    },
+    {
+      "tag": "#psl",
+      "reason": "Abbreviation tied to the same chain's drink; unsure if generic, so left out.",
+      "seen_at": "https://best-hashtags.com/hashtag/pumpkinlatte/"
+    },
+    {
+      "tag": "#starbucks",
+      "reason": "Competitor brand (legal no-go 3).",
+      "seen_at": "https://best-hashtags.com/hashtag/pumpkinlatte/"
+    },
+    {
+      "tag": "#starbuckscoffee",
+      "reason": "Competitor brand (legal no-go 3).",
+      "seen_at": "https://displaypurposes.com/hashtags/hashtag/coffee"
+    },
+    {
+      "tag": "#cupofexcellence",
+      "reason": "Cup of Excellence is a trademark of the Alliance for Coffee Excellence; not ours to use for the $105 story.",
+      "seen_at": "https://trademark.justia.com/owners/alliance-for-coffee-excellence-inc-1927600"
+    },
+    {
+      "tag": "#fibermaxxing",
+      "reason": "Nutrition trend; implies a health claim (legal no-go 1).",
+      "seen_at": "https://brasovstiri.ro/fibrele-alimentare-noul-trend-al-anului-2026-de-ce-tot-mai-multi-oameni-isi-schimba-meniul/"
+    },
+    {
+      "tag": "#coffeegram",
+      "reason": "The 2026 coffee guide advises avoiding it (overused).",
+      "seen_at": "https://taskant.com/hashtag/coffee/"
+    },
+    {
+      "tag": "#butfirstcoffee",
+      "reason": "The 2026 coffee guide advises avoiding it (overused).",
+      "seen_at": "https://taskant.com/hashtag/coffee/"
+    },
+    {
+      "tag": "#bossbabe",
+      "reason": "Off-brand; spam/MLM-adjacent set on the #workfromanywhere page.",
+      "seen_at": "https://best-hashtags.com/hashtag/workfromanywhere/"
+    },
+    {
+      "tag": "#makemoneyonline",
+      "reason": "Spam/MLM-adjacent; off-brand.",
+      "seen_at": "https://best-hashtags.com/hashtag/workfromanywhere/"
+    },
+    {
+      "tag": "#networkmarketing",
+      "reason": "Spam/MLM-adjacent; off-brand.",
+      "seen_at": "https://best-hashtags.com/hashtag/workfromanywhere/"
+    }
+  ],
+  "about_details": [
+    "Kinds: broad = very large general tag; niche = specific topic or community; local = Bucharest/Romania.",
+    "Other brands' trademarks, spam/MLM tags and tags that break Boabe's legal no-gos are listed under excluded, with the reason."
+  ]
+}
