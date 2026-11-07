@@ -1,15 +1,15 @@
 # QA report, 2026-11-07
 
-Two bugs in `backend/app/adapters.py` stop Slack and the Boabe trend from working; everything else is minor. Checked against `develop` at `5ca6d6e`, `feature/andu-skeleton` (PR #6) and `feature/militaru-adobe-integration`, each merged with `develop` locally. Nothing was pushed to those branches.
+Two bugs in `backend/app/adapters.py` broke Slack and the live trend; **both fixed in `hotfix/adapters-trend-slack`** with `backend/tests/test_adapters.py`. Everything else is minor. Checked against `develop` at `5ca6d6e`, `feature/andu-skeleton` (PR #6) and `feature/militaru-adobe-integration`, each merged with `develop` locally. Nothing was pushed to those branches.
 
-## Blocks the demo
+## Blocked the demo (fixed)
 
 | # | Owner | Where | Problem | Fix |
 |---|---|---|---|---|
 | 1 | Stefan | `backend/app/adapters.py:163-169` | `send_to_slack` calls `mod.SlackTask` (doesn't exist) and passes `demo_mode=` / `timeout_s=`, which `slack.send_final_post` doesn't take. It raises, `_guarded` swallows it, nothing is sent. | `mod.send_final_post(draft.caption, draft.image_url, tasks, elapsed)` with `models.Task` list; read `.sent` |
-| 2 | Stefan | `backend/app/adapters.py:101` | `asdict()` on the Pydantic `Trend` that `trends.get_trend()` returns raises `TypeError`, so `_fallback_trend` (the transit trend) is always used. | `return mod.get_trend(live=live)` |
+| 2 | Stefan | `backend/app/adapters.py:101` | `asdict()` on the Pydantic `Trend` that `trends.get_trend()` returns raises `TypeError`, so `_fallback_trend` is always used: the saved trend still showed, but `live=True` never reached `trends.py`. | `return mod.get_trend(live=live)` |
 
-All 69 tests pass with both bugs, because no test goes through `adapters.py` with the real modules. Add one that asserts the trend id isn't `trend_saved_demo` and that Slack returns `sent`.
+All 69 tests passed with both bugs. `test_adapters.py` now fails on each of them.
 
 ## Should fix
 
